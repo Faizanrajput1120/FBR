@@ -11,12 +11,12 @@ class DashboardController extends Controller
 {
      public function index()
     {
-        return view('dashboard');
+        return view('layouts.app');
     }
     public function user_index()
 {
  
-    return view('user_dashboard.user_dashboard');
+   return view('layouts.app');
 }
 
 }
