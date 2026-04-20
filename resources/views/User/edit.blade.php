@@ -90,7 +90,7 @@
                             @foreach($company as $comp)
                                 <option value="{{ $comp->cid }}"
                                     {{ $user->c_id == $comp->cid ? 'selected' : '' }}>
-                                    {{ $comp->name }}
+                                    {{ $comp->cname }}
                                 </option>
                             @endforeach
                         </select>

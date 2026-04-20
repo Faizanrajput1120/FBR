@@ -84,7 +84,7 @@
                         <select name="company_id" id="" class="form-select select2">
                             <option value="">Select Company</option>
                             @foreach($company as $comp)
-                                <option value="{{ $comp->cid }}">{{ $comp->name }}</option>
+                                <option value="{{ $comp->cid }}">{{ $comp->cname }}</option>
                             @endforeach
                         </select>
                     </div>
