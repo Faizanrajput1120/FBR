@@ -79,11 +79,11 @@
                     </div>
                 </li>
 
-            @endif
+        
 
 
             {{-- USER MENU --}}
-            @if ($user?->is_admin == 3)
+            @elseif ($user?->is_admin == 3)
 
                 <li class="side-nav-item">
                     <a data-bs-toggle="collapse" href="#accountsMenu" class="side-nav-link">

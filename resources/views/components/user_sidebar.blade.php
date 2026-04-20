@@ -1,6 +1,10 @@
+@php
+    $user = auth()->user();
+@endphp
+
 <div class="leftside-menu">
 
-    <!-- Brand Logo Light -->
+    <!-- Logo -->
     <a href="index.html" class="logo logo-light">
         <span class="logo-lg">
             <img src="{{ asset('printingcell/public/assets/images/logo.png') }}" alt="logo">
@@ -10,7 +14,6 @@
         </span>
     </a>
 
-    <!-- Brand Logo Dark -->
     <a href="index.html" class="logo logo-dark">
         <span class="logo-lg">
             <img src="{{ asset('printingcell/public/assets/images/logo-dark.png') }}" alt="dark logo">
@@ -20,63 +23,88 @@
         </span>
     </a>
 
-    <!-- Sidebar Hover Menu Toggle Button -->
-    <div class="button-sm-hover" data-bs-toggle="tooltip" data-bs-placement="right" title="Show Full Sidebar">
-        <i class="ri-checkbox-blank-circle-line align-middle"></i>
-    </div>
-
-    <!-- Full Sidebar Menu Close Button -->
-    <div class="button-close-fullsidebar">
-        <i class="ri-close-fill align-middle"></i>
-    </div>
-
     <!-- Sidebar -->
     <div class="h-100" id="leftside-menu-container" data-simplebar>
-        <!-- Leftbar User -->
-        <div class="leftbar-user">
-            <a href="pages-profile.html">
-                <img src="{{ asset('printingcell/public/assets/images/users/avatar-1.jpg') }}" alt="user-image"
-                    height="42" class="rounded-circle shadow-sm">
-                <span class="leftbar-user-name mt-2">Fazain Keller</span>
+
+        <!-- User -->
+        <div class="leftbar-user flex flex-col items-center justify-center py-4">
+            <a href="#" class="flex flex-col items-center">
+                <img src="{{ asset('printingcell/public/assets/images/users/avatar-1.jpg') }}"
+                     class="rounded-full shadow-sm border-2 border-gray-200 mb-2 mx-auto"
+                     height="52" width="52">
+                <span class="text-xs font-semibold">
+                    {{ $user->name ?? 'Guest' }}
+                </span>
             </a>
         </div>
 
-        <!--- Sidemenu -->
+        <!-- Menu -->
         <ul class="side-nav">
-
-            <li class="side-nav-title">Navigation</li>
-
-            <li class="side-nav-item">
-                <a href="{{ route('dashboard.admin') }}" class="side-nav-link">
-                    <i class="uil-calender"></i>
-                    <span> Dashboard </span>
-                </a>
-            </li>
 
             <li class="side-nav-title">Apps</li>
 
+            {{-- ADMIN MENU --}}
+            @if ($user?->is_admin == 1)
 
-            
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#reportsMenu" class="side-nav-link">
+                        <i class="uil-window"></i>
+                        <span>Reports</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="reportsMenu">
+                        <ul class="side-nav-second-level">
+                            <li>
+                                <a href="{{ route('reports.sales') }}">Sales Reports</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
-           
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#salesMenu" class="side-nav-link">
+                        <i class="uil-envelope"></i>
+                        <span>Sales</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="salesMenu">
+                        <ul class="side-nav-second-level">
+                            <li>
+                                <a href="{{ route('invoicing.index') }}">Sale Invoice</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('drafts.index') }}">Draft Invoice</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
-            
+        
 
 
-           
+            {{-- USER MENU --}}
+            @elseif ($user?->is_admin == 3)
 
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#accountsMenu" class="side-nav-link">
+                        <i class="uil-window"></i>
+                        <span>Accounts</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="accountsMenu">
+                        <ul class="side-nav-second-level">
+                            <li>
+                                <a href="{{ route('premiertax.companies.index') }}">Company</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('users.index') }}">Users</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
-           
-
-          
-
-           
-            <!-- end Help Box -->
-
+            @endif
 
         </ul>
-        <!--- End Sidemenu -->
-
-        <div class="clearfix"></div>
     </div>
 </div>
