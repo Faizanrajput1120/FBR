@@ -47,209 +47,76 @@
 
 
             <li class="side-nav-title">Apps</li>
+            @if (auth()->user()->is_admin == 1)
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarRegistrationForm22s" aria-expanded="false"
+                        aria-controls="sidebarRegistrationForm22s" class="side-nav-link">
+                        <i class="uil-window"></i>
+                        <span>Reports</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarRegistrationForm22s">
+                        <ul class="side-nav-second-level">
+
+                            <li>
+                                <a href="{{ route('reports.sales') }}">Sales Reports</a>
+                            </li>
 
 
-            <!--<li class="side-nav-item">-->
-            <!--    <a data-bs-toggle="collapse" href="#sidebarLayouts" aria-expanded="false" aria-controls="sidebarLayouts"-->
-            <!--        class="side-nav-link">-->
-            <!--        <i class="uil-window"></i>-->
-            <!--        <span> Accounts</span>-->
-            <!--        <span class="menu-arrow"></span>-->
-            <!--    </a>-->
-            <!--    <div class="collapse" id="sidebarLayouts">-->
-            <!--        <ul class="side-nav-second-level">-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('level1.list') }}">Level1</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('level2.list') }}">Level2</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('amaster.list') }}">Chart Of Account</a>-->
-            <!--            </li>-->
-
-            <!--            <li>-->
-            <!--                <a href="{{ route('cash.reports') }}">Cash Receipt</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('cheque_receipts.reports') }}">Cheque Receipts</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('payment.reports') }}">Cash Payment</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('bank_recipt.reports') }}">Bank Receipt</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('bank_payment.reports') }}">Bank Payment</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('ledger.list') }}">Ledger</a>-->
-            <!--            </li>-->
-                         
-                        
-
-            <!--            <li>-->
-            <!--                <a href="{{ route('payables.list') }}">Payables</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('recieveables.list') }}">Recieveable</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('journal_voucher.reports') }}">Journal Voucher</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('open_bal.reports') }}">Opening Balance</a>-->
-            <!--            </li>-->
-            <!--        </ul>-->
-            <!--    </div>-->
-            <!--</li>-->
-            
-            
-            <!--<li class="side-nav-item">-->
-            <!--    <a data-bs-toggle="collapse" href="#sidebarEmails2" aria-expanded="false" aria-controls="sidebarEmails2"-->
-            <!--        class="side-nav-link">-->
-            <!--        <i class="uil-envelope"></i>-->
-            <!--        <span> Reports </span>-->
-            <!--        <span class="menu-arrow"></span>-->
-            <!--    </a>-->
-            <!--    <div class="collapse" id="sidebarEmails2">-->
-            <!--        <ul class="side-nav-second-level">-->
-            <!--             <li>-->
-            <!--                <a href="{{ route('bank_cash.reports') }}">Bank/Cash Receipt Report</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('expense.reports') }}">Expense Report</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('purchase.reports') }}">Purchase Reports</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('sale.reports') }}">Sale Reports</a>-->
-            <!--            </li>-->
-            <!--            <li>-->
-            <!--                <a href="{{ route('daily_statement.reports') }}">Daily Statement</a>-->
-            <!--            </li>-->
-                       
-            <!--            <li>-->
-            <!--                <a href="{{ route('report.stock') }}">Stock Reports</a>-->
-            <!--            </li>-->
-
-            <!--        </ul>-->
-            <!--    </div>-->
-            <!--</li>-->
-            
-           
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarRegistrationForm22s" aria-expanded="false"
-                    aria-controls="sidebarRegistrationForm22s" class="side-nav-link">
-                    <i class="uil-window"></i>
-                    <span>Reports</span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarRegistrationForm22s">
-                    <ul class="side-nav-second-level">
-                      
-                        <li>
-                            <a href="{{ route('reports.sales') }}">Sales Reports</a>
-                        </li>
-
-                        
-                    </ul>
-                </div>
-            </li>
-            <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarEmails" aria-expanded="false" aria-controls="sidebarEmails"
-                    class="side-nav-link">
-                    <i class="uil-envelope"></i>
-                    <span> Sales </span>
-                    <span class="menu-arrow"></span>
-                </a>
-                <div class="collapse" id="sidebarEmails">
-                    <ul class="side-nav-second-level">
-                     
-                        
-                       <li>
-                            <a href="{{ route('invoicing.index') }}">Sale Invoice</a>
-                        </li>
-  <li>
-                            <a href="{{ route('drafts.index') }}">Draft Invoice</a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            <!--<li class="side-nav-item">-->
-            <!--    <a data-bs-toggle="collapse" href="#sidebarEmails1" aria-expanded="false" aria-controls="sidebarEmails1"-->
-            <!--        class="side-nav-link">-->
-            <!--        <i class="uil-envelope"></i>-->
-            <!--        <span> Billing </span>-->
-            <!--        <span class="menu-arrow"></span>-->
-            <!--    </a>-->
-            <!--    <div class="collapse" id="sidebarEmails1">-->
-            <!--        <ul class="side-nav-second-level">-->
-                     
-            <!--           <li>-->
-            <!--                <a href="{{ route('general_billing.report') }}">General Billing</a>-->
-            <!--            </li>-->
-
-            <!--        </ul>-->
-            <!--    </div>-->
-            <!--</li>-->
-           
-          
-            
-            
-
-            
-
-           
-
-            
-           
-            
-            
-           
-
-<!--<li class="side-nav-item">-->
-<!--                <a data-bs-toggle="collapse" href="#sidebarRegistrationForm2" aria-expanded="false"-->
-<!--                    aria-controls="sidebarRegistrationForm2" class="side-nav-link">-->
-<!--                    <i class="uil-window"></i>-->
-<!--                    <span>Set-Up Department</span>-->
-<!--                    <span class="menu-arrow"></span>-->
-<!--                </a>-->
-<!--                <div class="collapse" id="sidebarRegistrationForm2">-->
-<!--                    <ul class="side-nav-second-level">-->
-                      
-<!--                        <li>-->
-<!--                            <a href="{{ route('print.index') }}">Department</a>-->
-<!--                        </li>-->
-                        
-<!--                         <li>-->
-<!--                            <a href="{{ route('process.index') }}">Level2</a>-->
-<!--                        </li>-->
-                        
-<!--                    </ul>-->
-<!--                </div>-->
-<!--            </li>-->
-
-            
-            
-        
-            
-            
-         
+                        </ul>
+                    </div>
+                </li>
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarEmails" aria-expanded="false"
+                        aria-controls="sidebarEmails" class="side-nav-link">
+                        <i class="uil-envelope"></i>
+                        <span> Sales </span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarEmails">
+                        <ul class="side-nav-second-level">
 
 
-            <!--<li class="side-nav-item">-->
-            <!--    <a href="{{ route('premiertax.companies.index') }}" class="side-nav-link">-->
-            <!--        <i class="uil-rss"></i>-->
-            <!--        <span> Company </span>-->
-            <!--    </a>-->
-                
-            <!--</li>-->
+                            <li>
+                                <a href="{{ route('invoicing.index') }}">Sale Invoice</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('drafts.index') }}">Draft Invoice</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            @endif
 
-    
+
+
+            @if (auth()->user()->is_admin == 3)
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#sidebarLayouts" aria-expanded="false"
+                        aria-controls="sidebarLayouts" class="side-nav-link">
+                        <i class="uil-window"></i>
+                        <span> Accounts</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="sidebarLayouts">
+                        <ul class="side-nav-second-level">
+                            <li>
+                                <a href="{{ route('premiertax.companies.index') }}">Company</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('users.index') }}">Users</a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </li>
+            @endif
+
+
+
+
+
+
 
 
         </ul>
