@@ -75,7 +75,7 @@
         <!-- ========== Topbar End ========== -->
 
         <!-- ========== Left Sidebar Start ========== -->
-       @include('components.user_sidebar2')
+       @include('components.user_sidebar')
         <!-- ========== Left Sidebar End ========== -->
 
 

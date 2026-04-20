@@ -2,62 +2,47 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-     protected $table = 'users';
+    protected $table = 'users';
+
     protected $fillable = [
+        'is_admin',
         'name',
+        'username',
         'email',
         'password',
-        'account',
-        'billing',
-        'delivery_challan',
-        'setup_department',
-        'employee_department',
-        'waste_sale',
-        'gate_pass','purchase','inventory','product_registration','setup','employee','is_admin',
-        'report','gate_ex','job_sheet','attendance_system','wage_calculator','backup'
+        'fbr_access_token',
+        'use_sandbox',
+        'cinc_ntn',
+        'address',
+        'business_name',
+        'province',
+        'c_id',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_admin' => 'boolean',
+        'use_sandbox' => 'boolean',
     ];
-    
-    public function hasPermission($appName, $action)
-{
-    $right = $this->rights()->where('app_name', $appName)->first();
-    return $right ? (bool)$right->{$action} : false;
-}
-public function buyers(): HasMany
+
+    // Example relation
+    public function buyers(): HasMany
     {
         return $this->hasMany(Buyer::class);
     }

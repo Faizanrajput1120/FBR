@@ -14,6 +14,7 @@ use App\Http\Controllers\PartyMemberController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LedgerDetailController;
+use App\Http\Controllers\UserManagement;
 use App\Http\Controllers\PayableController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\EmployeeController;
@@ -244,6 +245,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 Route::resource('/premiertax/Customers', CustomerController::class)->names('custommer');
 Route::middleware('auth')->group(function () {
+    Route::resource('/user',UserManagement::class)->names('users');
     
     Route::resource('/premiertax/Customers', CustomerController::class)->names('custommer');
     Route::get('/premiertax/salary_calc', [SalaryCalculatorController::class, 'index'])->name('salary_calc.list');
