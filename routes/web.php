@@ -337,7 +337,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/premiertax/get-item-details/{id}', [PaymentInvoiceController::class, 'getItemDetails'])->name('getItemDetails');
     Route::post('/premiertax/update-status/{id}', [CashController::class, 'updateStatus'])->name('cash.updateStatus');
    
-    Route::get('/premiertax/user/dashboard', [DashboardController::class, 'user_index'])->name('dashboard.user');
+    Route::get('/premiertax/invoice/dashboard', [DashboardController::class, 'user_index'])->name('dashboard.user');
     Route::get('/premiertax/profile', [App\Http\Controllers\UserController::class, 'profile'])->name('profile');
     
     Route::get('/premiertax/department', [DepartmentController::class, 'index'])->name('department.list');

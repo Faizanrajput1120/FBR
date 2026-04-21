@@ -1407,7 +1407,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      '/premiertax/user/dashboard' => 
+      '/premiertax/invoice/dashboard' => 
       array (
         0 => 
         array (
@@ -15160,7 +15160,7 @@ app('router')->setCompiledRoutes(
         0 => 'GET',
         1 => 'HEAD',
       ),
-      'uri' => 'premiertax/user/dashboard',
+      'uri' => 'premiertax/invoice/dashboard',
       'action' => 
       array (
         'middleware' => 

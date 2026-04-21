@@ -24,7 +24,7 @@ class LoginController extends Controller
         }
 
         // Otherwise, redirect to the user dashboard
-        return '/premiertax/user/dashboard'; // User dashboard route
+        return '/premiertax/invoice/dashboard'; // User dashboard route
     }
     public function logout(Request $request)
     {

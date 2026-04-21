@@ -17,7 +17,7 @@ class UserMiddleware
     {
         // Check if the authenticated user is not an admin
         if (auth()->check() && auth()->user()->is_admin) {
-            return redirect('/premierlaw/user/dashboard'); // Redirect admin to their dashboard
+            return redirect('/premierlaw/invoice/dashboard'); // Redirect admin to their dashboard
         }
 
         return $next($request); // Proceed if the user is not an admin
