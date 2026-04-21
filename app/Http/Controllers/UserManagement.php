@@ -93,7 +93,7 @@ class UserManagement extends Controller
             $data['password'] = bcrypt($request->password);
         }
 
-        $data['is_admin'] = $request->has('is_admin');
+        $data['is_admin'] = $request->has('is_admin')??1;
         $data['use_sandbox'] = $request->has('use_sandbox');
 
         $data['business_name'] = $request->business_name;
