@@ -12,6 +12,7 @@ class UserManagement extends Controller
     //
     public function index(Request $request)
     {
+        dd("'asas");
         if (auth()->user()->is_admin == 1) {
 
             return redirect()->back()->with('error', 'You do not have permission to access this page.');
