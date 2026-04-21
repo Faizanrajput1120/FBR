@@ -99,4 +99,7 @@ public function edit($id)
 
     return view('companies.edit', compact('company'));
 }
+public function show(){
+    
+}
 }
