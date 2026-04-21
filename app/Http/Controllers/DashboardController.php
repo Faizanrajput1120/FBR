@@ -16,7 +16,8 @@ class DashboardController extends Controller
     public function user_index()
 {
 //  dd("asasas");
-   return view('layouts.app');
+
+   return redirect()->route('dashboard.admin');
 }
 
 }

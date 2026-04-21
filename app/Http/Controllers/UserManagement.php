@@ -12,6 +12,9 @@ class UserManagement extends Controller
     //
     public function index(Request $request)
 {
+     if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
     $query = User::query();
 
     // Filter by company
@@ -37,11 +40,17 @@ class UserManagement extends Controller
 
     public function create()
     {
+         if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
         $company=Company::all();
         return view('User.create', compact('company'));
     }
      public function store(Request $request)
     {
+         if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
         $request->validate([
             'name' => 'required|string|max:255',
             'username' => 'nullable|string|max:255|unique:users,username',
@@ -68,6 +77,9 @@ class UserManagement extends Controller
     }
     public function update(Request $request, $id)
 {
+     if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
     $user = User::findOrFail($id);
 
     $data = $request->validate([
@@ -95,11 +107,14 @@ class UserManagement extends Controller
 }
 public function edit($id)
 {
+     if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
     $company = Company::findOrFail($id);
 
     return view('companies.edit', compact('company'));
 }
 public function show(){
-    
+
 }
 }

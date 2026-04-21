@@ -11,6 +11,9 @@ class CompaniesController extends Controller
     // Show all companies
     public function index()
     {
+        if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
         $companies = Company::all();
         return view('companies.index', compact('companies'));
     }
@@ -18,12 +21,18 @@ class CompaniesController extends Controller
     // Show form to create company
     public function create()
     {
+         if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
         return view('companies.create');
     }
 
     // Store new company
     public function store(Request $request)
     {
+         if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
@@ -38,6 +47,9 @@ class CompaniesController extends Controller
     // Delete company
     public function destroy($id)
     {
+         if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
         $company = Company::findOrFail($id);
         $company->delete();
 
@@ -46,6 +58,9 @@ class CompaniesController extends Controller
     // Show form to edit a company
     public function edit($id)
     {
+         if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
         $company = Company::findOrFail($id);
         return view('companies.edit', compact('company'));
     }
@@ -53,6 +68,9 @@ class CompaniesController extends Controller
     // Update company in database
     public function update(Request $request, $id)
     {
+         if(auth()->user()->is_admin == 1){
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
         $request->validate([
             'name' => 'required|string|max:255',
         ]);
