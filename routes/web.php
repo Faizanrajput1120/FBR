@@ -229,7 +229,6 @@ Route::get('premiertax/sale/invoice/{id}', [SaleDetails::class, 'invoice'])
 Route::get('/premiertax/create-storage-link', [StorageLinkController::class, 'createLink']);
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::resource('/premiertax/companies', CompaniesController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->names('premiertax.companies');
     Route::get('/premiertax/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
     // Route::get('/premiertax/create_account', [CreateAccountController::class, 'index'])->name('create_account.list');
     // Route::get('/premiertax/create_account/reports', [CreateAccountController::class, 'reports'])->name('create_account.reports');
@@ -246,6 +245,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::resource('/premiertax/Customers', CustomerController::class)->names('custommer');
 Route::middleware('auth')->group(function () {
     Route::resource('/premiertax/users',UserManagement::class)->names('users');
+    Route::resource('/premiertax/companies', CompaniesController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])->names('premiertax.companies');
+    
     
     Route::resource('/premiertax/Customers', CustomerController::class)->names('custommer');
     Route::get('/premiertax/salary_calc', [SalaryCalculatorController::class, 'index'])->name('salary_calc.list');
