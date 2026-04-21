@@ -245,7 +245,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 Route::resource('/premiertax/Customers', CustomerController::class)->names('custommer');
 Route::middleware('auth')->group(function () {
-    Route::resource('/premiertax/user',UserManagement::class)->names('users');
+    Route::resource('/premiertax/users',UserManagement::class)->names('users');
     
     Route::resource('/premiertax/Customers', CustomerController::class)->names('custommer');
     Route::get('/premiertax/salary_calc', [SalaryCalculatorController::class, 'index'])->name('salary_calc.list');
