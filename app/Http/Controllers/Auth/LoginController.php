@@ -19,12 +19,11 @@ class LoginController extends Controller
     protected function redirectTo()
     {
         // Check if the authenticated user is an admin
-        if (Auth::user()->is_admin) {
+        if (Auth::user()) {
             return '/premiertax/admin/dashboard'; // Admin dashboard route
         }
 
         // Otherwise, redirect to the user dashboard
-        return '/premiertax/invoice/dashboard'; // User dashboard route
     }
     public function logout(Request $request)
     {

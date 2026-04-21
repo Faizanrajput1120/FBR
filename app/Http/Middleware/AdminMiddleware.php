@@ -17,7 +17,7 @@ class AdminMiddleware
     public function handle($request, Closure $next)
     {
         // If the user is an admin, allow access
-        if (Auth::check() && Auth::user()->is_admin==1 || Auth::check() && Auth::user()->is_admin==3) {
+        if (Auth::check() && Auth::user()->is_admin==1 || Auth::user()->is_admin==3) {
             return $next($request);
         }
 

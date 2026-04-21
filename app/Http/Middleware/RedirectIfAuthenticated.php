@@ -24,7 +24,7 @@ class RedirectIfAuthenticated
                 $user = Auth::guard($guard)->user();
 
                 // Redirect based on user role
-                if ($user->is_admin) { // Assuming you have an `is_admin` field
+                if ($user) { // Assuming you have an `is_admin` field
                     return redirect('/premiertax/admin/dashboard');
                 } else {
                     return redirect('/premiertax/invoice/dashboard'); // Redirect to regular user dashboard
