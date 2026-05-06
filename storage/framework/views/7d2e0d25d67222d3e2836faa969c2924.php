@@ -1,4 +1,3 @@
-
 <?php $__env->startSection('content'); ?>
       <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -21,7 +20,7 @@
                                     <div class="flex-shrink-0">
                                         <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                        </svg>
+                                        </svg>calculateRateForField
                                     </div>
                                     <div class="ml-3">
                                         <h3 class="text-sm font-medium text-yellow-800">
@@ -490,7 +489,17 @@
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     try {
-                        const data = JSON.parse(xhr.responseText);
+                        const raw = xhr.responseText;
+console.log('RAW HS RESPONSE:', raw);
+
+let cleanText = raw.trim();
+
+// Remove invalid prefix (like "c")
+if (!cleanText.startsWith('{')) {
+    cleanText = cleanText.substring(cleanText.indexOf('{'));
+}
+
+const data = JSON.parse(cleanText);
                         if (data.success && data.data) {
                             const result = {
                                 results: data.data.map(item => ({
@@ -1010,7 +1019,14 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     }
                 });
 
-                const result = await response.json();
+               const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success && result.data) {
                     // Cache the result
@@ -1050,7 +1066,14 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     }
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success && result.data) {
                     // Cache the result
@@ -1371,7 +1394,14 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     })
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Clear the select and add default option
@@ -1584,7 +1614,14 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     }
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success && result.data) {
                     uoMs = result.data;
@@ -1610,45 +1647,50 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
 
         // Load and populate Document Types (Invoice Types) from FBR API
         async function loadAndPopulateDocumentTypes() {
-            try {
-               
-                const response = await fetch(`${API_BASE}/premiertax/api/fbr/doctypecode`, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': CSRF_TOKEN
-                    }
-                });
+    try {
 
-                const result = await response.json();
-
-                if (result.success && result.data) {
-                    documentTypes = result.data;
-                    populateDocumentTypeSelects();
-
-                    // Re-initialize Select2 for document type selects after loading data
-                    $('.invoice-type-select').select2('destroy').select2({
-                        placeholder: 'Select Invoice Type',
-                        allowClear: true,
-                        width: 'resolve'
-                    });
-
-                   
-                } else {
-                    console.error('Failed to load Document Types:', result.message);
-                    showMessage('Failed to load Invoice Types: ' + (result.message || 'Unknown error'), 'warning');
-
-                    // Fallback to default values if API fails
-                    loadDefaultDocumentTypes();
-                }
-            } catch (error) {
-                console.error('Error loading Document Types:', error);
-                showMessage('Error loading Invoice Types from FBR server', 'error');
-
-                // Fallback to default values if API fails
-                loadDefaultDocumentTypes();
+        const response = await fetch(`${API_BASE}/premiertax/api/fbr/doctypecode`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': CSRF_TOKEN
             }
+        });
+
+        const text = await response.text();
+        console.log('RAW RESPONSE:', text);
+
+        const cleanText = text.trim().startsWith('{')
+            ? text
+            : text.substring(text.indexOf('{'));
+
+        const result = JSON.parse(cleanText);
+
+        if (result.success && result.data) {
+            documentTypes = result.data;
+            populateDocumentTypeSelects();
+
+            $('.invoice-type-select').select2('destroy').select2({
+                placeholder: 'Select Invoice Type',
+                allowClear: true,
+                width: 'resolve'
+            });
+
+        } else {
+            console.error('Failed to load Document Types:', result.message);
+            showMessage(
+                'Failed to load Invoice Types: ' + (result.message || 'Unknown error'),
+                'warning'
+            );
+            loadDefaultDocumentTypes();
         }
+
+    } catch (error) {
+        console.error('Error loading Document Types:', error);
+        showMessage('Error loading Invoice Types from FBR server', 'error');
+        loadDefaultDocumentTypes();
+    }
+}
 
 
 
@@ -1755,7 +1797,14 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     }
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                                 if (result.success && result.data) {
                     transactionTypes = result.data;
@@ -1902,7 +1951,14 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     })
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Cache the result
@@ -2013,7 +2069,14 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     })
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Display SRO information
@@ -2123,7 +2186,14 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     })
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Populate SRO Items dropdown
