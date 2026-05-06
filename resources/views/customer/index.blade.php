@@ -88,7 +88,7 @@
                                                 <i class="fas fa-eye">View</i>
                                             </a> --}}
                                             <a href="{{ route('custommer.edit', $buyer->id) }}" class="btn btn-warning"
-                                                title="Edit">
+                                                title ="Edit">
                                                 <i class="fas fa-edit">EDIT</i>
                                             </a>
                                             <form action="{{ route('custommer.destroy', $buyer->id) }}" method="POST"

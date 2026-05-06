@@ -25,8 +25,7 @@ class SaleDetails extends Controller
      */
  public function invoice($id)
 {
-    // dd(Auth::user()->c_id);
-    $invoice = SaleInvoiceFbr::findOrFail($id);
+    $invoice = SaleInvoiceFbr::where('cid', Auth::user()->c_id)->findOrFail($id);
 
        if ($invoice->cid == 17) {
            return view('SaleInvoice.invoice_ss', compact('invoice'));
@@ -67,7 +66,7 @@ public function index(Request $request)
     $salesInvoices = $query->where('cid',auth()->user()->c_id)->paginate(100);
 
     // Pass the filtered results + data for dropdowns (e.g., availableBillNumbers, parties)
-    $availableBillNumbers = SaleInvoiceFbr::distinct()->pluck('fbr_invoice_no');
+    $availableBillNumbers = SaleInvoiceFbr::where('cid', auth()->user()->c_id)->distinct()->pluck('fbr_invoice_no');
     $parties = Party::all(); // adjust Party model name
 
     return view('SaleInvoice.index', compact('salesInvoices', 'availableBillNumbers', 'parties'));
@@ -80,7 +79,7 @@ public function printMultiple(Request $request)
         'invoice_ids.*' => 'exists:sale_invoice_fbr,id',
     ]);
 
-    $invoices = SaleInvoiceFbr::whereIn('id', $request->invoice_ids)->get();
+    $invoices = SaleInvoiceFbr::where('cid', Auth::user()->c_id)->whereIn('id', $request->invoice_ids)->get();
     
     $firstInvoice = $invoices->first();
     
@@ -93,7 +92,7 @@ public function printMultiple(Request $request)
 
 public function invoiceSS($id)
 {
-    $invoice = SaleInvoiceFbr::findOrFail($id);
+    $invoice = SaleInvoiceFbr::where('cid', Auth::user()->c_id)->findOrFail($id);
     return view('SaleInvoice.invoice_ss', compact('invoice'));
 }
 
@@ -106,7 +105,7 @@ public function invoiceSS($id)
          $accounts = \App\Models\AccountMaster::where('c_id',$user->c_id)->get();   // Party dropdown
         $products = \App\Models\ItemMaster::where('c_id',$user->c_id)->get();   // Product dropdown
          $saleAc = ErpParam::with('saleAcc')->where('c_id',$user->c_id)->first();
-         $clients = \App\Models\Member::where('type','customer')->get();
+         $clients = \App\Models\Member::where('type','customer')->where('c_id', $user->c_id)->get();
         return view('SaleInvoice.list', compact('accounts', 'products','saleAc','clients'));
     }
 
@@ -135,8 +134,8 @@ public function invoiceSS($id)
     $cashId = $request->s_account;
     $preparedBy = auth()->user()->name;
 
-    $vno = SalesInvoice::max('v_no') + 1;
-    $bill = SalesInvoice::max('bill_no') + 1;
+    $vno = SalesInvoice::where('c_id', $userCId)->max('v_no') + 1;
+    $bill = SalesInvoice::where('c_id', $userCId)->max('bill_no') + 1;
     $totalCredit = 0;
 
    foreach ($entries as $entry) {
@@ -231,16 +230,20 @@ public function invoiceSS($id)
     DB::beginTransaction();
 
     try {
-        // Find all sales entries with this bill_no
-        $sales = SalesInvoice::where('bill_no', $billNo)->get();
+        // Find all sales entries with this bill_no for this company
+        $sales = SalesInvoice::where('bill_no', $billNo)
+                             ->where('c_id', Auth::user()->c_id)
+                             ->get();
         
         // Delete related TRNDTL entries for each sale
         foreach ($sales as $sale) {
             TRNDTL::where('r_id', $sale->id)->delete();
         }
         
-        // Delete all sales entries with this bill_no
-        SalesInvoice::where('bill_no', $billNo)->delete();
+        // Delete all sales entries with this bill_no for this company
+        SalesInvoice::where('bill_no', $billNo)
+                    ->where('c_id', Auth::user()->c_id)
+                    ->delete();
         
         // Commit the transaction if all operations succeed
         DB::commit();
