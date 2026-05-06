@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Member as Party;
+use App\Models\Buyer;
 use App\Models\SaleDetail; 
 use App\Models\PurchaseDetail; 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -16,15 +17,22 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-         $query = Party::where('type', 'customer');
+         $userCId = Auth::user()->c_id;
+         $query = Buyer::where('cid', $userCId);
     
+    if ($request->has('search')) {
+        $search = $request->search;
+        $query->where('business_name', 'like', '%' . $search . '%')
+              ->orWhere('ntn_cnic', 'like', '%' . $search . '%');
+    }
+
     if ($request->has('sort')) {
         $direction = $request->direction === 'desc' ? 'desc' : 'asc';
         $query->orderBy($request->sort, $direction);
     }
     
-    $parties = $query->paginate(10);
-    return view('customer.index', compact('parties'));
+    $buyers = $query->paginate(10);
+    return view('customer.index', compact('buyers'));
     }
 
     /**
@@ -46,21 +54,24 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'buyer_name' => 'required|string|max:255',
-            'buyer_type' => 'required|in:Registered,Unregistered',
-            'cnic' => 'nullable|string|max:15',
-            'address' => 'nullable|string|max:100',
+            'business_name' => 'required|string|max:255',
+            'registration_type' => 'required|in:Registered,Unregistered',
+            'ntn_cnic' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
             'province' => 'nullable|string|max:100',
-            'city' => 'nullable|string|max:100',
-            'NTN' => 'nullable|max:255',
-            'strn' => 'nullable|max:255',
-            'type' => 'nullable|max:255'
         ]);
 
-        Party::create($validated);
+        $validated['ntn_cnic'] = $validated['ntn_cnic'] ?? '';
+        $validated['address'] = $validated['address'] ?? '';
+        $validated['province'] = $validated['province'] ?? '';
+
+        $validated['user_id'] = Auth::id() ?? 1;
+        $validated['cid'] = Auth::user()->c_id;
+
+        Buyer::create($validated);
 
         return redirect()->route('custommer.index')
-            ->with('success', 'Party created successfully.');
+            ->with('success', 'Customer created successfully.');
     }
 
     /**
@@ -71,8 +82,8 @@ class CustomerController extends Controller
      */
     public function show($id)
     {
-        $party = Party::findOrFail($id);
-        return view('customer.show', compact('party'));
+        $buyer = Buyer::where('cid', Auth::user()->c_id)->findOrFail($id);
+        return view('customer.show', compact('buyer'));
     }
 
     /**
@@ -84,8 +95,8 @@ class CustomerController extends Controller
     public function edit($id)
     {
         
-        $party = Party::findOrFail($id);
-        return view('customer.edit', compact('party'));
+        $buyer = Buyer::where('cid', Auth::user()->c_id)->findOrFail($id);
+        return view('customer.edit', compact('buyer'));
     }
 
     /**
@@ -97,24 +108,24 @@ class CustomerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $party = Party::findOrFail($id);
+        $buyer = Buyer::where('cid', Auth::user()->c_id)->findOrFail($id);
 
         $validated = $request->validate([
-            'buyer_name' => 'required|string|max:255',
-            'buyer_type' => 'required|in:Registered,Unregistered',
-            'cnic' => 'nullable|string|max:15',
-            'address' => 'nullable|string|max:100',
+            'business_name' => 'required|string|max:255',
+            'registration_type' => 'required|in:Registered,Unregistered',
+            'ntn_cnic' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
             'province' => 'nullable|string|max:100',
-            'city' => 'nullable|string|max:100',
-            'NTN' => 'nullable|max:255',
-            'strn' => 'nullable|max:255',
-            'type' => 'nullable|max:255'
         ]);
 
-        $party->update($validated);
+        $validated['ntn_cnic'] = $validated['ntn_cnic'] ?? '';
+        $validated['address'] = $validated['address'] ?? '';
+        $validated['province'] = $validated['province'] ?? '';
+
+        $buyer->update($validated);
 
         return redirect()->route('custommer.index')
-            ->with('success', 'Party updated successfully.');
+            ->with('success', 'Customer updated successfully.');
     }
 
     /**
@@ -125,21 +136,10 @@ class CustomerController extends Controller
      */
    public function destroy($id)
 {
-    // Check for related records in SalesInvoice
-    $salesRecords = SaleDetail::where('fk_parties_id', $id)->exists();
-    
-    // Check for related records in PurchaseDetail
-    $purchaseRecords = PurchaseDetail::where('fk_parties_id', $id)->exists();
-
-    if ($salesRecords || $purchaseRecords) {
-        return redirect()->route('parties.index')
-            ->with('error', 'Cannot delete party because related records exist in ' );
-    }
-
-    $party = Party::findOrFail($id);
-    $party->delete();
+    $buyer = Buyer::where('cid', Auth::user()->c_id)->findOrFail($id);
+    $buyer->delete();
 
     return redirect()->route('custommer.index')
-        ->with('success', 'Party deleted successfully.');
+        ->with('success', 'Customer deleted successfully.');
 }
 }

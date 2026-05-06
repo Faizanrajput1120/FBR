@@ -77,9 +77,8 @@ class FbrApiService
             $response = Http::timeout(config('fbr.timeout', 30))
                 ->connectTimeout(config('fbr.connect_timeout', 10))
                 ->withHeaders([
-    'Authorization' => 'Bearer ' . $accessToken,
-    'Accept' => 'application/json',
-    'Accept-Encoding' => 'gzip, deflate, br',
+                'Authorization' => 'Bearer ' . $accessToken,
+    'Accept' => 'application/json'
 ])->post($apiUrl, $invoiceData);
 
             
@@ -528,11 +527,32 @@ class FbrApiService
     private function handleResponse($response, string $apiUrl = null, string $accessToken = null): array
     {
         $statusCode = $response->status();
-        $responseData = $response->json();
+        $responseBody = $response->body();
+
+        // Try to decode JSON, handle decoding errors
+        $responseData = json_decode($responseBody, true);
+        $jsonError = json_last_error();
+
+        if ($jsonError !== JSON_ERROR_NONE) {
+            Log::error('FBR API returned non-JSON response', [
+                'status_code' => $statusCode,
+                'response_body' => substr($responseBody, 0, 1000),
+                'json_error' => json_last_error_msg(),
+                'api_url' => $apiUrl
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Server returned invalid response (not JSON). Check logs for details.',
+                'status_code' => $statusCode,
+                'raw_response' => substr($responseBody, 0, 500)
+            ];
+        }
+
         $baseResponse = [
             'environment' => $this->getEnvironment(),
             'api_url' => $apiUrl,
-            'access_token' => $accessToken ? substr($accessToken, 0, 10) . '...' : null, // Partial token for security
+            'access_token' => $accessToken ? substr($accessToken, 0, 10) . '...' : null
         ];
 
         switch ($statusCode) {
@@ -556,14 +576,6 @@ class FbrApiService
                     'message' => 'Bad Request - ' . ($responseData['message'] ?? 'Invalid request data'),
                     'status_code' => $statusCode,
                     'errors' => $responseData['errors'] ?? null
-                ]);
-
-            case 500:
-                return array_merge($baseResponse, [
-                    'success' => false,
-                    'message' => $responseData,
-                    'status_code' => $statusCode,
-                    'response' => $responseData
                 ]);
 
             default:

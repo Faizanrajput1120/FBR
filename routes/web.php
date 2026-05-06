@@ -226,6 +226,8 @@ Route::get('premiertax/purchase/invoice/{id}', [PurchaseDetail::class, 'invoice'
      ->name('premiertax.purchase.invoice');
 Route::get('premiertax/sale/invoice/{id}', [SaleDetails::class, 'invoice'])
      ->name('premiertax.sale.invoice');
+Route::post('premiertax/sale/print-multiple', [SaleDetails::class, 'printMultiple'])
+     ->name('premiertax.sale.print-multiple');
 Route::get('/premiertax/create-storage-link', [StorageLinkController::class, 'createLink']);
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -525,6 +527,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/premiertax/inventory/create/itemtype', [InventoryController::class, 'createitemtype'])->name('inventory.create.itemtype');
+    Route::get('/premiertax/inventory/search-items', [InventoryController::class, 'searchItems'])->name('inventory.search_items');
     Route::post('/premiertax/inventory/boxboard', [InventoryController::class, 'boxboard'])->name('inventory.boxboard');
     Route::post('/premiertax/inventory/lamination', [InventoryController::class, 'lamination'])->name('inventory.lamination');
     Route::post('/premiertax/inventory/corrugation', [InventoryController::class, 'corrugation'])->name('inventory.corrugation');
@@ -875,6 +878,12 @@ Route::middleware('auth')->group(function () {
     Route::get('premiertax/api/fbr/transaction-types', [App\Http\Controllers\InvoicingController::class, 'getTransactionTypeCodes'])->name('api.fbr.transaction-types');
     Route::get('premiertax/api/fbr/tax-rates', [App\Http\Controllers\InvoicingController::class, 'getTaxRates'])->name('api.fbr.tax-rates');
     Route::get('premiertax/api/fbr/doctypecode', [App\Http\Controllers\InvoicingController::class, 'getDocumentTypeCodes'])->name('api.fbr.doctypecode');
+
+    // FBR API endpoints for HS Code search and Buyer autocomplete
+    Route::get('premiertax/api/fbr/item-description-codes/search', [App\Http\Controllers\InvoicingController::class, 'searchItemDescriptionCodes'])->name('api.fbr.item-description-codes.search');
+    Route::get('premiertax/api/buyers', [App\Http\Controllers\InvoicingController::class, 'getBuyers'])->name('api.buyers.index');
+    Route::get('premiertax/api/buyers/search', [App\Http\Controllers\InvoicingController::class, 'searchBuyersByNtn'])->name('api.buyers.search');
+    Route::get('premiertax/api/buyers/{id}', [App\Http\Controllers\InvoicingController::class, 'getBuyerById'])->name('api.buyers.show');
     Route::get('premiertax/drafts/{id}/edit', [DraftController::class, 'edit'])->name('drafts.edit');
     Route::get('premiertax/drafts', [DraftController::class, 'index'])->name('drafts.index');
     Route::put('premiertax/drafts/{id}', [DraftController::class, 'update'])->name('drafts.update');

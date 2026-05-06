@@ -33,7 +33,7 @@ class UserManagement extends Controller
             });
         }
 
-        $users = $query->latest()->paginate(10);
+        $users = $query->with('company')->latest()->paginate(10);
 
         // Companies for dropdown
         $company = Company::all();
@@ -113,8 +113,9 @@ class UserManagement extends Controller
         if (auth()->user()->is_admin == 1) {
             return redirect()->back()->with('error', 'You do not have permission to access this page.');
         }
-        $company = Company::findOrFail($id);
+        $user = User::findOrFail($id);
+        $company = Company::all();
 
-        return view('companies.edit', compact('company'));
+        return view('User.edit', compact('user', 'company'));
     }
 }

@@ -78,18 +78,17 @@ class InventoryController extends Controller
     }
   public function itemmaster(Request $request)
 {
-    // Validate incoming request
             $user=Auth::user();
     $request->validate([
-        'item_code' => 'required|string|max:255', // Validate item_code
-        'hs_code' => 'required|string|max:255', // Validate hscode
-        'purchase' => 'required|string|max:255', // Validate purchase
-        'sale_rate' => 'required|numeric|min:0', // Validate sale_rate as a non-negative number
-        'gramage' => 'required|string|max:255', // Validate gramage
+        'item_code' => 'required|string|max:255',
+        'hs_code' => 'required|string|max:255',
+        'purchase' => 'required|numeric|min:0',
+        'sale_rate' => 'required|numeric|min:0',
+        'gramage' => 'required|numeric|min:0',
         'sale_type'=>'required',
-        'sale'=>'nullable',
-        'unit_value'=>'nullable',
-        'unit'=>'nullable'
+        'sale'=>'nullable|numeric|min:0',
+        'unit_value'=>'nullable|numeric|min:0',
+        'unit'=>'required'
     ]);
 
     // Create new ItemMaster entry
@@ -129,17 +128,16 @@ class InventoryController extends Controller
  public function itemmasterupdate(Request $request, $id)
 {
             $user=Auth::user();
-    // Validate incoming request
     $request->validate([
-        'item_code' => 'required|string|max:255', // Validate item_code
-        'hs_code' => 'required|string|max:255', // Validate hscode
-        'purchase' => 'required|string|max:255', // Validate purchase
-        'sale_rate' => 'required|numeric|min:0', // Validate sale_rate as a non-negative number
-        'gramage' => 'required|string|max:255', // Validate gramage
+        'item_code' => 'required|string|max:255',
+        'hs_code' => 'required|string|max:255',
+        'purchase' => 'required|numeric|min:0',
+        'sale_rate' => 'required|numeric|min:0',
+        'gramage' => 'required|numeric|min:0',
         'sale_type'=>'required',
-        'sale'=>'nullable',
-        'unit_value'=>'nullable',
-        'unit'=>'nullable'
+        'sale'=>'nullable|numeric|min:0',
+        'unit_value'=>'nullable|numeric|min:0',
+        'unit'=>'required'
     ]);
 
     try {
@@ -253,5 +251,39 @@ public function itemlogList(Request $request)
         $itemtypes->delete();
 
         return redirect()->route('inventory.itemtype.list')->with('success', 'Item Type deleted successfully');
+    }
+
+    public function searchItems(Request $request)
+    {
+        $user = Auth::user();
+        $query = trim($request->input('query', ''));
+
+        if (empty($query)) {
+            return response()->json([]);
+        }
+
+        try {
+            $itemsQuery = ItemMaster::query();
+
+            if ($user && $user->c_id) {
+                $itemsQuery->where('c_id', $user->c_id);
+            }
+
+            $items = $itemsQuery
+                ->where(function($q) use ($query) {
+                    $q->where('item_code', 'like', '%' . $query . '%')
+                      ->orWhere('hscode', 'like', '%' . $query . '%')
+                      ->orWhere('gramage', 'like', '%' . $query . '%')
+                      ->orWhere('sale', 'like', '%' . $query . '%');
+                })
+                ->select('id', 'item_code', 'hscode', 'sale_rate', 'purchase', 'gramage', 'unit', 'unit_value', 'sale_type', 'sale')
+                ->limit(20)
+                ->get();
+
+            return response()->json($items);
+        } catch (\Exception $e) {
+            \Log::error('searchItems error: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

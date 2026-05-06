@@ -30,8 +30,7 @@
         <div class="leftbar-user flex flex-col items-center justify-center py-4">
             <a href="#" class="flex flex-col items-center">
                 <img src="{{ asset('printingcell/public/assets/images/users/avatar-1.jpg') }}"
-                     class="rounded-full shadow-sm border-2 border-gray-200 mb-2 mx-auto"
-                     height="52" width="52">
+                    class="rounded-full shadow-sm border-2 border-gray-200 mb-2 mx-auto" height="52" width="52">
                 <span class="text-xs font-semibold">
                     {{ $user->name ?? 'Guest' }}
                 </span>
@@ -45,6 +44,45 @@
 
             {{-- ADMIN MENU --}}
             @if ($user?->is_admin == 1)
+
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#salesMenu" class="side-nav-link">
+                        <i class="uil-envelope"></i>
+                        <span>Sales</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="salesMenu">
+                        <ul class="side-nav-second-level">
+                            <li>
+                                <a href="{{ route('invoicing.index') }}">Sale Invoice</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('drafts.index') }}">Draft Invoice</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('custommer.index') }}">Customer List</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#inventoryMenu" class="side-nav-link">
+                        <i class="uil-box"></i>
+                        <span>Inventory</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="inventoryMenu">
+                        <ul class="side-nav-second-level">
+                            <li>
+                                <a href="{{ route('inventory.itemmaster.list') }}">Item List</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('inventory.create.itemmaster') }}">Register Item</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
                 <li class="side-nav-item">
                     <a data-bs-toggle="collapse" href="#reportsMenu" class="side-nav-link">
@@ -61,28 +99,7 @@
                     </div>
                 </li>
 
-                <li class="side-nav-item">
-                    <a data-bs-toggle="collapse" href="#salesMenu" class="side-nav-link">
-                        <i class="uil-envelope"></i>
-                        <span>Sales</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <div class="collapse" id="salesMenu">
-                        <ul class="side-nav-second-level">
-                            <li>
-                                <a href="{{ route('invoicing.index') }}">Sale Invoice</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('drafts.index') }}">Draft Invoice</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-        
-
-
-            {{-- USER MENU --}}
+                {{-- USER MENU --}}
             @elseif ($user?->is_admin == 3)
 
                 <li class="side-nav-item">

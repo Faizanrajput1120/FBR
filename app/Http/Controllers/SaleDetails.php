@@ -23,13 +23,16 @@ class SaleDetails extends Controller
     /**
      * Display a listing of the resource.
      */
-     // Controller
-public function invoice($id)
+ public function invoice($id)
 {
-    // dd("WORKING");
-       $invoice = SaleInvoiceFbr::findOrFail($id);
-    return view('SaleInvoice.invoice', compact('invoice'));
+    // dd(Auth::user()->c_id);
+    $invoice = SaleInvoiceFbr::findOrFail($id);
 
+       if ($invoice->cid == 17) {
+           return view('SaleInvoice.invoice_ss', compact('invoice'));
+       }
+
+       return view('SaleInvoice.invoice', compact('invoice'));
 }
     
 public function index(Request $request)
@@ -49,15 +52,49 @@ public function index(Request $request)
         $query->where('fbr_invoice_no', $request->bill_no);
     }
 
+    // Apply client filter
+    if ($request->filled('client_name')) {
+        $query->where('buyer_business_name', 'like', '%' . $request->client_name . '%');
+    }
+
+    // Apply item filter
+    if ($request->filled('item_name')) {
+        $query->where('items', 'like', '%' . $request->item_name . '%');
+    }
+
     // You might also want to filter by party_id here, depending on your DB
 
-    $salesInvoices = $query->where('cid',auth()->user()->c_id)->get();
+    $salesInvoices = $query->where('cid',auth()->user()->c_id)->paginate(100);
 
     // Pass the filtered results + data for dropdowns (e.g., availableBillNumbers, parties)
     $availableBillNumbers = SaleInvoiceFbr::distinct()->pluck('fbr_invoice_no');
     $parties = Party::all(); // adjust Party model name
 
     return view('SaleInvoice.index', compact('salesInvoices', 'availableBillNumbers', 'parties'));
+}
+
+public function printMultiple(Request $request)
+{
+    $request->validate([
+        'invoice_ids' => 'required|array',
+        'invoice_ids.*' => 'exists:sale_invoice_fbr,id',
+    ]);
+
+    $invoices = SaleInvoiceFbr::whereIn('id', $request->invoice_ids)->get();
+    
+    $firstInvoice = $invoices->first();
+    
+    if ($firstInvoice && $firstInvoice->cid == 17) {
+        return view('SaleInvoice.print_multiple_ss', compact('invoices'));
+    }
+
+    return view('SaleInvoice.print_multiple', compact('invoices'));
+}
+
+public function invoiceSS($id)
+{
+    $invoice = SaleInvoiceFbr::findOrFail($id);
+    return view('SaleInvoice.invoice_ss', compact('invoice'));
 }
 
     /**

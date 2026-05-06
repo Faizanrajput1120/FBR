@@ -28,9 +28,9 @@ class AddValue extends Controller{
                   ->whereNull('c_id')
                   ->update(['c_id' => $companyId]);
 
-                echo "Updated c_id in table: $tableName\n";
+                // echo "Updated c_id in table: $tableName\n";
             } catch (\Exception $e) {
-                echo "Failed to update table $tableName: " . $e->getMessage() . "\n";
+                // echo "Failed to update table $tableName: " . $e->getMessage() . "\n";
             }
         }
     }

@@ -108,10 +108,7 @@
                                     <input type="text" id="invoiceRefNo" name="invoiceRefNo" placeholder="Enter reference number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 @if($user->use_sandbox)
-                                <div>
-                                    <label for="scenarioId" class="block text-sm font-medium text-gray-700 mb-1">Scenario ID</label>
-                                    <input type="text" id="scenarioId" name="scenarioId" value="SN000" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                </div>
+                                <!-- Scenario ID removed - causes FBR to treat as debit note -->
                                 @endif
                             </div>
                         </div>
@@ -305,6 +302,26 @@
                 <!-- Modal Body -->
                 <div class="mt-6">
                     <form id="itemForm" class="space-y-6">
+                        <!-- Item Search Section -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                            <div class="flex items-center mb-2">
+                                <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                                <label class="block text-sm font-semibold text-gray-900">Search & Select Item</label>
+                            </div>
+                            <div class="relative">
+                                <input type="text" id="modalItemSearch" placeholder="Type to search items by name, HS code, or gramage..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" autocomplete="off">
+                                <div id="modalItemAutocomplete" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden">
+                                    <div class="p-2 text-sm text-gray-500 text-center">Start typing to search items...</div>
+                                </div>
+                            </div>
+                            <div id="selectedItemInfo" class="mt-2 text-xs text-green-700 hidden">
+                                <strong>Selected:</strong> <span id="selectedItemName"></span>
+                                <button type="button" id="clearItemSelection" class="ml-2 text-red-600 underline">Clear</button>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Sale Type <span class="text-red-500">*</span></label>
@@ -435,6 +452,7 @@
             hsCodes: @json($hsCodes ?? []),
             uoMs: @json($uoMs ?? []),
             transactionTypes: @json($transactionTypes ?? []),
+            items: @json($items ?? []),
             user: {
                 cinc_ntn: @json($user->cinc_ntn ?? ''),
                 business_name: @json($user->business_name ?? $user->name ?? ''),
@@ -716,6 +734,21 @@
             document.getElementById('invoiceForm').addEventListener('submit', submitInvoice);
             document.getElementById('validateBtn').addEventListener('click', validateInvoice);
             document.getElementById('Draft').addEventListener('click', submitDraft);
+
+                        // Item search event listeners
+            document.getElementById('modalItemSearch').addEventListener('input', handleItemSearchInput);
+            document.getElementById('modalItemSearch').addEventListener('focus', handleItemSearchFocus);
+            document.getElementById('modalItemSearch').addEventListener('blur', handleItemSearchBlur);
+            document.getElementById('clearItemSelection').addEventListener('click', clearItemSelection);
+
+                        // Click outside to close item autocomplete
+            document.addEventListener('click', function(e) {
+                const autocompleteDiv = document.getElementById('modalItemAutocomplete');
+                const itemInput = document.getElementById('modalItemSearch');
+                if (!itemInput.contains(e.target) && !autocompleteDiv.contains(e.target)) {
+                    hideItemAutocomplete();
+                }
+            });
 
             // Add blur event listener for buyer NTN/CNIC field
             // document.getElementById('buyerNTNCNIC').addEventListener('blur', fetchRegistrationType);
@@ -1010,7 +1043,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     }
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success && result.data) {
                     // Cache the result
@@ -1050,7 +1083,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     }
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success && result.data) {
                     // Cache the result
@@ -1193,6 +1226,228 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
         // Hide buyer autocomplete
         function hideBuyerAutocomplete() {
             const autocompleteDiv = document.getElementById('buyerNTNAutocomplete');
+            autocompleteDiv.classList.add('hidden');
+        }
+
+                        // ========== ITEM SEARCH FUNCTIONS ==========
+        let itemSearchTimeout;
+        let selectedItemData = null;
+        const allItems = window.appData.items || [];
+        console.log('Item search initialized. Items loaded:', allItems.length, allItems);
+
+        function handleItemSearchInput(e) {
+            clearTimeout(itemSearchTimeout);
+            const query = e.target.value.trim();
+
+            if (query.length >= 1) {
+                itemSearchTimeout = setTimeout(() => {
+                    filterItems(query);
+                }, 300);
+            } else {
+                hideItemAutocomplete();
+            }
+        }
+
+        function handleItemSearchFocus(e) {
+            const query = e.target.value.trim();
+            if (query.length >= 1) {
+                filterItems(query);
+            }
+        }
+
+        function handleItemSearchBlur(e) {
+            setTimeout(() => {
+                hideItemAutocomplete();
+            }, 200);
+        }
+
+        function filterItems(query) {
+            const results = [];
+            const lowerQuery = query.toLowerCase();
+
+            console.log('Filtering items. Query:', query, 'Total items:', allItems.length);
+
+            for (let i = 0; i < allItems.length; i++) {
+                const item = allItems[i];
+                const matchCode = item.item_code && item.item_code.toLowerCase().includes(lowerQuery);
+                const matchHs = item.hscode && String(item.hscode).toLowerCase().includes(lowerQuery);
+                const matchGramage = item.gramage && String(item.gramage).toLowerCase().includes(lowerQuery);
+                const matchSale = item.sale && String(item.sale).toLowerCase().includes(lowerQuery);
+
+                if (matchCode || matchHs || matchGramage || matchSale) {
+                    results.push(item);
+                    if (results.length >= 20) break;
+                }
+            }
+
+            console.log('Filter results:', results.length, results);
+
+            if (results.length > 0) {
+                displayItemSuggestions(results);
+            } else {
+                showNoItemsMessage();
+            }
+        }
+
+        function displayItemSuggestions(items) {
+            const autocompleteDiv = document.getElementById('modalItemAutocomplete');
+            let html = '';
+
+            console.log('Displaying suggestions:', items.length);
+
+            items.forEach(item => {
+                html += `
+                    <div class="item-suggestion px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                         data-item-id="${item.id}"
+                         data-item-code="${item.item_code}"
+                         data-hscode="${item.hscode}"
+                         data-sale-rate="${item.sale_rate}"
+                         data-purchase="${item.purchase}"
+                         data-unit="${item.unit}"
+                         data-unit-value="${item.unit_value}"
+                         data-gramage="${item.gramage}"
+                         data-sale-type="${item.sale_type}"
+                         data-sale="${item.sale}">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="font-medium text-sm text-gray-900">${item.item_code}</div>
+                                <div class="text-xs text-gray-500">HS: ${item.hscode} | Rate: ${item.sale_rate}</div>
+                            </div>
+                            <div class="text-xs text-gray-500 ml-2">${item.unit}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            autocompleteDiv.innerHTML = html;
+            autocompleteDiv.classList.remove('hidden');
+            console.log('Autocomplete div shown, suggestions added');
+
+            autocompleteDiv.querySelectorAll('.item-suggestion').forEach(suggestion => {
+                suggestion.addEventListener('click', function() {
+                    console.log('Item clicked:', this.dataset.itemCode);
+                    selectItem(this);
+                });
+            });
+        }
+
+        function selectItem(suggestionElement) {
+            selectedItemData = {
+                id: suggestionElement.dataset.itemId,
+                item_code: suggestionElement.dataset.itemCode,
+                hscode: suggestionElement.dataset.hscode,
+                sale_rate: suggestionElement.dataset.saleRate,
+                purchase: suggestionElement.dataset.purchase,
+                unit: suggestionElement.dataset.unit,
+                unit_value: suggestionElement.dataset.unitValue,
+                gramage: suggestionElement.dataset.gramage,
+                sale_type: suggestionElement.dataset.saleType,
+                sale: suggestionElement.dataset.sale
+            };
+
+            console.log('Selecting item:', selectedItemData);
+
+            $('#modalProductDescription').val(selectedItemData.item_code);
+
+            // Set HS Code - create option if doesn't exist
+            const hsSelect = $('#modalHsCode');
+            if (selectedItemData.hscode && hsSelect.find(`option[value="${selectedItemData.hscode}"]`).length === 0) {
+                hsSelect.append(new Option(selectedItemData.hscode, selectedItemData.hscode));
+            }
+            hsSelect.val(selectedItemData.hscode).trigger('change');
+
+            // Set Sale Type - create option if doesn't exist
+            const saleTypeSelect = $('#modalSaleType');
+            if (selectedItemData.sale_type && saleTypeSelect.find(`option[value="${selectedItemData.sale_type}"]`).length === 0) {
+                saleTypeSelect.append(new Option(selectedItemData.sale_type, selectedItemData.sale_type));
+            }
+            saleTypeSelect.val(selectedItemData.sale_type).trigger('change');
+
+            // Set UoM - create option if doesn't exist
+            const uomSelect = $('#modalUoM');
+            if (selectedItemData.unit && uomSelect.find(`option[value="${selectedItemData.unit}"]`).length === 0) {
+                uomSelect.append(new Option(selectedItemData.unit, selectedItemData.unit));
+            }
+            uomSelect.val(selectedItemData.unit).trigger('change');
+
+            $('#modalRateValues').val(selectedItemData.sale_rate);
+
+            // Set Rate - create option if doesn't exist
+            const rateSelect = $('#modalRate');
+            if (selectedItemData.unit_value && rateSelect.find(`option[value="${selectedItemData.unit_value}"]`).length === 0) {
+                rateSelect.append(new Option(selectedItemData.unit_value, selectedItemData.unit_value));
+            }
+            rateSelect.val(selectedItemData.unit_value).trigger('change');
+
+            $('#modalSalesTaxApplicable').val(selectedItemData.sale);
+
+            console.log('Fields populated. HS:', hsSelect.val(), 'SaleType:', saleTypeSelect.val(), 'UoM:', uomSelect.val(), 'Rate:', rateSelect.val());
+
+            document.getElementById('selectedItemName').textContent = `${selectedItemData.item_code} (HS: ${selectedItemData.hscode})`;
+            document.getElementById('selectedItemInfo').classList.remove('hidden');
+
+            hideItemAutocomplete();
+
+            setTimeout(() => {
+                if (document.getElementById('modalHsCode').value) {
+                    fetchUomByHsCode(document.getElementById('modalHsCode'));
+                }
+                if (document.getElementById('modalSaleType').value) {
+                    // fetchSaleTypeRate was removed, use calculateRateForField instead
+                    const rateSelect = document.getElementById('modalRateValues');
+                    if (rateSelect) {
+                        calculateRateForField(rateSelect);
+                    }
+                }
+                const rateCalcSelect = document.getElementById('modalRateValues');
+                if (rateCalcSelect && rateCalcSelect.value) {
+                    calculateRateForField(rateCalcSelect);
+                }
+            }, 100);
+        }
+
+        function clearItemSelection() {
+            selectedItemData = null;
+            document.getElementById('modalItemSearch').value = '';
+            document.getElementById('selectedItemInfo').classList.add('hidden');
+            $('#modalProductDescription').val('');
+            $('#modalHsCode').val('').trigger('change');
+            $('#modalSaleType').val('').trigger('change');
+            $('#modalUoM').val('').trigger('change');
+            $('#modalRateValues').val('');
+            $('#modalRate').val('').trigger('change');
+            $('#modalSalesTaxApplicable').val('');
+            hideItemAutocomplete();
+        }
+
+        function showNoItemsMessage() {
+            const autocompleteDiv = document.getElementById('modalItemAutocomplete');
+            autocompleteDiv.innerHTML = `
+                <div class="px-3 py-4 text-sm text-gray-500 text-center">
+                    <svg class="mx-auto h-6 w-6 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    No items found
+                </div>
+            `;
+            autocompleteDiv.classList.remove('hidden');
+        }
+
+        function showItemErrorMessage(message) {
+            const autocompleteDiv = document.getElementById('modalItemAutocomplete');
+            autocompleteDiv.innerHTML = `
+                <div class="px-3 py-4 text-sm text-red-500 text-center">
+                    <svg class="mx-auto h-6 w-6 text-red-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    ${message}
+                </div>
+            `;
+            autocompleteDiv.classList.remove('hidden');
+        }
+
+        function hideItemAutocomplete() {
+            const autocompleteDiv = document.getElementById('modalItemAutocomplete');
             autocompleteDiv.classList.add('hidden');
         }
 
@@ -1371,7 +1626,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     })
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Clear the select and add default option
@@ -1584,7 +1839,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     }
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success && result.data) {
                     uoMs = result.data;
@@ -1620,7 +1875,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     }
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success && result.data) {
                     documentTypes = result.data;
@@ -1755,7 +2010,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     }
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                                 if (result.success && result.data) {
                     transactionTypes = result.data;
@@ -1902,7 +2157,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     })
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Cache the result
@@ -2013,7 +2268,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     })
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Display SRO information
@@ -2123,7 +2378,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     })
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Populate SRO Items dropdown
@@ -2340,6 +2595,12 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
         function clearModalForm() {
             const form = document.getElementById('itemForm');
             form.reset();
+
+                        // Clear item search
+            selectedItemData = null;
+            document.getElementById('modalItemSearch').value = '';
+            document.getElementById('selectedItemInfo').classList.add('hidden');
+            hideItemAutocomplete();
 
             // Clear Select2 selections
             const selects = form.querySelectorAll('select');
@@ -2886,7 +3147,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     body: JSON.stringify(data) // Send original data with IDs, not converted labels
                 });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success) {
                     showMessage('Invoice validation successful!', 'success');
@@ -2896,6 +3157,28 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
             } catch (error) {
                 console.error('Validation error:', error);
                 showMessage('Validation failed: ' + error.message, 'error');
+            }
+        }
+
+        // Helper function to parse API responses that may have a 'c' prefix
+        async function parseApiResponse(response) {
+            const responseText = await response.text();
+            console.log('Raw API Response:', responseText);
+
+            // Strip any non-JSON prefix (like 'c' that sometimes appears)
+            let jsonText = responseText;
+            const jsonStart = responseText.indexOf('{');
+            if (jsonStart > 0) {
+                jsonText = responseText.substring(jsonStart);
+                console.log('Stripped prefix, cleaned response:', jsonText);
+            }
+
+            try {
+                return JSON.parse(jsonText);
+            } catch (parseError) {
+                console.error('JSON Parse Error:', parseError);
+                console.error('Response started with:', responseText.substring(0, 50));
+                throw new Error('Server returned invalid response (not JSON)');
             }
         }
 
@@ -2925,7 +3208,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
             body: JSON.stringify(data)
         });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success) {
                     showMessage('Invoice submitted successfully to FBR!', 'success');
@@ -2939,6 +3222,10 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     showMessage('Submission failed: ' + result.message, 'error');
                     if (result.errors) {
                         console.error('Validation errors:', result.errors);
+                    }
+                    // Log the raw FBR response for debugging
+                    if (result.fbr_raw_response) {
+                        console.error('FBR Raw Response:', result.fbr_raw_response);
                     }
                 }
             } catch (error) {
@@ -2977,7 +3264,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
             body: JSON.stringify(data)
         });
 
-                const result = await response.json();
+                const result = await parseApiResponse(response);
 
                 if (result.success) {
                     showMessage('Invoice Saved in Draft Successfully !', 'success');
@@ -2991,6 +3278,10 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     showMessage('Submission failed: ' + result.message, 'error');
                     if (result.errors) {
                         console.error( result);
+                    }
+                    // Log the raw FBR response for debugging
+                    if (result.fbr_raw_response) {
+                        console.error('FBR Raw Response:', result.fbr_raw_response);
                     }
                 }
             } catch (error) {

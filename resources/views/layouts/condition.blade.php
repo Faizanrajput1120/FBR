@@ -868,6 +868,9 @@
     <!-- App js -->
     <script src="{{asset('printingcell/public/assets/js/app.min.js')}}"></script>
 
+
+    @stack('scripts')
+    @yield('scripts')
 </body>
 
 

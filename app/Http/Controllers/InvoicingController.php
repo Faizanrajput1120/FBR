@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Buyer;
 use App\Models\SaleInvoiceFbr;
+use App\Models\ItemMaster;
 use App\Services\FbrApiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,39 +42,44 @@ class InvoicingController extends Controller
             return redirect()->route('profile.edit')
                 ->with('warning', 'Please set your FBR Access Token in your profile to use the invoicing system.');
         }
-        // dd("WORKING");
-        // Load data from FBR API
+
         $provinces = [];
         $hsCodes = [];
         $uoMs = [];
         $transactionTypes = [];
+        $items = [];
 
         try {
             $fbrService = $this->getFbrApiService();
 
-            // Load provinces
             $provincesResult = $fbrService->getProvinceCodes($user->fbr_access_token);
             if ($provincesResult['success']) {
                 $provinces = $provincesResult['data'] ?? [];
             }
 
-            // Load HS codes (Item Description Codes)
             $hsCodesResult = $fbrService->getItemDescriptionCodes($user->fbr_access_token);
             if ($hsCodesResult['success']) {
                 $hsCodes = $hsCodesResult['data'] ?? [];
             }
 
-            // Load Units of Measurement
             $uoMsResult = $fbrService->getUnitsOfMeasurement($user->fbr_access_token);
             if ($uoMsResult['success']) {
                 $uoMs = $uoMsResult['data'] ?? [];
             }
 
-            // Load Transaction Types
             $transactionTypesResult = $fbrService->getTransactionTypeCodes($user->fbr_access_token);
             if ($transactionTypesResult['success']) {
                 $transactionTypes = $transactionTypesResult['data'] ?? [];
             }
+
+            $itemsQuery = ItemMaster::query();
+            if ($user->c_id) {
+                $itemsQuery->where('c_id', $user->c_id);
+            }
+            $items = $itemsQuery
+                ->select('id', 'item_code', 'hscode', 'sale_rate', 'purchase', 'gramage', 'unit', 'unit_value', 'sale_type', 'sale')
+                ->get()
+                ->toArray();
         } catch (\Exception $e) {
             Log::error('Error loading FBR data', [
                 'user_id' => $user->id,
@@ -81,7 +87,7 @@ class InvoicingController extends Controller
             ]);
         }
 
-        return view('invoicing.index', compact('provinces', 'hsCodes', 'uoMs', 'transactionTypes', 'user'));
+        return view('invoicing.index', compact('provinces', 'hsCodes', 'uoMs', 'transactionTypes', 'user', 'items'));
     }
 
     /**
@@ -228,12 +234,16 @@ foreach ($fbrItems as &$item) {
 $invoiceData['items'] = $fbrItems;
 
 // Submit to FBR API
-$result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $invoiceData);
+$fbrResponse = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $invoiceData);
 
         Log::info('Invoice submission response', [
             'user_id' => $user->id,
-            'fbr_response' => $result
+            'fbr_response' => $fbrResponse,
+            'fbr_response_keys' => array_keys($fbrResponse),
+            'fbr_response_success' => $fbrResponse['success'] ?? 'key not set'
         ]);
+
+$result = $fbrResponse;
 
         if ($result['success'] ?? false) {
             $validationResponse = $result['data']['validationResponse'] ?? null;
@@ -292,7 +302,10 @@ $result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $i
             return response()->json([
                 'success' => false,
                 'message' => $result['message'] ?? 'Invoice submission failed',
-                'errors' => $result['errors'] ?? null
+                'errors' => $result['errors'] ?? null,
+                'fbr_raw_response' => $result['raw_response'] ?? null,
+                'fbr_api_url' => $result['api_url'] ?? null,
+                'fbr_status_code' => $result['status_code'] ?? null
             ], $result['status_code'] ?? 400);
         }
 
@@ -1305,7 +1318,7 @@ $result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $i
         $limit = min((int) $request->query('limit', 10), 50);
 
         try {
-            $query = Buyer;
+            $query = Buyer::query();
 
             if (!empty($search)) {
                 $query->search($search);

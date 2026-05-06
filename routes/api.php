@@ -27,7 +27,7 @@ Route::get('/hello', function () {
 
 
 // FBR API routes
-Route::middleware('web')->group(function () {
+Route::middleware(['web', 'auth'])->group(function () {
     Route::post('api/fbr/registration-type', [InvoicingController::class, 'getRegistrationType'])->name('api.fbr.registration-type');
     Route::post('api/fbr/sale-type-to-rate', [InvoicingController::class, 'getSaleTypeToRate'])->name('api.fbr.sale-type-to-rate');
     Route::post('api/fbr/sro-schedule', [InvoicingController::class, 'getSroSchedule'])->name('api.fbr.sro-schedule');

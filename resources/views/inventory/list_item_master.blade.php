@@ -24,24 +24,23 @@
                 <div class="card-body">
                     <div class="tab-content">
                         <div class="col-12">
-                           <form action="{{ route('inventory.itemmaster.list') }}" method="GET" class="form-inline col-xl-12" id="search-form">
-    <div class="row">
-        <div class="form-group col-xl-3">
-            <label for="item_code" class="sr-only">Item Title</label>
-            <select name="item_code" id="item_code" class="form-control select2" data-toggle="select2">
-                <option value="">Select Item Title</option>
-                @foreach ($items as $code => $item_code)
-                    <option value="{{ $code }}" {{ request('item_code') == $code ? 'selected' : '' }}>
-                        {{ $item_code }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        
+                           <form action="{{ route('inventory.itemmaster.list') }}" method="GET" class="row g-3 align-items-end" id="search-form">
+    <div class="col-md-4">
+        <label for="item_code" class="form-label">Item Title</label>
+        <select name="item_code" id="item_code" class="form-control select2" data-toggle="select2">
+            <option value="">All Items</option>
+            @foreach ($items as $code => $item_code)
+                <option value="{{ $code }}" {{ request('item_code') == $code ? 'selected' : '' }}>
+                    {{ $item_code }}
+                </option>
+            @endforeach
+        </select>
     </div>
-    <div class="form-group col-xl-3 mt-2">
-        <button type="submit" class="btn btn-primary">Search</button>
-        <a href="{{ route('inventory.itemmaster.list') }}" class="btn btn-secondary">Clear</a>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Search</button>
+    </div>
+    <div class="col-md-2">
+        <a href="{{ route('inventory.itemmaster.list') }}" class="btn btn-secondary w-100">Clear</a>
     </div>
 </form>
                         </div>
@@ -72,23 +71,32 @@
                                 <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100">
                                     <thead>
                                         <tr>
-                                            <th>Item Code</th>
+                                            <th>Sr#</th>
                                             <th>Item Title</th>
                                             <th>HS Code</th>
+                                            <th>Unit</th>
+                                            <th>Unit Value</th>
                                             <th>Purchase Rate</th>
                                             <th>Sale Rate</th>
+                                            <th>Sale Type</th>
+                                            <th>Sale Tax%</th>
                                             <th>Gramage</th>
                                             <th class="no-print">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @php $sr = 1; @endphp
                                         @foreach ($itemmasters as $itemmaster)
                                             <tr>
-                                                <td>{{ $itemmaster->id }}</td>
+                                                <td>{{ $sr++ }}</td>
                                                 <td>{{ $itemmaster->item_code }}</td>
                                                 <td>{{ $itemmaster->hscode }}</td>
-                                                <td>{{ $itemmaster->purchase }}</td>
-                                                <td>{{ $itemmaster->sale_rate }}</td>
+                                                <td>{{ $itemmaster->unit }}</td>
+                                                <td>{{ $itemmaster->unit_value }}</td>
+                                                <td>{{ number_format($itemmaster->purchase, 2) }}</td>
+                                                <td>{{ number_format($itemmaster->sale_rate, 2) }}</td>
+                                                <td>{{ $itemmaster->sale_type }}</td>
+                                                <td>{{ $itemmaster->sale }}%</td>
                                                 <td>{{ $itemmaster->gramage }}</td>
                                                 <td class="no-print">
                                                     <div class="d-flex">
@@ -96,8 +104,7 @@
                                                         <button type="button" class="btn btn-primary" onclick="return checkPermissionEdit()" >Edit</button>
                                                     </a>
 
-                                                    {{-- <button type="button" class="btn btn-danger">Print Table</button> --}}
-                                                    <form action="{{ route('inventory.itemmaster.destroy', $itemmaster->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this Item Type?');">
+                                                    <form action="{{ route('inventory.itemmaster.destroy', $itemmaster->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this Item?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger" style="margin-left: 2px;" onclick="return checkPermissionDel()" >Delete</button>
