@@ -544,7 +544,7 @@
         async function loadAndPopulateDocumentTypes() {
             try {
                 console.log('Loading Document Types from FBR API...');
-                const response = await fetch(`${API_BASE}/premiertax/api/fbr/doctypecode`, {
+                const response = await fetch(`${API_BASE}/api/fbr/doctypecode`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -729,7 +729,7 @@ const result = JSON.parse(cleanText);
 
             if (!data) return;
 
-            const apiUrl = `${API_BASE}/premiertax/drafts/${DRAFT_ID}`;
+            const apiUrl = `${API_BASE}/drafts/${DRAFT_ID}`;
 
             try {
                 showMessage('Saving draft...', 'info');
@@ -778,7 +778,7 @@ const result = JSON.parse(cleanText);
     }
 
     const data = formDataToObjectWithLabels(formData);
-    const apiUrl = `${API_BASE}/premiertax/invoicing/submit`;
+    const apiUrl = `${API_BASE}/invoicing/submit`;
 
     console.log('=== SUBMIT INVOICE API CALL ===');
     console.log('API URL:', apiUrl);
@@ -1331,7 +1331,7 @@ const result = JSON.parse(cleanText);
 
             // Make API request
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', `${API_BASE}/premiertax/api/fbr/item-description-codes/search?search=${encodeURIComponent(searchTerm)}&page=${page}&limit=20`);
+            xhr.open('GET', `${API_BASE}/api/fbr/item-description-codes/search?search=${encodeURIComponent(searchTerm)}&page=${page}&limit=20`);
             xhr.setRequestHeader('Accept', 'application/json');
             xhr.setRequestHeader('X-CSRF-TOKEN', CSRF_TOKEN);
 
@@ -1390,7 +1390,7 @@ const result = JSON.parse(cleanText);
                     uomSelect.disabled = true;
                 }
 
-                const response = await fetch(`${API_BASE}/premiertax/api/fbr/uom-by-hs-code`, {
+                const response = await fetch(`${API_BASE}/api/fbr/uom-by-hs-code`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -1475,7 +1475,7 @@ const result = JSON.parse(cleanText);
                     rateSelect.disabled = true;
                 }
 
-                const response = await fetch(`${API_BASE}/premiertax/api/fbr/sale-type-to-rate`, {
+                const response = await fetch(`${API_BASE}/api/fbr/sale-type-to-rate`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',

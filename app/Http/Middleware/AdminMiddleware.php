@@ -22,6 +22,6 @@ class AdminMiddleware
         }
 
         // Otherwise, redirect to login or another page
-        return redirect('/premiertax/login');
+        return redirect('/login');
     }
 }

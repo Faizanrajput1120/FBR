@@ -1,84 +1,102 @@
 @extends('layouts.app')
 @section('content')
-      <div class="py-12">
+    <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <!-- Header Section -->
                     <!-- <div class="">
-                        <div class="flex items-center mb-4">
-                            <div class="bg-blue-600 text-white p-3 rounded-lg mr-4">
-                                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"/>
-                                    <path d="M8 6h4v1H8V6zm0 2h4v1H8V8zm0 2h2v1H8v-1z"/>
-                                </svg>
+                            <div class="flex items-center mb-4">
+                                <div class="bg-blue-600 text-white p-3 rounded-lg mr-4">
+                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"/>
+                                        <path d="M8 6h4v1H8V6zm0 2h4v1H8V8zm0 2h2v1H8v-1z"/>
+                                    </svg>
+                                </div>
+                                <h1 class="text-3xl font-bold text-gray-900">Digital Invoicing</h1>
                             </div>
-                            <h1 class="text-3xl font-bold text-gray-900">Digital Invoicing</h1>
-                        </div>
-                        @if(!auth()->user()->fbr_access_token)
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6">
-                                <div class="flex">
-                                    <div class="flex-shrink-0">
-                                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                        </svg>calculateRateForField
-                                    </div>
-                                    <div class="ml-3">
-                                        <h3 class="text-sm font-medium text-yellow-800">
-                                            FBR Access Token Required
-                                        </h3>
-                                        <div class="mt-2 text-sm text-yellow-700">
-                                            <p>You need to set your FBR Access Token to use the invoicing system.</p>
+                            @if(!auth()->user()->fbr_access_token)
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6">
+                                    <div class="flex">
+                                        <div class="flex-shrink-0">
+                                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                            </svg>calculateRateForField
                                         </div>
-                                        <div class="mt-4">
-                                            <div class="-mx-2 -my-1.5 flex">
-                                                <a href="{{ route('profile.edit') }}" class="bg-yellow-50 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600">
-                                                    Set Token in Profile
-                                                </a>
+                                        <div class="ml-3">
+                                            <h3 class="text-sm font-medium text-yellow-800">
+                                                FBR Access Token Required
+                                            </h3>
+                                            <div class="mt-2 text-sm text-yellow-700">
+                                                <p>You need to set your FBR Access Token to use the invoicing system.</p>
+                                            </div>
+                                            <div class="mt-4">
+                                                <div class="-mx-2 -my-1.5 flex">
+                                                    <a href="{{ route('profile.edit') }}" class="bg-yellow-50 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600">
+                                                        Set Token in Profile
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endif
-                    </div> -->
+                            @endif
+                        </div> -->
 
 
                     <!-- Invoice Form -->
                     <form id="invoiceForm" method="POST" action="{{ route('invoicing.submit') }}" class="space-y-8">
                         @csrf
 
-                                                    <!-- Seller Information -->
+                        <!-- Seller Information -->
                         <div class="bg-gray-50 rounded-lg">
-                            <div class="seller-accordion-header cursor-pointer p-6 flex items-center justify-between hover:bg-gray-100 transition-colors duration-200" onclick="toggleSellerAccordion()">
+                            <div class="seller-accordion-header cursor-pointer p-6 flex items-center justify-between hover:bg-gray-100 transition-colors duration-200"
+                                onclick="toggleSellerAccordion()">
                                 <div class="flex items-center">
                                     <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z" clip-rule="evenodd" />
+                                        <path fill-rule="evenodd"
+                                            d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z"
+                                            clip-rule="evenodd" />
                                     </svg>
                                     <h2 class="text-lg font-semibold text-gray-900">Seller Information</h2>
                                 </div>
-                                <svg id="sellerAccordionIcon" class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                <svg id="sellerAccordionIcon"
+                                    class="w-5 h-5 text-gray-500 transform transition-transform duration-200"
+                                    fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
                                 </svg>
                             </div>
                             <div id="sellerAccordionContent" class="hidden px-6 pb-6">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label for="sellerNTNCNIC" class="block text-sm font-medium text-gray-700 mb-1" required>CNIC/NTN</label>
-                                        <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="{{ $user->cinc_ntn ?? '' }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <label for="sellerNTNCNIC" class="block text-sm font-medium text-gray-700 mb-1"
+                                            required>CNIC/NTN</label>
+                                        <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC"
+                                            placeholder="0000000000000" value="{{ $user->cinc_ntn ?? '' }}" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     </div>
                                     <div>
-                                        <label for="sellerBusinessName" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                                        <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Your Business Name" value="{{ $user->business_name ?? $user->name }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <label for="sellerBusinessName"
+                                            class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+                                        <input type="text" id="sellerBusinessName" name="sellerBusinessName"
+                                            placeholder="Your Business Name"
+                                            value="{{ $user->business_name ?? $user->name }}" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     </div>
                                     <div>
-                                        <label for="sellerProvince" class="block text-sm font-medium text-gray-700 mb-1">Province</label>
-                                        
+                                        <label for="sellerProvince"
+                                            class="block text-sm font-medium text-gray-700 mb-1">Province</label>
+
                                         <input name='sellerProvince' value="PUNJAB" readonly>
                                     </div>
                                     <div class="md:col-span-2 mb-4">
-                                        <label for="sellerAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                        <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ $user->address ?? '' }}</textarea>
+                                        <label for="sellerAddress"
+                                            class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                        <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address"
+                                            required rows="3"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ $user->address ?? '' }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -88,30 +106,41 @@
                         <div class="bg-gray-50 p-2 rounded-lg">
                             <div class="flex items-center mb-4">
                                 <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                        clip-rule="evenodd" />
                                 </svg>
                                 <h2 class="text-lg font-semibold text-gray-900">Invoice Information</h2>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div>
-                                    <label for="invoiceType" class="block text-sm font-medium text-gray-700 mb-1">Invoice Type</label>
-                                    <select id="invoiceType" name="invoiceType" required class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 invoice-type-select">
+                                    <label for="invoiceType" class="block text-sm font-medium text-gray-700 mb-1">Invoice
+                                        Type</label>
+                                    <select id="invoiceType" name="invoiceType" required
+                                        class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 invoice-type-select">
                                         <option value="">Loading invoice types...</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label for="invoiceDate" class="block text-sm font-medium text-gray-700 mb-1">Invoice Date</label>
-                                    <input type="date" id="invoiceDate" name="invoiceDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <label for="invoiceDate" class="block text-sm font-medium text-gray-700 mb-1">Invoice
+                                        Date</label>
+                                    <input type="date" id="invoiceDate" name="invoiceDate" required
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 <div>
-                                    <label for="invoiceRefNo" class="block text-sm font-medium text-gray-700 mb-1">Invoice Reference No.</label>
-                                    <input type="text" id="invoiceRefNo" name="invoiceRefNo" placeholder="Enter reference number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <label for="invoiceRefNo" class="block text-sm font-medium text-gray-700 mb-1">Invoice
+                                        Reference No.</label>
+                                    <input type="text" id="invoiceRefNo" name="invoiceRefNo"
+                                        placeholder="Enter reference number"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 @if($user->use_sandbox)
-                                <div>
-                                    <label for="scenarioId" class="block text-sm font-medium text-gray-700 mb-1">Scenario ID</label>
-                                    <input type="text" id="scenarioId" name="scenarioId" value="SN000" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                </div>
+                                    <div>
+                                        <label for="scenarioId" class="block text-sm font-medium text-gray-700 mb-1">Scenario
+                                            ID</label>
+                                        <input type="text" id="scenarioId" name="scenarioId" value="SN000" required
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -122,29 +151,40 @@
                         <div class="bg-gray-50 p-2 rounded-lg">
                             <div class="flex items-center mb-4">
                                 <svg class="w-5 h-5 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                        clip-rule="evenodd" />
                                 </svg>
                                 <h2 class="text-lg font-semibold text-gray-900">Buyer Information</h2>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div class="relative">
-                                    <label for="buyerNTNCNIC" class="block text-sm font-medium text-gray-700 mb-1">NTN/CNIC</label>
-                                    <input type="text" id="buyerNTNCNIC" name="buyerNTNCNIC" placeholder="0000000000000" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" autocomplete="off">
+                                    <label for="buyerNTNCNIC"
+                                        class="block text-sm font-medium text-gray-700 mb-1">NTN/CNIC</label>
+                                    <input type="text" id="buyerNTNCNIC" name="buyerNTNCNIC" placeholder="0000000000000"
+                                        required
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                        autocomplete="off">
 
                                     <!-- Autocomplete suggestions dropdown -->
-                                    <div id="buyerNTNAutocomplete" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden">
+                                    <div id="buyerNTNAutocomplete"
+                                        class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden">
                                         <div class="p-2 text-sm text-gray-500 text-center">
                                             Start typing to search buyers...
                                         </div>
                                     </div>
                                 </div>
                                 <div>
-                                    <label for="buyerBusinessName" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                                    <input type="text" id="buyerBusinessName" name="buyerBusinessName" placeholder="Buyer Business Name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <label for="buyerBusinessName"
+                                        class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+                                    <input type="text" id="buyerBusinessName" name="buyerBusinessName"
+                                        placeholder="Buyer Business Name" required
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 <div>
-                                    <label for="buyerProvince" class="block text-sm font-medium text-gray-700 mb-1">Province</label>
-                                    <select id="buyerProvince" name="buyerProvince" required class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 province-select">
+                                    <label for="buyerProvince"
+                                        class="block text-sm font-medium text-gray-700 mb-1">Province</label>
+                                    <select id="buyerProvince" name="buyerProvince" required
+                                        class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 province-select">
                                         <option value="">Select Province</option>
                                     </select>
                                 </div>
@@ -152,15 +192,19 @@
                                     <label for="buyerRegistrationType" class="block text-sm font-medium text-gray-700 mb-1">
                                         Registration Type
                                     </label>
-                                    <select id="buyerRegistrationType" name="buyerRegistrationType" required class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <select id="buyerRegistrationType" name="buyerRegistrationType" required
+                                        class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         <option value="">Select Registration Type</option>
                                         <option value="Unregistered">Unregistered</option>
                                         <option value="Registered">Registered</option>
                                     </select>
                                 </div>
                                 <div class="md:col-span-4">
-                                    <label for="buyerAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                    <textarea id="buyerAddress" name="buyerAddress" placeholder="Buyer Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 !h-[50px]"></textarea>
+                                    <label for="buyerAddress"
+                                        class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                    <textarea id="buyerAddress" name="buyerAddress" placeholder="Buyer Address" required
+                                        rows="3"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 !h-[50px]"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -170,20 +214,27 @@
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center">
                                     <svg class="w-5 h-5 text-indigo-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                        <path fill-rule="evenodd"
+                                            d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                                            clip-rule="evenodd" />
                                     </svg>
                                     <h2 class="text-lg font-semibold text-gray-900">Invoice Items</h2>
                                 </div>
                                 <div class="flex flex-col items-end">
-                                    <button type="button" id="addItemBtn" disabled class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition opacity-50 cursor-not-allowed" title="Please select buyer province and registration type first">
-                                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                    <button type="button" id="addItemBtn" disabled
+                                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition opacity-50 cursor-not-allowed"
+                                        title="Please select buyer province and registration type first">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                         Add Item
                                     </button>
                                     <div id="addItemRequirement" class="mt-1 text-xs text-red-600">
                                         Please select buyer province and registration type first
-                                        <button type="button" onclick="validateBuyerRequirements()" class="ml-2 text-blue-600 underline hover:text-blue-800">
+                                        <button type="button" onclick="validateBuyerRequirements()"
+                                            class="ml-2 text-blue-600 underline hover:text-blue-800">
                                             Check now
                                         </button>
                                     </div>
@@ -192,24 +243,43 @@
 
                             <!-- Items Table -->
                             <div class="overflow-x-auto">
-                                <table id="itemsTable" class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+                                <table id="itemsTable"
+                                    class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
                                     <thead class="bg-gray-50">
                                         <tr>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Description</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HS Code</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rate (%)</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value Sales Excluding ST</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sales Tax</th>
-                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                #</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Product Description</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                HS Code</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Quantity</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Rate (%)</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Value Sales Excluding ST</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Sales Tax</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="itemsTableBody" class="bg-white divide-y divide-gray-200">
                                         <tr id="noItemsRow">
                                             <td colspan="8" class="px-4 py-8 text-center text-gray-500">
-                                                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-6a2 2 0 00-2 2v3a2 2 0 002 2h6a2 2 0 002-2v-3a2 2 0 00-2-2z" />
+                                                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-6a2 2 0 00-2 2v3a2 2 0 002 2h6a2 2 0 002-2v-3a2 2 0 00-2-2z" />
                                                 </svg>
                                                 No items added yet. Click "Add Item" to get started.
                                             </td>
@@ -244,35 +314,47 @@
                                     <td>
                                         <input name="furtherexpense" value=0 id='furthertaxexpense'>
                                     </td>
-                                   
-                                    
+
+
                                 </tr>
                             </table>
                         </div>
 
                         <!-- Submit Section -->
                         <div class="flex justify-end space-x-4">
-                            <button type="button" id="clearBtn" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-500 focus:outline-none focus:border-gray-700 focus:ring focus:ring-gray-200 active:bg-gray-600 disabled:opacity-25 transition">
-                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                            <button type="button" id="clearBtn"
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-500 focus:outline-none focus:border-gray-700 focus:ring focus:ring-gray-200 active:bg-gray-600 disabled:opacity-25 transition">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                        clip-rule="evenodd" />
                                 </svg>
                                 Clear
                             </button>
-                            <button type="button" id="validateBtn" class="!hidden inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-500 focus:outline-none focus:border-yellow-700 focus:ring focus:ring-yellow-200 active:bg-yellow-600 disabled:opacity-25 transition">
-                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            <button type="button" id="validateBtn"
+                                class="!hidden inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-500 focus:outline-none focus:border-yellow-700 focus:ring focus:ring-yellow-200 active:bg-yellow-600 disabled:opacity-25 transition">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
                                 </svg>
                                 Validate Invoice
                             </button>
-                            <button type="submit" id="submitBtn" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 focus:outline-none focus:border-green-700 focus:ring focus:ring-green-200 active:bg-green-600 disabled:opacity-25 transition">
-                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 8.207a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9.5z" clip-rule="evenodd" />
+                            <button type="submit" id="submitBtn"
+                                class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 focus:outline-none focus:border-green-700 focus:ring focus:ring-green-200 active:bg-green-600 disabled:opacity-25 transition">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 8.207a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9.5z"
+                                        clip-rule="evenodd" />
                                 </svg>
                                 Generate Invoice
                             </button>
-                            <button  id="Draft" class="inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 focus:outline-none focus:border-green-700 focus:ring focus:ring-green-200 active:bg-green-600 disabled:opacity-25 transition">
-                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 8.207a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9.5z" clip-rule="evenodd" />
+                            <button id="Draft"
+                                class="inline-flex items-center px-4 py-2 bg-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 focus:outline-none focus:border-green-700 focus:ring focus:ring-green-200 active:bg-green-600 disabled:opacity-25 transition">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 8.207a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9.5z"
+                                        clip-rule="evenodd" />
                                 </svg>
                                 Draft Invoice
                             </button>
@@ -297,7 +379,8 @@
                     <h3 class="text-lg font-medium text-gray-900">Add Invoice Item</h3>
                     <button type="button" id="closeModalBtn" class="text-gray-400 hover:text-gray-600 focus:outline-none">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
@@ -307,27 +390,35 @@
                     <form id="itemForm" class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Sale Type <span class="text-red-500">*</span></label>
-                                <select id="modalSaleType" name="saleType" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sale-type-select">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Sale Type <span
+                                        class="text-red-500">*</span></label>
+                                <select id="modalSaleType" name="saleType" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sale-type-select">
                                     <option value="">Select Sale Type</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">HS Code <span class="text-red-500">*</span></label>
-                                <select id="modalHsCode" name="hsCode" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm hs-code-select">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">HS Code <span
+                                        class="text-red-500">*</span></label>
+                                <select id="modalHsCode" name="hsCode" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm hs-code-select">
                                     <option value="">Select HS Code</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Product Description <span class="text-red-500">*</span></label>
-                                <input type="text" id="modalProductDescription" name="productDescription" placeholder="Enter product description" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Product Description <span
+                                        class="text-red-500">*</span></label>
+                                <input type="text" id="modalProductDescription" name="productDescription"
+                                    placeholder="Enter product description" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Rate (%) <span class="text-red-500">*</span>
                                     <span class="rate-loader hidden ml-2 text-blue-600">Loading...</span>
                                 </label>
-                                <select id="modalRate" name="rate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm rate-select">
+                                <select id="modalRate" name="rate" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm rate-select">
                                     <option value="">Select Rate</option>
                                 </select>
                             </div>
@@ -336,69 +427,98 @@
                                     Unit of Measure <span class="text-red-500">*</span>
                                     <span class="text-xs text-gray-500">(Select HS Code first)</span>
                                 </label>
-                                <select id="modalUoM" name="uoM" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm uom-select">
+                                <select id="modalUoM" name="uoM" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm uom-select">
                                     <option value="">Select Unit of Measure</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Quantity <span class="text-red-500">*</span></label>
-                                <input type="number" id="modalQuantity" name="quantity" placeholder="0" min="0" step="any" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Quantity <span
+                                        class="text-red-500">*</span></label>
+                                <input type="number" id="modalQuantity" name="quantity" placeholder="0" min="0" step="any"
+                                    required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Rate <span class="text-red-500">*</span></label>
-                                <input type="number" id="modalRateValues" name="rateValues" placeholder="0" min="0" step="any" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Rate <span
+                                        class="text-red-500">*</span></label>
+                                <input type="number" id="modalRateValues" name="rateValues" placeholder="0" min="0"
+                                    step="any" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Total Values <span class="text-red-500">*</span></label>
-                                <input type="number" id="modalTotalValues" name="totalValues" placeholder="0" min="0" step="any" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Total Values <span
+                                        class="text-red-500">*</span></label>
+                                <input type="number" id="modalTotalValues" name="totalValues" placeholder="0" min="0"
+                                    step="any" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Value Sales Excluding ST <span class="text-red-500">*</span></label>
-                                <input type="number" id="modalValueSalesExcludingST" name="valueSalesExcludingST" placeholder="0" min="0" step="any" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Value Sales Excluding ST <span
+                                        class="text-red-500">*</span></label>
+                                <input type="number" id="modalValueSalesExcludingST" name="valueSalesExcludingST"
+                                    placeholder="0" min="0" step="any" required
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Sales Tax Applicable</label>
-                                <input type="number" id="modalSalesTaxApplicable" name="salesTaxApplicable" placeholder="Auto-calculated" min="0" step="any" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sales-tax-field">
+                                <input type="number" id="modalSalesTaxApplicable" name="salesTaxApplicable"
+                                    placeholder="Auto-calculated" min="0" step="any" readonly
+                                    class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sales-tax-field">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Fixed Notified Value/Retail Price</label>
-                                <input type="number" id="modalFixedNotifiedValueOrRetailPrice" name="fixedNotifiedValueOrRetailPrice" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Fixed Notified Value/Retail
+                                    Price</label>
+                                <input type="number" id="modalFixedNotifiedValueOrRetailPrice"
+                                    name="fixedNotifiedValueOrRetailPrice" placeholder="0" min="0" step="any"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Sales Tax Withheld at Source</label>
-                                <input type="number" id="modalSalesTaxWithheldAtSource" name="salesTaxWithheldAtSource" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Sales Tax Withheld at
+                                    Source</label>
+                                <input type="number" id="modalSalesTaxWithheldAtSource" name="salesTaxWithheldAtSource"
+                                    placeholder="0" min="0" step="any"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Extra Tax</label>
-                                <input type="text" id="modalExtraTax" name="extraTax" placeholder="Enter extra tax details" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <input type="text" id="modalExtraTax" name="extraTax" placeholder="Enter extra tax details"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Further Tax</label>
-                                <input type="number" id="modalFurtherTax" name="furtherTax" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <input type="number" id="modalFurtherTax" name="furtherTax" placeholder="0" min="0"
+                                    step="any"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     SRO Schedule No.
                                     <span class="text-red-500 hidden sro-schedule-required">*</span>
                                 </label>
-                                <select id="modalSroScheduleNo" name="sroScheduleNo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sro-schedule-select">
+                                <select id="modalSroScheduleNo" name="sroScheduleNo"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sro-schedule-select">
                                     <option value="">Select SRO Schedule</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">FED Payable</label>
-                                <input type="number" id="modalFedPayable" name="fedPayable" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <input type="number" id="modalFedPayable" name="fedPayable" placeholder="0" min="0"
+                                    step="any"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Discount</label>
-                                <input type="number" id="modalDiscount" name="discount" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <input type="number" id="modalDiscount" name="discount" placeholder="0" min="0" step="any"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     SRO Item Serial No.
                                     <span class="text-red-500 hidden sro-item-required">*</span>
                                 </label>
-                                <select id="modalSroItemSerialNo" name="sroItemSerialNo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sro-item-select">
+                                <select id="modalSroItemSerialNo" name="sroItemSerialNo"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sro-item-select">
                                     <option value="">Select SRO Item</option>
                                 </select>
                             </div>
@@ -408,12 +528,16 @@
 
                 <!-- Modal Footer -->
                 <div class="flex items-center justify-end pt-6 border-t space-x-3">
-                    <button type="button" id="cancelModalBtn" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-500 focus:outline-none focus:border-gray-700 focus:ring focus:ring-gray-200 active:bg-gray-600 disabled:opacity-25 transition">
+                    <button type="button" id="cancelModalBtn"
+                        class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-500 focus:outline-none focus:border-gray-700 focus:ring focus:ring-gray-200 active:bg-gray-600 disabled:opacity-25 transition">
                         Cancel
                     </button>
-                    <button type="button" id="addItemFromModalBtn" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
+                    <button type="button" id="addItemFromModalBtn"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
                         <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd"
+                                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                clip-rule="evenodd" />
                         </svg>
                         Add Item
                     </button>
@@ -476,31 +600,31 @@
             // Check cache first
             const cachedResult = hsCodesCache.get(cacheKey);
             if (cachedResult && (Date.now() - cachedResult.timestamp) < CACHE_DURATION) {
-              
+
                 success(cachedResult.data);
                 return;
             }
 
             // Make API request
             const xhr = new XMLHttpRequest();
-            xhr.open('GET', `${API_BASE}/premiertax/api/fbr/item-description-codes/search?search=${encodeURIComponent(searchTerm)}&page=${page}&limit=20`);
+            xhr.open('GET', `${API_BASE}/api/fbr/item-description-codes/search?search=${encodeURIComponent(searchTerm)}&page=${page}&limit=20`);
             xhr.setRequestHeader('Accept', 'application/json');
             xhr.setRequestHeader('X-CSRF-TOKEN', CSRF_TOKEN);
 
-            xhr.onload = function() {
+            xhr.onload = function () {
                 if (xhr.status === 200) {
                     try {
                         const raw = xhr.responseText;
-console.log('RAW HS RESPONSE:', raw);
+                        console.log('RAW HS RESPONSE:', raw);
 
-let cleanText = raw.trim();
+                        let cleanText = raw.trim();
 
-// Remove invalid prefix (like "c")
-if (!cleanText.startsWith('{')) {
-    cleanText = cleanText.substring(cleanText.indexOf('{'));
-}
+                        // Remove invalid prefix (like "c")
+                        if (!cleanText.startsWith('{')) {
+                            cleanText = cleanText.substring(cleanText.indexOf('{'));
+                        }
 
-const data = JSON.parse(cleanText);
+                        const data = JSON.parse(cleanText);
                         if (data.success && data.data) {
                             const result = {
                                 results: data.data.map(item => ({
@@ -524,7 +648,7 @@ const data = JSON.parse(cleanText);
                                 hsCodesCache.delete(oldestKey);
                             }
 
-                           
+
                             success(result);
                         } else {
                             success({ results: [] });
@@ -539,7 +663,7 @@ const data = JSON.parse(cleanText);
                 }
             };
 
-            xhr.onerror = function() {
+            xhr.onerror = function () {
                 console.error('HS codes network error');
                 failure();
             };
@@ -549,7 +673,7 @@ const data = JSON.parse(cleanText);
 
         // Pre-warm cache with common HS codes (run in background)
         function warmHsCodesCache() {
-           
+
 
             // Common search terms that users typically look for
             const commonSearchTerms = ['', '8', '84', '85', '39', '73', '62', '61', '90', '87'];
@@ -567,7 +691,7 @@ const data = JSON.parse(cleanText);
             });
         }
 
-                // Wait for dependencies to be loaded
+        // Wait for dependencies to be loaded
         function waitForDependencies(callback) {
             if (window.dependenciesLoaded && typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
                 callback();
@@ -577,31 +701,31 @@ const data = JSON.parse(cleanText);
         }
 
         // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            waitForDependencies(function() {
-              
+        document.addEventListener('DOMContentLoaded', function () {
+            waitForDependencies(function () {
+
 
                 // Set today's date
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('invoiceDate').value = today;
 
-                            // Populate data first, then initialize Select2
-            populateProvinceSelects();
-            populateTransactionTypeSelects();
+                // Populate data first, then initialize Select2
+                populateProvinceSelects();
+                populateTransactionTypeSelects();
 
-            // Initialize Select2 after data is populated
-            initializeSelect2();
+                // Initialize Select2 after data is populated
+                initializeSelect2();
 
-            // Ensure seller province is properly selected in Select2
-            if (userProfile.province) {
-                $('#sellerProvince').val(userProfile.province).trigger('change');
-              
-            }
+                // Ensure seller province is properly selected in Select2
+                if (userProfile.province) {
+                    $('#sellerProvince').val(userProfile.province).trigger('change');
 
-            // Load only essential data (UoM is now loaded based on HS code selection)
-            setTimeout(() => {
-                loadAndPopulateDocumentTypes();
-            }, 100);
+                }
+
+                // Load only essential data (UoM is now loaded based on HS code selection)
+                setTimeout(() => {
+                    loadAndPopulateDocumentTypes();
+                }, 100);
 
                 // Load transaction types if not already loaded
                 if (!transactionTypes || transactionTypes.length === 0) {
@@ -619,7 +743,7 @@ const data = JSON.parse(cleanText);
 
                 // Add a secondary validation after Select2 is fully initialized
                 setTimeout(() => {
-                   
+
                     handleRegistrationTypeChange(); // Ensure registration type is handled
                     validateBuyerRequirements();
                 }, 500);
@@ -631,17 +755,17 @@ const data = JSON.parse(cleanText);
             });
         });
 
-                        // Handle registration type changes
+        // Handle registration type changes
         function handleRegistrationTypeChange() {
             const registrationType = $('#buyerRegistrationType').val();
             const ntnCnicField = document.getElementById('buyerNTNCNIC');
             const businessNameField = document.getElementById('buyerBusinessName');
             const addressField = document.getElementById('buyerAddress');
 
-          
+
 
             if (registrationType === 'Unregistered') {
-               // Enable fields for registered suppliers
+                // Enable fields for registered suppliers
                 ntnCnicField.readOnly = false;
                 businessNameField.readOnly = false;
                 addressField.readOnly = false;
@@ -651,7 +775,7 @@ const data = JSON.parse(cleanText);
                 businessNameField.classList.remove('bg-gray-100', 'text-gray-500');
                 addressField.classList.remove('bg-gray-100', 'text-gray-500');
 
-             
+
             } else if (registrationType === 'Registered') {
                 // Enable fields for registered suppliers
                 ntnCnicField.readOnly = false;
@@ -668,7 +792,7 @@ const data = JSON.parse(cleanText);
                     businessNameField.value = '';
                 }
 
-               
+
             } else {
                 // Default state - enable all fields
                 ntnCnicField.readOnly = false;
@@ -689,11 +813,11 @@ const data = JSON.parse(cleanText);
             const addItemBtn = document.getElementById('addItemBtn');
             const requirementMsg = document.getElementById('addItemRequirement');
 
-           
-            const isValid = buyerProvince && buyerProvince.trim() !== '' &&
-                           buyerRegistrationType && buyerRegistrationType.trim() !== '';
 
-     
+            const isValid = buyerProvince && buyerProvince.trim() !== '' &&
+                buyerRegistrationType && buyerRegistrationType.trim() !== '';
+
+
 
             if (isValid) {
                 // Enable the button
@@ -702,7 +826,7 @@ const data = JSON.parse(cleanText);
                 addItemBtn.classList.add('hover:bg-blue-500');
                 requirementMsg.classList.add('hidden');
                 addItemBtn.title = '';
-               
+
             } else {
                 // Disable the button
                 addItemBtn.disabled = true;
@@ -710,7 +834,7 @@ const data = JSON.parse(cleanText);
                 addItemBtn.classList.remove('hover:bg-blue-500');
                 requirementMsg.classList.remove('hidden');
                 addItemBtn.title = 'Please select buyer province and registration type first';
-              
+
             }
 
             return isValid;
@@ -730,16 +854,16 @@ const data = JSON.parse(cleanText);
             // Add blur event listener for buyer NTN/CNIC field
             // document.getElementById('buyerNTNCNIC').addEventListener('blur', fetchRegistrationType);
 
-                        // Add event listeners for buyer field validation
+            // Add event listeners for buyer field validation
             $('#buyerProvince').on('select2:select select2:clear change', validateBuyerRequirements);
-            $('#buyerRegistrationType').on('select2:select select2:clear change', function() {
+            $('#buyerRegistrationType').on('select2:select select2:clear change', function () {
                 handleRegistrationTypeChange();
                 validateBuyerRequirements();
             });
 
             // Also add regular change event listeners as fallback
             document.getElementById('buyerProvince').addEventListener('change', validateBuyerRequirements);
-            document.getElementById('buyerRegistrationType').addEventListener('change', function() {
+            document.getElementById('buyerRegistrationType').addEventListener('change', function () {
                 handleRegistrationTypeChange();
                 validateBuyerRequirements();
             });
@@ -749,150 +873,150 @@ const data = JSON.parse(cleanText);
             document.getElementById('invoiceDate').addEventListener('change', calculateRates);
 
             // Delegate event listener for sale type changes in dynamic items using Select2
-            $(document).on('select2:select', '.sale-type-select', function(e) {
+            $(document).on('select2:select', '.sale-type-select', function (e) {
                 calculateRatesForItem(e.target);
             });
 
             // Delegate event listener for SRO Schedule selection changes
-            $(document).on('select2:select', '.sro-schedule-select', function(e) {
+            $(document).on('select2:select', '.sro-schedule-select', function (e) {
                 fetchSroItems(e.target);
                 updateSroRequiredIndicators(e.target);
             });
 
             // Delegate event listener for SRO Schedule clear/unselect
-            $(document).on('select2:clear', '.sro-schedule-select', function(e) {
+            $(document).on('select2:clear', '.sro-schedule-select', function (e) {
                 updateSroRequiredIndicators(e.target);
             });
 
             // Delegate event listener for SRO Item selection changes
-            $(document).on('select2:select', '.sro-item-select', function(e) {
+            $(document).on('select2:select', '.sro-item-select', function (e) {
                 updateSroRequiredIndicators(e.target);
             });
 
             // Delegate event listener for SRO Item clear/unselect
-            $(document).on('select2:clear', '.sro-item-select', function(e) {
+            $(document).on('select2:clear', '.sro-item-select', function (e) {
                 updateSroRequiredIndicators(e.target);
             });
 
             // Delegate event listener for HS Code selection changes
-            $(document).on('select2:select', '.hs-code-select', function(e) {
+            $(document).on('select2:select', '.hs-code-select', function (e) {
                 fetchUomByHsCode(e.target);
             });
 
-           $(document).on('input change', 'input[name*="[valueSalesExcludingST]"], #modalValueSalesExcludingST', function(e) {
-    calculateSalesTaxForItem(e.target);
-});
+            $(document).on('input change', 'input[name*="[valueSalesExcludingST]"], #modalValueSalesExcludingST', function (e) {
+                calculateSalesTaxForItem(e.target);
+            });
 
             // Add event listener for rate*quantity
-            $(document).on('input', 'input[name*="[rateValues]"],input[name*="[quantity]"], #modalRateValues,#modalQuantity', function(e) {
-           // Calculate sales tax for a specific item
-let rateSelecter, quantity,rateTax;
+            $(document).on('input', 'input[name*="[rateValues]"],input[name*="[quantity]"], #modalRateValues,#modalQuantity', function (e) {
+                // Calculate sales tax for a specific item
+                let rateSelecter, quantity, rateTax;
 
-// Check if we're in the modal context
-const isModal =
-    e.target.closest('#addItemModal') !== null ||
-    e.target.id === 'modalRateValues';
+                // Check if we're in the modal context
+                const isModal =
+                    e.target.closest('#addItemModal') !== null ||
+                    e.target.id === 'modalRateValues';
 
-if (isModal) {
-    rateSelecter = document.getElementById('modalRateValues');
-    quantity = document.getElementById('modalQuantity');
-  let rateTax = document.getElementById('modalRate');
+                if (isModal) {
+                    rateSelecter = document.getElementById('modalRateValues');
+                    quantity = document.getElementById('modalQuantity');
+                    let rateTax = document.getElementById('modalRate');
 
-let rateData = JSON.parse(rateTax.value);
-console.log(rateData.rate_id);
-console.log(rateData.rate_value);
-console.log(rateData.rate_desc);
+                    let rateData = JSON.parse(rateTax.value);
+                    console.log(rateData.rate_id);
+                    console.log(rateData.rate_value);
+                    console.log(rateData.rate_desc);
 
 
-    // Ensure both exist and have numeric values
-    const rater = parseFloat(rateSelecter.value) || 0;
-    const qty = parseFloat(quantity.value) || 0;
-    const taxter = parseFloat(rateData.rate_value) || 0;
-const totalTaxvalue = (rater * taxter) / 100;
-    console.log(totalTaxvalue)
-    const total = (rater+totalTaxvalue )* qty;
-    const totalDM = (rater )* qty;
-    
-    $('#modalTotalValues').val(total);
-    $('#modalValueSalesExcludingST').val(totalDM);
-    
-    
-      
-            let rateSelect, valueSalesField, salesTaxField;
+                    // Ensure both exist and have numeric values
+                    const rater = parseFloat(rateSelecter.value) || 0;
+                    const qty = parseFloat(quantity.value) || 0;
+                    const taxter = parseFloat(rateData.rate_value) || 0;
+                    const totalTaxvalue = (rater * taxter) / 100;
+                    console.log(totalTaxvalue)
+                    const total = (rater + totalTaxvalue) * qty;
+                    const totalDM = (rater) * qty;
 
-   
+                    $('#modalTotalValues').val(total);
+                    $('#modalValueSalesExcludingST').val(totalDM);
 
-      
-                rateSelect = document.getElementById('modalRate');
-                valueSalesField = document.getElementById('modalValueSalesExcludingST');
-                valueFurtherField = document.getElementById('modalFurtherTax');
-                salesTaxField = document.getElementById('modalSalesTaxApplicable');
-       
 
-            if (!rateSelect || !valueSalesField || !salesTaxField) {
-                console.warn('Could not find required fields for sales tax calculation');
-                return;
-            }
 
-            // Extract rate value from the selected option's JSON data
-            let rate = 0;
-            if (rateSelect.value) {
-                try {
-                    const rateData = JSON.parse(rateSelect.value);
-                    rate = parseFloat(rateData.rate_value) || 0;
-                } catch (e) {
-                    console.warn('Could not parse rate data:', e);
-                    rate = 0;
+                    let rateSelect, valueSalesField, salesTaxField;
+
+
+
+
+                    rateSelect = document.getElementById('modalRate');
+                    valueSalesField = document.getElementById('modalValueSalesExcludingST');
+                    valueFurtherField = document.getElementById('modalFurtherTax');
+                    salesTaxField = document.getElementById('modalSalesTaxApplicable');
+
+
+                    if (!rateSelect || !valueSalesField || !salesTaxField) {
+                        console.warn('Could not find required fields for sales tax calculation');
+                        return;
+                    }
+
+                    // Extract rate value from the selected option's JSON data
+                    let rate = 0;
+                    if (rateSelect.value) {
+                        try {
+                            const rateData = JSON.parse(rateSelect.value);
+                            rate = parseFloat(rateData.rate_value) || 0;
+                        } catch (e) {
+                            console.warn('Could not parse rate data:', e);
+                            rate = 0;
+                        }
+                    }
+                    const valueSalesFieldtax = parseFloat(valueSalesField.value) || 0;
+                    const valueSalesFurther = parseFloat(valueSalesField.value) || 0;
+                    const valueSales = parseFloat(valueSalesField.value) || 0;
+                    // Calculate: Sales Tax Applicable = (Value Sales Excluding ST * Rate) / 100
+                    const salesTax = (valueSales * rate) / 100;
+                    const salesfur = (totalDM * 4) / 100;
+                    const taxTyper = $('#buyerRegistrationType').val();
+                    if (taxTyper === 'Unregistered') {
+                        valueFurtherField.value = salesfur;
+                    }
+                    // Update the sales tax field
+                    salesTaxField.value = salesTax.toFixed(2);
+
+                    // Visual feedback
+                    if (rate > 0 && valueSales > 0) {
+                        salesTaxField.classList.remove('bg-gray-50', 'bg-red-50');
+                        salesTaxField.classList.add('bg-green-50');
+                        salesTaxField.title = `Calculated: ${valueSales} × ${rate}% = ${salesTax.toFixed(2)}`;
+                    } else {
+                        salesTaxField.classList.remove('bg-green-50');
+                        salesTaxField.classList.add('bg-gray-50');
+                        salesTaxField.title = 'Enter rate and value sales to calculate';
+                    }
+
+                    // Parse values as floats to ensure numeric addition
+                    const Ftax = parseFloat($('#modalFurtherTax').val()) || 0;
+                    const saleTaxer = parseFloat($('#modalTotalValues').val()) || 0;
+                    const saleExclTaxer = parseFloat($('#modalValueSalesExcludingST').val()) || 0;
+
+                    // Calculate the new values
+                    const ftaxincludesaleTaxer = saleTaxer + Ftax;
+                    const ftaxincludesaleExclTaxer = saleExclTaxer + Ftax;
+
+                    // Update the fields with the calculated values
+                    $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
+
+
+
                 }
-            }
-            const valueSalesFieldtax=parseFloat(valueSalesField.value) || 0;
-            const valueSalesFurther = parseFloat(valueSalesField.value) || 0;
-  const valueSales = parseFloat(valueSalesField.value) || 0;
-            // Calculate: Sales Tax Applicable = (Value Sales Excluding ST * Rate) / 100
-            const salesTax = (valueSales * rate) / 100;
- const salesfur = (totalDM * 4) / 100;
- const taxTyper=$('#buyerRegistrationType').val();
-              if (taxTyper === 'Unregistered') {
-                  valueFurtherField.value=salesfur;
-              }
-            // Update the sales tax field
-            salesTaxField.value = salesTax.toFixed(2);
-
-            // Visual feedback
-            if (rate > 0 && valueSales > 0) {
-                salesTaxField.classList.remove('bg-gray-50', 'bg-red-50');
-                salesTaxField.classList.add('bg-green-50');
-                salesTaxField.title = `Calculated: ${valueSales} × ${rate}% = ${salesTax.toFixed(2)}`;
-            } else {
-                salesTaxField.classList.remove('bg-green-50');
-                salesTaxField.classList.add('bg-gray-50');
-                salesTaxField.title = 'Enter rate and value sales to calculate';
-            }
-            
-// Parse values as floats to ensure numeric addition
-const Ftax = parseFloat($('#modalFurtherTax').val()) || 0;
-const saleTaxer = parseFloat($('#modalTotalValues').val()) || 0;
-const saleExclTaxer = parseFloat($('#modalValueSalesExcludingST').val()) || 0;
-
-// Calculate the new values
-const ftaxincludesaleTaxer = saleTaxer + Ftax;
-const ftaxincludesaleExclTaxer = saleExclTaxer + Ftax;
-
-// Update the fields with the calculated values
-$('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
-             
-            
-            
-}
 
 
 
-        
+
             });
 
             // Add event listener for rate changes (when rate selection changes)
-            $(document).on('select2:select', '.rate-select', function(e) {
-                
+            $(document).on('select2:select', '.rate-select', function (e) {
+
                 calculateSalesTaxForItem(e.target);
 
                 // Also update SRO schedule when rate changes
@@ -915,28 +1039,28 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
             });
 
             // Modal-specific event listeners
-            $(document).on('select2:select', '#modalSaleType', function(e) {
+            $(document).on('select2:select', '#modalSaleType', function (e) {
                 calculateRatesForItem(e.target);
             });
 
-            $(document).on('select2:select', '#modalHsCode', function(e) {
+            $(document).on('select2:select', '#modalHsCode', function (e) {
                 fetchUomByHsCode(e.target);
             });
 
-            $(document).on('select2:select', '#modalSroScheduleNo', function(e) {
+            $(document).on('select2:select', '#modalSroScheduleNo', function (e) {
                 fetchSroItems(e.target);
                 updateSroRequiredIndicators(e.target);
             });
 
-            $(document).on('select2:clear', '#modalSroScheduleNo', function(e) {
+            $(document).on('select2:clear', '#modalSroScheduleNo', function (e) {
                 updateSroRequiredIndicators(e.target);
             });
 
-            $(document).on('select2:select', '#modalSroItemSerialNo', function(e) {
+            $(document).on('select2:select', '#modalSroItemSerialNo', function (e) {
                 updateSroRequiredIndicators(e.target);
             });
 
-            $(document).on('select2:clear', '#modalSroItemSerialNo', function(e) {
+            $(document).on('select2:clear', '#modalSroItemSerialNo', function (e) {
                 updateSroRequiredIndicators(e.target);
             });
 
@@ -946,7 +1070,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
             document.getElementById('buyerNTNCNIC').addEventListener('blur', handleBuyerNTNBlur);
 
             // Click outside to close autocomplete
-            document.addEventListener('click', function(e) {
+            document.addEventListener('click', function (e) {
                 const autocompleteDiv = document.getElementById('buyerNTNAutocomplete');
                 const ntnInput = document.getElementById('buyerNTNCNIC');
 
@@ -1012,7 +1136,7 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     return;
                 }
 
-                const response = await fetch(`${API_BASE}/premiertax/api/buyers/search?ntn=${encodeURIComponent(searchTerm)}&limit=10`, {
+                const response = await fetch(`${API_BASE}/api/buyers/search?ntn=${encodeURIComponent(searchTerm)}&limit=10`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -1020,14 +1144,14 @@ $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
                     }
                 });
 
-               const text = await response.text();
-console.log('RAW RATE RESPONSE:', text);
+                const text = await response.text();
+                console.log('RAW RATE RESPONSE:', text);
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
 
-const result = JSON.parse(cleanText);
+                const result = JSON.parse(cleanText);
 
                 if (result.success && result.data) {
                     // Cache the result
@@ -1059,7 +1183,7 @@ const result = JSON.parse(cleanText);
                     return;
                 }
 
-                const response = await fetch(`${API_BASE}/premiertax/api/buyers?limit=10`, {
+                const response = await fetch(`${API_BASE}/api/buyers?limit=10`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -1068,13 +1192,13 @@ const result = JSON.parse(cleanText);
                 });
 
                 const text = await response.text();
-console.log('RAW RATE RESPONSE:', text);
+                console.log('RAW RATE RESPONSE:', text);
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
 
-const result = JSON.parse(cleanText);
+                const result = JSON.parse(cleanText);
 
                 if (result.success && result.data) {
                     // Cache the result
@@ -1111,25 +1235,25 @@ const result = JSON.parse(cleanText);
 
             buyers.forEach(buyer => {
                 html += `
-                    <div class="buyer-suggestion px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                         data-buyer-id="${buyer.id}"
-                         data-ntn-cnic="${buyer.ntn_cnic}"
-                         data-business-name="${buyer.business_name}"
-                         data-address="${buyer.address}"
-                         data-registration-type="${buyer.registration_type}"
-                         data-province="${buyer.province}">
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <div class="font-medium text-sm text-gray-900">${buyer.ntn_cnic}</div>
-                                <div class="text-sm text-gray-600">${buyer.business_name}</div>
-                                <div class="text-xs text-gray-500">${buyer.registration_type}</div>
-                            </div>
-                            <div class="text-xs text-gray-500 ml-2">
-                                ${getProvinceDescription(buyer.province)}
+                        <div class="buyer-suggestion px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                             data-buyer-id="${buyer.id}"
+                             data-ntn-cnic="${buyer.ntn_cnic}"
+                             data-business-name="${buyer.business_name}"
+                             data-address="${buyer.address}"
+                             data-registration-type="${buyer.registration_type}"
+                             data-province="${buyer.province}">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="font-medium text-sm text-gray-900">${buyer.ntn_cnic}</div>
+                                    <div class="text-sm text-gray-600">${buyer.business_name}</div>
+                                    <div class="text-xs text-gray-500">${buyer.registration_type}</div>
+                                </div>
+                                <div class="text-xs text-gray-500 ml-2">
+                                    ${getProvinceDescription(buyer.province)}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
             });
 
             autocompleteDiv.innerHTML = html;
@@ -1137,7 +1261,7 @@ const result = JSON.parse(cleanText);
 
             // Add click listeners to suggestions
             autocompleteDiv.querySelectorAll('.buyer-suggestion').forEach(suggestion => {
-                suggestion.addEventListener('click', function() {
+                suggestion.addEventListener('click', function () {
                     selectBuyer(this);
                 });
             });
@@ -1183,20 +1307,20 @@ const result = JSON.parse(cleanText);
             // Validate buyer requirements
             validateBuyerRequirements();
 
-           
+
         }
 
         // Show no buyers found message
         function showNoBuyersMessage() {
             const autocompleteDiv = document.getElementById('buyerNTNAutocomplete');
             autocompleteDiv.innerHTML = `
-                <div class="px-3 py-4 text-sm text-gray-500 text-center">
-                    <svg class="mx-auto h-6 w-6 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    No buyers found
-                </div>
-            `;
+                    <div class="px-3 py-4 text-sm text-gray-500 text-center">
+                        <svg class="mx-auto h-6 w-6 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        No buyers found
+                    </div>
+                `;
             autocompleteDiv.classList.remove('hidden');
         }
 
@@ -1204,13 +1328,13 @@ const result = JSON.parse(cleanText);
         function showErrorMessage(message) {
             const autocompleteDiv = document.getElementById('buyerNTNAutocomplete');
             autocompleteDiv.innerHTML = `
-                <div class="px-3 py-4 text-sm text-red-500 text-center">
-                    <svg class="mx-auto h-6 w-6 text-red-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                    </svg>
-                    ${message}
-                </div>
-            `;
+                    <div class="px-3 py-4 text-sm text-red-500 text-center">
+                        <svg class="mx-auto h-6 w-6 text-red-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        ${message}
+                    </div>
+                `;
             autocompleteDiv.classList.remove('hidden');
         }
 
@@ -1381,7 +1505,7 @@ const result = JSON.parse(cleanText);
                 rateSelect.classList.remove('bg-gray-50', 'bg-red-50');
                 rateSelect.classList.add('bg-blue-50');
 
-                const response = await fetch(`${API_BASE}/premiertax/api/fbr/sale-type-to-rate`, {
+                const response = await fetch(`${API_BASE}/api/fbr/sale-type-to-rate`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -1396,19 +1520,19 @@ const result = JSON.parse(cleanText);
                 });
 
                 const text = await response.text();
-console.log('RAW RATE RESPONSE:', text);
+                console.log('RAW RATE RESPONSE:', text);
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
 
-const result = JSON.parse(cleanText);
+                const result = JSON.parse(cleanText);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Clear the select and add default option
                     rateSelect.innerHTML = '<option value="">Select Rate</option>';
 
-                                        // Populate with all available rates
+                    // Populate with all available rates
                     result.data.forEach((rateData, index) => {
                         const rateValue = rateData.ratE_VALUE || 0;
                         const rateId = rateData.ratE_ID;
@@ -1442,7 +1566,7 @@ const result = JSON.parse(cleanText);
                     rateSelect.classList.add('bg-green-50');
                     rateSelect.title = `${result.data.length} rate(s) available`;
 
-                   
+
 
                     // Trigger sales tax calculation with the selected rate
                     calculateSalesTaxForItem(rateSelect);
@@ -1496,11 +1620,11 @@ const result = JSON.parse(cleanText);
 
 
 
-                                // Populate province selects with HTML options
+        // Populate province selects with HTML options
         function populateProvinceSelects() {
             if (provinces && Array.isArray(provinces)) {
                 // Update all province selects
-                $('.province-select').each(function() {
+                $('.province-select').each(function () {
                     const select = this;
                     select.innerHTML = '<option value="">Select Province</option>';
 
@@ -1516,16 +1640,16 @@ const result = JSON.parse(cleanText);
                             // Pre-select user's province for seller province field
                             if (select.id === 'sellerProvince' && userProfile.province &&
                                 (provinceCode == userProfile.province ||
-                                 String(provinceCode) === String(userProfile.province))) {
+                                    String(provinceCode) === String(userProfile.province))) {
                                 option.selected = true;
-                               
+
                             }
 
                             select.appendChild(option);
                         }
                     });
                 });
-              
+
             }
         }
 
@@ -1594,7 +1718,7 @@ const result = JSON.parse(cleanText);
                 width: 'resolve',
             });
 
-          
+
         }
 
 
@@ -1606,8 +1730,8 @@ const result = JSON.parse(cleanText);
         // Load and populate UoM from API
         async function loadAndPopulateUoM() {
             try {
-               
-                const response = await fetch(`${API_BASE}/premiertax/api/fbr/uom`, {
+
+                const response = await fetch(`${API_BASE}/api/fbr/uom`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -1616,13 +1740,13 @@ const result = JSON.parse(cleanText);
                 });
 
                 const text = await response.text();
-console.log('RAW RATE RESPONSE:', text);
+                console.log('RAW RATE RESPONSE:', text);
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
 
-const result = JSON.parse(cleanText);
+                const result = JSON.parse(cleanText);
 
                 if (result.success && result.data) {
                     uoMs = result.data;
@@ -1635,7 +1759,7 @@ const result = JSON.parse(cleanText);
                         width: 'resolve'
                     });
 
-                  
+
                 } else {
                     console.error('Failed to load UoM:', result.message);
                     showMessage('Failed to load Units of Measurement: ' + (result.message || 'Unknown error'), 'warning');
@@ -1648,58 +1772,58 @@ const result = JSON.parse(cleanText);
 
         // Load and populate Document Types (Invoice Types) from FBR API
         async function loadAndPopulateDocumentTypes() {
-    try {
+            try {
 
-        const response = await fetch(`${API_BASE}/premiertax/api/fbr/doctypecode`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': CSRF_TOKEN
+                const response = await fetch(`${API_BASE}/api/fbr/doctypecode`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN
+                    }
+                });
+
+                const text = await response.text();
+                console.log('RAW RESPONSE:', text);
+
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
+
+                const result = JSON.parse(cleanText);
+
+                if (result.success && result.data) {
+                    documentTypes = result.data;
+                    populateDocumentTypeSelects();
+
+                    $('.invoice-type-select').select2('destroy').select2({
+                        placeholder: 'Select Invoice Type',
+                        allowClear: true,
+                        width: 'resolve'
+                    });
+
+                } else {
+                    console.error('Failed to load Document Types:', result.message);
+                    showMessage(
+                        'Failed to load Invoice Types: ' + (result.message || 'Unknown error'),
+                        'warning'
+                    );
+                    loadDefaultDocumentTypes();
+                }
+
+            } catch (error) {
+                console.error('Error loading Document Types:', error);
+                showMessage('Error loading Invoice Types from FBR server', 'error');
+                loadDefaultDocumentTypes();
             }
-        });
-
-        const text = await response.text();
-        console.log('RAW RESPONSE:', text);
-
-        const cleanText = text.trim().startsWith('{')
-            ? text
-            : text.substring(text.indexOf('{'));
-
-        const result = JSON.parse(cleanText);
-
-        if (result.success && result.data) {
-            documentTypes = result.data;
-            populateDocumentTypeSelects();
-
-            $('.invoice-type-select').select2('destroy').select2({
-                placeholder: 'Select Invoice Type',
-                allowClear: true,
-                width: 'resolve'
-            });
-
-        } else {
-            console.error('Failed to load Document Types:', result.message);
-            showMessage(
-                'Failed to load Invoice Types: ' + (result.message || 'Unknown error'),
-                'warning'
-            );
-            loadDefaultDocumentTypes();
         }
 
-    } catch (error) {
-        console.error('Error loading Document Types:', error);
-        showMessage('Error loading Invoice Types from FBR server', 'error');
-        loadDefaultDocumentTypes();
-    }
-}
 
 
-
-                                // Populate UoM selects with HTML options
+        // Populate UoM selects with HTML options
         function populateUoMSelects() {
             if (uoMs && Array.isArray(uoMs)) {
                 // Update all UoM selects
-                $('.uom-select').each(function() {
+                $('.uom-select').each(function () {
                     const select = this;
                     select.innerHTML = '<option value="">Select Unit of Measure</option>';
 
@@ -1716,7 +1840,7 @@ const result = JSON.parse(cleanText);
                         }
                     });
                 });
-              
+
             }
         }
 
@@ -1724,7 +1848,7 @@ const result = JSON.parse(cleanText);
         function populateDocumentTypeSelects() {
             if (documentTypes && Array.isArray(documentTypes)) {
                 // Update all document type selects
-                $('.invoice-type-select').each(function() {
+                $('.invoice-type-select').each(function () {
                     const select = this;
                     select.innerHTML = '<option value="">Select Invoice Type</option>';
 
@@ -1740,7 +1864,7 @@ const result = JSON.parse(cleanText);
                         }
                     });
                 });
-               
+
             }
         }
 
@@ -1764,11 +1888,11 @@ const result = JSON.parse(cleanText);
 
         }
 
-                                        // Populate transaction type selects with HTML options
+        // Populate transaction type selects with HTML options
         function populateTransactionTypeSelects() {
             if (transactionTypes && Array.isArray(transactionTypes)) {
                 // Update all transaction type selects
-                $('.sale-type-select').each(function() {
+                $('.sale-type-select').each(function () {
                     const select = this;
                     select.innerHTML = '<option value="">Select Sale Type</option>';
 
@@ -1790,7 +1914,7 @@ const result = JSON.parse(cleanText);
         // Load transaction types dynamically from API
         async function loadTransactionTypesFromAPI() {
             try {
-                const response = await fetch(`${API_BASE}/premiertax/api/fbr/transaction-types`, {
+                const response = await fetch(`${API_BASE}/api/fbr/transaction-types`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
@@ -1799,15 +1923,15 @@ const result = JSON.parse(cleanText);
                 });
 
                 const text = await response.text();
-console.log('RAW RATE RESPONSE:', text);
+                console.log('RAW RATE RESPONSE:', text);
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
 
-const result = JSON.parse(cleanText);
+                const result = JSON.parse(cleanText);
 
-                                if (result.success && result.data) {
+                if (result.success && result.data) {
                     transactionTypes = result.data;
                     populateTransactionTypeSelects();
 
@@ -1826,7 +1950,7 @@ const result = JSON.parse(cleanText);
             } catch (error) {
                 console.error('Error loading transaction types:', error);
                 showMessage('Error loading transaction types from server', 'error');
-                        }
+            }
         }
 
         // Calculate sales tax for a specific item
@@ -1835,8 +1959,8 @@ const result = JSON.parse(cleanText);
 
             // Check if we're in the modal context
             const isModal = triggerField.closest('#addItemModal') !== null ||
-                           triggerField.id === 'modalValueSalesExcludingST' ||
-                           triggerField.id === 'modalRate';
+                triggerField.id === 'modalValueSalesExcludingST' ||
+                triggerField.id === 'modalRate';
 
             if (isModal) {
                 rateSelect = document.getElementById('modalRate');
@@ -1867,16 +1991,16 @@ const result = JSON.parse(cleanText);
                     rate = 0;
                 }
             }
-            const valueSalesFieldtax=parseFloat(valueSalesField.value) || 0;
+            const valueSalesFieldtax = parseFloat(valueSalesField.value) || 0;
             const valueSalesFurther = parseFloat(valueSalesField.value) || 0;
-  const valueSales = parseFloat(valueSalesField.value) || 0;
+            const valueSales = parseFloat(valueSalesField.value) || 0;
             // Calculate: Sales Tax Applicable = (Value Sales Excluding ST * Rate) / 100
             const salesTax = (valueSales * rate) / 100;
- const salesfur = (valueSalesFurther * 4) / 100;
- const taxTyper=$('#buyerRegistrationType').val();
-              if (taxTyper === 'Unregistered') {
-                  valueFurtherField.value=salesfur;
-              }
+            const salesfur = (valueSalesFurther * 4) / 100;
+            const taxTyper = $('#buyerRegistrationType').val();
+            if (taxTyper === 'Unregistered') {
+                valueFurtherField.value = salesfur;
+            }
             // Update the sales tax field
             salesTaxField.value = salesTax.toFixed(2);
 
@@ -1892,21 +2016,21 @@ const result = JSON.parse(cleanText);
             }
 
         }
-     $('#modalHsCode').on('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-    const hsCode = selectedOption.value;
-    const fullDescription = selectedOption.textContent;
-    
-    // Remove the HS code prefix if needed
-    const descriptionOnly = fullDescription.replace(hsCode + ' - ', '');
-    
-    console.log('HS Code:', hsCode);
-    console.log('Full description:', fullDescription);
-    console.log('Description only:', descriptionOnly);
-    
-    // Use the description as needed
-    // e.g., populate another field, store in variable, etc.
-});
+        $('#modalHsCode').on('change', function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const hsCode = selectedOption.value;
+            const fullDescription = selectedOption.textContent;
+
+            // Remove the HS code prefix if needed
+            const descriptionOnly = fullDescription.replace(hsCode + ' - ', '');
+
+            console.log('HS Code:', hsCode);
+            console.log('Full description:', fullDescription);
+            console.log('Description only:', descriptionOnly);
+
+            // Use the description as needed
+            // e.g., populate another field, store in variable, etc.
+        });
 
         // Fetch UOM based on HS code with caching
         async function fetchUomByHsCode(hsCodeSelect, skipCacheCheck = false) {
@@ -1915,19 +2039,19 @@ const result = JSON.parse(cleanText);
             console.log(hsCodeSelect)
             const firstOption = hsCodeSelect.options[1];
 
-console.log("DONE ITEM DONE"); // 6909.1200
-console.log(firstOption.text);  // Full text
-const fullText = firstOption.text;
+            console.log("DONE ITEM DONE"); // 6909.1200
+            console.log(firstOption.text);  // Full text
+            const fullText = firstOption.text;
 
-// Split by " - " and remove the first part (the code)
-const parts = fullText.split(' - ');
-parts.shift(); // Remove the first element (HS code)
-const description = parts.join(' - ');
+            // Split by " - " and remove the first part (the code)
+            const parts = fullText.split(' - ');
+            parts.shift(); // Remove the first element (HS code)
+            const description = parts.join(' - ');
 
-console.log(description);
-$('#modalProductDescription').val(description);
+            console.log(description);
+            $('#modalProductDescription').val(description);
 
-// Output: "GLASS AND GLASSWARE. - GLASS FIBRES (INCLUDING GLASS WOOL) AND ARTICLES THEREOF (FOR EXAMPLE, YEARN, WOVEN FABRICS). - OPEN WOVEN FABRICS OF A WIDTH NOT EXCEEDING 30 CM"
+            // Output: "GLASS AND GLASSWARE. - GLASS FIBRES (INCLUDING GLASS WOOL) AND ARTICLES THEREOF (FOR EXAMPLE, YEARN, WOVEN FABRICS). - OPEN WOVEN FABRICS OF A WIDTH NOT EXCEEDING 30 CM"
             // Check if we're in the modal context
             if (hsCodeSelect.id === 'modalHsCode') {
                 uomSelect = document.getElementById('modalUoM');
@@ -1954,7 +2078,7 @@ $('#modalProductDescription').val(description);
             if (!skipCacheCheck) {
                 const cachedUom = uomCache.get(hsCode);
                 if (cachedUom && (Date.now() - cachedUom.timestamp) < UOM_CACHE_DURATION) {
-                   
+
                     populateUomSelect(uomSelect, cachedUom.data, hsCode, cachedUom.fallback);
                     return;
                 }
@@ -1969,7 +2093,7 @@ $('#modalProductDescription').val(description);
                     uomSelect.disabled = true;
                 }
 
-                const response = await fetch(`${API_BASE}/premiertax/api/fbr/uom-by-hs-code`, {
+                const response = await fetch(`${API_BASE}/api/fbr/uom-by-hs-code`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -1984,11 +2108,11 @@ $('#modalProductDescription').val(description);
                 const text = await response.text();
                 console.log('RAW RATE RESPONSE:', text);
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
 
-const result = JSON.parse(cleanText);
+                const result = JSON.parse(cleanText);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Cache the result
@@ -2040,75 +2164,75 @@ const result = JSON.parse(cleanText);
         }
 
         // Helper function to populate UOM select
-function populateUomSelect(uomSelect, uomData, hsCode, fallback = false) {
-    if (!uomSelect || !uomData || uomData.length === 0) {
-        return;
-    }
+        function populateUomSelect(uomSelect, uomData, hsCode, fallback = false) {
+            if (!uomSelect || !uomData || uomData.length === 0) {
+                return;
+            }
 
-    // Clear all existing options
-    uomSelect.innerHTML = '';
-    
-    // Use a Set to track unique UOM values and prevent duplicates
-    const uniqueUoms = new Map();
-    
-    uomData.forEach(uom => {
-        const uomId = uom.uoM_ID || uom.id;
-        const uomDesc = uom.uoM_DESC || uom.description;
-        
-        if (uomId && uomDesc && !uniqueUoms.has(uomId)) {
-            uniqueUoms.set(uomId, uomDesc);
+            // Clear all existing options
+            uomSelect.innerHTML = '';
+
+            // Use a Set to track unique UOM values and prevent duplicates
+            const uniqueUoms = new Map();
+
+            uomData.forEach(uom => {
+                const uomId = uom.uoM_ID || uom.id;
+                const uomDesc = uom.uoM_DESC || uom.description;
+
+                if (uomId && uomDesc && !uniqueUoms.has(uomId)) {
+                    uniqueUoms.set(uomId, uomDesc);
+                }
+            });
+
+            // Add unique options to select
+            uniqueUoms.forEach((desc, id) => {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = desc;
+                uomSelect.appendChild(option);
+            });
+
+            // Visual feedback and enable the select
+            uomSelect.classList.remove('bg-blue-50', 'bg-gray-50');
+            uomSelect.classList.add('bg-green-50');
+            uomSelect.title = `${uniqueUoms.size} UOM option(s) available for HS Code: ${hsCode}`;
+            uomSelect.disabled = false;
+
+            // Show fallback message if applicable
+            if (fallback) {
+                uomSelect.title += ' (using general UOM options)';
+            }
+
+            // Destroy existing Select2 completely
+            if ($(uomSelect).data('select2')) {
+                $(uomSelect).select2('destroy');
+            }
+
+            // Remove the hidden-accessible class and any select2 attributes
+            $(uomSelect).removeClass('select2-hidden-accessible');
+            $(uomSelect).removeAttr('data-select2-id');
+            $(uomSelect).removeAttr('tabindex');
+            $(uomSelect).removeAttr('aria-hidden');
+
+            // Re-initialize Select2
+            $(uomSelect).select2({
+                placeholder: 'Select Unit of Measure',
+                allowClear: true,
+                width: 'resolve',
+                dropdownParent: uomSelect.closest('#addItemModal') ? $('#addItemModal') : $('body')
+            });
+
+            // Auto-select the first option
+            if (uomSelect.options.length > 0) {
+                $(uomSelect).val(uomSelect.options[0].value).trigger('change');
+            }
         }
-    });
-    
-    // Add unique options to select
-    uniqueUoms.forEach((desc, id) => {
-        const option = document.createElement('option');
-        option.value = id;
-        option.textContent = desc;
-        uomSelect.appendChild(option);
-    });
-
-    // Visual feedback and enable the select
-    uomSelect.classList.remove('bg-blue-50', 'bg-gray-50');
-    uomSelect.classList.add('bg-green-50');
-    uomSelect.title = `${uniqueUoms.size} UOM option(s) available for HS Code: ${hsCode}`;
-    uomSelect.disabled = false;
-
-    // Show fallback message if applicable
-    if (fallback) {
-        uomSelect.title += ' (using general UOM options)';
-    }
-
-    // Destroy existing Select2 completely
-    if ($(uomSelect).data('select2')) {
-        $(uomSelect).select2('destroy');
-    }
-    
-    // Remove the hidden-accessible class and any select2 attributes
-    $(uomSelect).removeClass('select2-hidden-accessible');
-    $(uomSelect).removeAttr('data-select2-id');
-    $(uomSelect).removeAttr('tabindex');
-    $(uomSelect).removeAttr('aria-hidden');
-    
-    // Re-initialize Select2
-    $(uomSelect).select2({
-        placeholder: 'Select Unit of Measure',
-        allowClear: true,
-        width: 'resolve',
-        dropdownParent: uomSelect.closest('#addItemModal') ? $('#addItemModal') : $('body')
-    });
-    
-    // Auto-select the first option
-    if (uomSelect.options.length > 0) {
-        $(uomSelect).val(uomSelect.options[0].value).trigger('change');
-    }
-}
-// Fetch SRO Schedule based on rate ID, date, and province
+        // Fetch SRO Schedule based on rate ID, date, and province
         async function fetchSroSchedule(rateId, date, provinceCode, itemContainer) {
             try {
-               
 
-                const response = await fetch(`${API_BASE}/premiertax/api/fbr/sro-schedule`, {
+
+                const response = await fetch(`${API_BASE}/api/fbr/sro-schedule`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -2125,16 +2249,16 @@ function populateUomSelect(uomSelect, uomData, hsCode, fallback = false) {
                 const text = await response.text();
 
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
 
-const result = JSON.parse(cleanText);
+                const result = JSON.parse(cleanText);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Display SRO information
                     displaySroInformation(result.data, itemContainer);
-                  
+
                 } else {
                     console.warn('No SRO schedule found for the given criteria');
                     clearSroInformation(itemContainer);
@@ -2146,7 +2270,7 @@ const result = JSON.parse(cleanText);
             }
         }
 
-                        // Display SRO information in the item container
+        // Display SRO information in the item container
         function displaySroInformation(sroData, itemContainer) {
             // Find the SRO Schedule select and populate it
             const sroScheduleSelect = itemContainer.querySelector('.sro-schedule-select');
@@ -2178,7 +2302,7 @@ const result = JSON.parse(cleanText);
                 // Update required indicators now that options are available
                 updateSroRequiredIndicators(sroScheduleSelect);
 
-              
+
             }
         }
 
@@ -2212,12 +2336,12 @@ const result = JSON.parse(cleanText);
             const invoiceDate = document.getElementById('invoiceDate').value;
 
             if (!sroId || !invoiceDate) {
-               
+
                 return;
             }
 
             try {
-               
+
 
                 // Show loading state
                 if (sroItemSelect) {
@@ -2226,7 +2350,7 @@ const result = JSON.parse(cleanText);
                     sroItemSelect.classList.add('bg-blue-50');
                 }
 
-                const response = await fetch(`${API_BASE}/premiertax/api/fbr/sro-item`, {
+                const response = await fetch(`${API_BASE}/api/fbr/sro-item`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -2240,18 +2364,18 @@ const result = JSON.parse(cleanText);
                 });
 
                 const text = await response.text();
-console.log('RAW RATE RESPONSE:', text);
+                console.log('RAW RATE RESPONSE:', text);
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
 
-const result = JSON.parse(cleanText);
+                const result = JSON.parse(cleanText);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Populate SRO Items dropdown
                     populateSroItems(result.data, itemContainer);
-                   
+
                 } else {
                     console.warn('No SRO items found for the given criteria');
                     // Show no items available
@@ -2304,7 +2428,7 @@ const result = JSON.parse(cleanText);
                 // Update required indicators now that SRO items are available
                 updateSroRequiredIndicators(sroItemSelect);
 
-               
+
             }
         }
 
@@ -2322,7 +2446,7 @@ const result = JSON.parse(cleanText);
             }
         }
 
-                // Clear SRO Schedule and Items when HS code changes
+        // Clear SRO Schedule and Items when HS code changes
         function clearSroScheduleForItem(hsCodeSelect) {
             const itemContainer = hsCodeSelect.closest('div.bg-white');
             const sroScheduleSelect = itemContainer.querySelector('.sro-schedule-select');
@@ -2437,11 +2561,11 @@ const result = JSON.parse(cleanText);
             // Reset modal title and button text for adding new item
             document.querySelector('#addItemModal h3').textContent = 'Add Invoice Item';
             document.getElementById('addItemFromModalBtn').innerHTML = `
-                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                </svg>
-                Add Item
-            `;
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Add Item
+                `;
 
             // Show modal
             document.getElementById('addItemModal').classList.remove('hidden');
@@ -2665,7 +2789,7 @@ const result = JSON.parse(cleanText);
             totalValueSalesEl.textContent = totalValueSales.toFixed(2);
             totalSalesTaxEl.textContent = totalSalesTax.toFixed(2);
 
-         
+
         }
 
         // Update items table display
@@ -2691,20 +2815,20 @@ const result = JSON.parse(cleanText);
                 row.className = 'hover:bg-gray-50';
 
                 row.innerHTML = `
-                    <td class="px-4 py-3 text-sm text-gray-900">${index + 1}</td>
-                    <td class="px-4 py-3 text-sm text-gray-900">${item.productDescription || '-'}</td>
-                    <td class="px-4 py-3 text-sm text-gray-900">${item.hsCodeText || '-'}</td>
-                    <td class="px-4 py-3 text-sm text-gray-900">${item.quantity || 0}</td>
-                    <td class="px-4 py-3 text-sm text-gray-900">${item.rateValue || 0}%</td>
-                    <td class="px-4 py-3 text-sm text-gray-900">${parseFloat(item.valueSalesExcludingST || 0).toFixed(2)}</td>
-                    <td class="px-4 py-3 text-sm text-gray-900">${parseFloat(item.salesTaxApplicable || 0).toFixed(2)}</td>
-                    <td class="px-4 py-3 text-sm text-gray-900">
-                        <div class="flex space-x-2">
-                            <button type="button" onclick="editItem(${index})" class="text-blue-600 hover:text-blue-900 text-sm font-medium">Edit</button>
-                            <button type="button" onclick="deleteItem(${index})" class="text-red-600 hover:text-red-900 text-sm font-medium">Delete</button>
-                        </div>
-                    </td>
-                `;
+                        <td class="px-4 py-3 text-sm text-gray-900">${index + 1}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">${item.productDescription || '-'}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">${item.hsCodeText || '-'}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">${item.quantity || 0}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">${item.rateValue || 0}%</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">${parseFloat(item.valueSalesExcludingST || 0).toFixed(2)}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">${parseFloat(item.salesTaxApplicable || 0).toFixed(2)}</td>
+                        <td class="px-4 py-3 text-sm text-gray-900">
+                            <div class="flex space-x-2">
+                                <button type="button" onclick="editItem(${index})" class="text-blue-600 hover:text-blue-900 text-sm font-medium">Edit</button>
+                                <button type="button" onclick="deleteItem(${index})" class="text-red-600 hover:text-red-900 text-sm font-medium">Delete</button>
+                            </div>
+                        </td>
+                    `;
 
                 tableBody.appendChild(row);
             });
@@ -2760,20 +2884,20 @@ const result = JSON.parse(cleanText);
                     // Wait a bit for HS Code to be set, then fetch UoM options
                     setTimeout(async () => {
                         try {
-                           
+
                             // Fetch UoM options for this HS code
                             await fetchUomByHsCode(hsCodeElement);
 
                             // Wait a bit more for UoM options to be populated, then set the value
                             setTimeout(() => {
                                 $(uomElement).val(item.uoM).trigger('change');
-                               
+
 
                                 // After UoM is set, handle SRO Schedule and SRO Item
                                 setTimeout(async () => {
                                     // Set SRO Schedule No. if available
                                     if (item.sroScheduleNo) {
-                                       
+
 
                                         // Get the rate data to fetch SRO schedules
                                         const rateSelect = document.getElementById('modalRate');
@@ -2791,7 +2915,7 @@ const result = JSON.parse(cleanText);
                                                 // Wait for SRO schedules to be populated
                                                 setTimeout(() => {
                                                     $('#modalSroScheduleNo').val(item.sroScheduleNo).trigger('change');
-                                                  
+
 
                                                     // Wait for SRO Items to load after SRO Schedule is set
                                                     setTimeout(() => {
@@ -2820,11 +2944,11 @@ const result = JSON.parse(cleanText);
                 // Update modal title
                 document.querySelector('#addItemModal h3').textContent = 'Edit Invoice Item';
                 document.getElementById('addItemFromModalBtn').innerHTML = `
-                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.828-2.828z" />
-                    </svg>
-                    Update Item
-                `;
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.828-2.828z" />
+                        </svg>
+                        Update Item
+                    `;
             }, 100);
         }
 
@@ -2900,7 +3024,7 @@ const result = JSON.parse(cleanText);
                         }
                     }
 
-                                        // Rate is already in correct format from FBR API (no processing needed)
+                    // Rate is already in correct format from FBR API (no processing needed)
 
                     // Convert SRO Schedule ID to description
                     if (item.sroScheduleNo && sroSchedules.has(String(item.sroScheduleNo))) {
@@ -2924,7 +3048,7 @@ const result = JSON.parse(cleanText);
                 return;
             }
 
-           
+
 
             // Clear seller information and reset to defaults
             // document.getElementById('sellerNTNCNIC').value = userProfile.cinc_ntn || '';
@@ -2987,14 +3111,14 @@ const result = JSON.parse(cleanText);
 
         // Validate invoice
         async function validateInvoice() {
-             const formData = new FormData(document.getElementById('invoiceForm'));
-    const data = formDataToObjectWithLabels(formData); // <-- use labels
-    const apiUrl = `${API_BASE}/invoicing/validate`;
+            const formData = new FormData(document.getElementById('invoiceForm'));
+            const data = formDataToObjectWithLabels(formData); // <-- use labels
+            const apiUrl = `${API_BASE}/invoicing/validate`;
 
             // Create display version for console logging (with labels)
             const displayData = convertIdsToLabels(data);
 
-          
+
 
             try {
                 showMessage('Validating invoice...', 'info');
@@ -3010,13 +3134,13 @@ const result = JSON.parse(cleanText);
                 });
 
                 const text = await response.text();
-console.log('RAW RATE RESPONSE:', text);
+                console.log('RAW RATE RESPONSE:', text);
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
 
-const result = JSON.parse(cleanText);
+                const result = JSON.parse(cleanText);
 
                 if (result.success) {
                     showMessage('Invoice validation successful!', 'success');
@@ -3031,38 +3155,38 @@ const result = JSON.parse(cleanText);
 
         // Submit invoice
         async function submitInvoice(e) {
-             e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = formDataToObjectWithLabels(formData); // <-- use labels
-    const apiUrl = `${API_BASE}/premiertax/invoicing/submit`;
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = formDataToObjectWithLabels(formData); // <-- use labels
+            const apiUrl = `${API_BASE}/invoicing/submit`;
 
             // Create display version for console logging (with labels)
             const displayData = convertIdsToLabels(data);
 
-           
 
-             try {
-        showMessage('Submitting invoice to FBR...', 'info');
-        document.getElementById('submitBtn').disabled = true;
 
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': CSRF_TOKEN,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
+            try {
+                showMessage('Submitting invoice to FBR...', 'info');
+                document.getElementById('submitBtn').disabled = true;
 
-               const text = await response.text();
-console.log('RAW RATE RESPONSE:', text);
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const text = await response.text();
+                console.log('RAW RATE RESPONSE:', text);
 
-const result = JSON.parse(cleanText);
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
+
+                const result = JSON.parse(cleanText);
 
                 if (result.success) {
                     showMessage('Invoice submitted successfully to FBR!', 'success');
@@ -3087,41 +3211,41 @@ const result = JSON.parse(cleanText);
         }
 
 
-//For displaySroInformation
-// Submit invoice
+        //For displaySroInformation
+        // Submit invoice
         async function submitDraft(e) {
-             e.preventDefault();
-    const formData = new FormData(document.getElementById('invoiceForm'));
-    const data = formDataToObjectWithLabels(formData); // <-- use labels
-    const apiUrl = `${API_BASE}/premiertax/invoicing/save-draft`;
+            e.preventDefault();
+            const formData = new FormData(document.getElementById('invoiceForm'));
+            const data = formDataToObjectWithLabels(formData); // <-- use labels
+            const apiUrl = `${API_BASE}/invoicing/save-draft`;
 
             // Create display version for console logging (with labels)
             const displayData = convertIdsToLabels(data);
 
-           
 
-             try {
-        showMessage('Submitting invoice to FBR...', 'info');
-        document.getElementById('submitBtn').disabled = true;
 
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': CSRF_TOKEN,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
+            try {
+                showMessage('Submitting invoice to FBR...', 'info');
+                document.getElementById('submitBtn').disabled = true;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
 
                 const text = await response.text();
-console.log('RAW RATE RESPONSE:', text);
+                console.log('RAW RATE RESPONSE:', text);
 
-const cleanText = text.trim().startsWith('{')
-    ? text
-    : text.substring(text.indexOf('{'));
+                const cleanText = text.trim().startsWith('{')
+                    ? text
+                    : text.substring(text.indexOf('{'));
 
-const result = JSON.parse(cleanText);
+                const result = JSON.parse(cleanText);
 
                 if (result.success) {
                     showMessage('Invoice Saved in Draft Successfully !', 'success');
@@ -3134,7 +3258,7 @@ const result = JSON.parse(cleanText);
                 } else {
                     showMessage('Submission failed: ' + result.message, 'error');
                     if (result.errors) {
-                        console.error( result);
+                        console.error(result);
                     }
                 }
             } catch (error) {
@@ -3163,14 +3287,14 @@ const result = JSON.parse(cleanText);
                             items[itemIndex] = {};
                         }
 
-                                                // Handle rate field specifically (extract rate_desc from JSON, fallback to rate_value)
+                        // Handle rate field specifically (extract rate_desc from JSON, fallback to rate_value)
                         if (fieldName === 'rate') {
                             if (value) {
                                 try {
                                     const rateData = JSON.parse(value);
                                     let rate;
 
-                                                                        // Use rate_desc if available, otherwise fallback to rate_value with % sign
+                                    // Use rate_desc if available, otherwise fallback to rate_value with % sign
                                     if (rateData.rate_desc && rateData.rate_desc.trim() !== '') {
                                         rate = rateData.rate_desc;
                                     } else {
@@ -3199,8 +3323,8 @@ const result = JSON.parse(cleanText);
                         }
                         // Convert other numeric fields
                         else if (['quantity', 'totalValues', 'valueSalesExcludingST', 'salesTaxApplicable',
-                             'fixedNotifiedValueOrRetailPrice', 'salesTaxWithheldAtSource', 'furtherTax',
-                             'fedPayable', 'discount'].includes(fieldName)) {
+                            'fixedNotifiedValueOrRetailPrice', 'salesTaxWithheldAtSource', 'furtherTax',
+                            'fedPayable', 'discount'].includes(fieldName)) {
                             items[itemIndex][fieldName] = parseFloat(value) || 0;
                         } else {
                             items[itemIndex][fieldName] = value;
@@ -3209,7 +3333,7 @@ const result = JSON.parse(cleanText);
                 } else {
                     // Exclude scenarioId when use_sandbox is false
                     if (key === 'scenarioId' && !userProfile.use_sandbox) {
-                      
+
                         continue;
                     }
                     obj[key] = value;
@@ -3272,26 +3396,26 @@ const result = JSON.parse(cleanText);
 
             messageEl.className = `border rounded-md p-4 ${bgColor} shadow-lg max-w-md`;
             messageEl.innerHTML = `
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 ${textColor}" viewBox="0 0 20 20" fill="currentColor">
-                            ${iconSvg}
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <p class="text-sm font-medium ${textColor}">
-                            ${message}
-                        </p>
-                    </div>
-                    <div class="ml-auto pl-3">
-                        <button onclick="this.parentElement.parentElement.remove()" class="${textColor} hover:${textColor.replace('800', '900')}">
-                            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 ${textColor}" viewBox="0 0 20 20" fill="currentColor">
+                                ${iconSvg}
                             </svg>
-                        </button>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium ${textColor}">
+                                ${message}
+                            </p>
+                        </div>
+                        <div class="ml-auto pl-3">
+                            <button onclick="this.parentElement.parentElement.remove()" class="${textColor} hover:${textColor.replace('800', '900')}">
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
 
             messagesContainer.appendChild(messageEl);
 
@@ -3303,56 +3427,56 @@ const result = JSON.parse(cleanText);
             }, 5000);
         }
         function formDataToObjectWithLabels(formData) {
-    const obj = {};
-    const items = {};
+            const obj = {};
+            const items = {};
 
-    for (let [key, value] of formData.entries()) {
-        if (key.startsWith('items[')) {
-            const matches = key.match(/items\[(\d+)\]\[([^\]]+)\]/);
-            if (matches) {
-                const itemIndex = matches[1];
-                const fieldName = matches[2];
+            for (let [key, value] of formData.entries()) {
+                if (key.startsWith('items[')) {
+                    const matches = key.match(/items\[(\d+)\]\[([^\]]+)\]/);
+                    if (matches) {
+                        const itemIndex = matches[1];
+                        const fieldName = matches[2];
 
-                if (!items[itemIndex]) items[itemIndex] = {};
+                        if (!items[itemIndex]) items[itemIndex] = {};
 
-                // Convert fields to descriptions
-                if (fieldName === 'uoM' && uoMs) {
-                    const uom = uoMs.find(u => (u.uoM_ID || u.id) == value);
-                    items[itemIndex][fieldName] = uom ? (uom.uoM_DESC || uom.description) : value;
-                } else if (fieldName === 'saleType' && transactionTypes) {
-                    const saleType = transactionTypes.find(t => t.transactioN_TYPE_ID == value);
-                    items[itemIndex][fieldName] = saleType ? saleType.transactioN_DESC : value;
-                } else if (fieldName === 'rate' && value) {
-                    try {
-                        const rateData = JSON.parse(value);
-                        items[itemIndex][fieldName] = rateData.rate_desc || (rateData.rate_value + '%');
-                    } catch {
-                        items[itemIndex][fieldName] = value;
+                        // Convert fields to descriptions
+                        if (fieldName === 'uoM' && uoMs) {
+                            const uom = uoMs.find(u => (u.uoM_ID || u.id) == value);
+                            items[itemIndex][fieldName] = uom ? (uom.uoM_DESC || uom.description) : value;
+                        } else if (fieldName === 'saleType' && transactionTypes) {
+                            const saleType = transactionTypes.find(t => t.transactioN_TYPE_ID == value);
+                            items[itemIndex][fieldName] = saleType ? saleType.transactioN_DESC : value;
+                        } else if (fieldName === 'rate' && value) {
+                            try {
+                                const rateData = JSON.parse(value);
+                                items[itemIndex][fieldName] = rateData.rate_desc || (rateData.rate_value + '%');
+                            } catch {
+                                items[itemIndex][fieldName] = value;
+                            }
+                        } else if (fieldName === 'sroScheduleNo' && sroSchedules.has(String(value))) {
+                            items[itemIndex][fieldName] = sroSchedules.get(String(value));
+                        } else if (fieldName === 'sroItemSerialNo' && sroItems.has(String(value))) {
+                            items[itemIndex][fieldName] = sroItems.get(String(value));
+                        } else {
+                            items[itemIndex][fieldName] = value;
+                        }
                     }
-                } else if (fieldName === 'sroScheduleNo' && sroSchedules.has(String(value))) {
-                    items[itemIndex][fieldName] = sroSchedules.get(String(value));
-                } else if (fieldName === 'sroItemSerialNo' && sroItems.has(String(value))) {
-                    items[itemIndex][fieldName] = sroItems.get(String(value));
                 } else {
-                    items[itemIndex][fieldName] = value;
+                    // Convert province codes to descriptions
+                    if (key === 'sellerProvince' && provinces) {
+                        const province = provinces.find(p => p.stateProvinceCode == value);
+                        obj[key] = province ? province.stateProvinceDesc : value;
+                    } else if (key === 'buyerProvince' && provinces) {
+                        const province = provinces.find(p => p.stateProvinceCode == value);
+                        obj[key] = province ? province.stateProvinceDesc : value;
+                    } else {
+                        obj[key] = value;
+                    }
                 }
             }
-        } else {
-            // Convert province codes to descriptions
-            if (key === 'sellerProvince' && provinces) {
-                const province = provinces.find(p => p.stateProvinceCode == value);
-                obj[key] = province ? province.stateProvinceDesc : value;
-            } else if (key === 'buyerProvince' && provinces) {
-                const province = provinces.find(p => p.stateProvinceCode == value);
-                obj[key] = province ? province.stateProvinceDesc : value;
-            } else {
-                obj[key] = value;
-            }
+            obj.items = Object.values(items);
+            return obj;
         }
-    }
-    obj.items = Object.values(items);
-    return obj;
-}
 
     </script>
 @endsection

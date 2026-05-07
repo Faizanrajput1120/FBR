@@ -25,9 +25,9 @@ class RedirectIfAuthenticated
 
                 // Redirect based on user role
                 if ($user) { // Assuming you have an `is_admin` field
-                    return redirect('/premiertax/admin/dashboard');
+                    return redirect('/admin/dashboard');
                 } else {
-                    return redirect('/premiertax/invoice/dashboard'); // Redirect to regular user dashboard
+                    return redirect('/invoice/dashboard'); // Redirect to regular user dashboard
                 }
             }
         }

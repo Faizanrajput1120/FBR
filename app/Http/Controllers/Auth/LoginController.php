@@ -20,7 +20,7 @@ class LoginController extends Controller
     {
         // Check if the authenticated user is an admin
         if (Auth::user()) {
-            return '/premiertax/admin/dashboard'; // Admin dashboard route
+            return '/admin/dashboard'; // Admin dashboard route
         }
 
         // Otherwise, redirect to the user dashboard
@@ -30,7 +30,7 @@ class LoginController extends Controller
         Auth::logout();
 
         // Redirect to the desired path after logout
-        return redirect('/premiertax/login'); // Change this as needed
+        return redirect('/login'); // Change this as needed
     }
 
     /**
