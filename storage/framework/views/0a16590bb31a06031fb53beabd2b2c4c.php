@@ -7,19 +7,19 @@
     <!-- Logo -->
     <a href="index.html" class="logo logo-light">
         <span class="logo-lg">
-            <img src="<?php echo e(asset('printingcell/public/assets/images/logo.png')); ?>" alt="logo">
+            <img src="<?php echo e(asset('assets/images/logo.png')); ?>" alt="logo">
         </span>
         <span class="logo-sm">
-            <img src="<?php echo e(asset('printingcell/public/assets/images/logo-sm.png')); ?>" alt="small logo">
+            <img src="<?php echo e(asset('assets/images/logo-sm.png')); ?>" alt="small logo">
         </span>
     </a>
 
     <a href="index.html" class="logo logo-dark">
         <span class="logo-lg">
-            <img src="<?php echo e(asset('printingcell/public/assets/images/logo-dark.png')); ?>" alt="dark logo">
+            <img src="<?php echo e(asset('assets/images/logo-dark.png')); ?>" alt="dark logo">
         </span>
         <span class="logo-sm">
-            <img src="<?php echo e(asset('printingcell/public/assets/images/logo-dark-sm.png')); ?>" alt="small logo">
+            <img src="<?php echo e(asset('assets/images/logo-dark-sm.png')); ?>" alt="small logo">
         </span>
     </a>
 
@@ -29,7 +29,7 @@
         <!-- User -->
         <div class="leftbar-user flex flex-col items-center justify-center py-4">
             <a href="#" class="flex flex-col items-center">
-                <img src="<?php echo e(asset('printingcell/public/assets/images/users/avatar-1.jpg')); ?>"
+                <img src="<?php echo e(asset('assets/images/users/avatar-1.jpg')); ?>"
                      class="rounded-full shadow-sm border-2 border-gray-200 mb-2 mx-auto"
                      height="52" width="52">
                 <span class="text-xs font-semibold">

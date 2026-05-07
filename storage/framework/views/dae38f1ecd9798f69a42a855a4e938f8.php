@@ -4,6 +4,7 @@
 
 <!-- Mirrored from coderthemes.com/hyper_2/modern/dashboard-analytics.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 08 Sep 2024 09:07:45 GMT -->
 <head>
+
     <meta charset="utf-8" />
     <title>Analytics Dashboard | Hyper - Responsive Bootstrap 5 Admin Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,41 +19,41 @@
     <link href="<?php echo e(asset('assets/vendor/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css')); ?>" rel="stylesheet" type="text/css" />
     <link href="<?php echo e(asset('assets/vendor/datatables.net-select-bs5/css/select.bootstrap5.min.css')); ?>" rel="stylesheet" type="text/css" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="<?php echo e(asset("printingcell/public/assets/images/favicon.ico")); ?>">
+    <link rel="shortcut icon" href="<?php echo e(asset("assets/images/favicon.ico")); ?>">
  <!-- Select2 css -->
- <link href="<?php echo e(asset("printingcell/public/assets/vendor/select2/css/select2.min.css")); ?>" rel="stylesheet" type="text/css" />
- <link href="https://erplive.net/premiertax/printingcell/public/build/assets/app.css" rel="stylesheet" type="text/css" />
- <link href="https://erplive.net/premiertax/printingcell/public/build/assets/app2.css" rel="stylesheet" type="text/css" />
+ <link href="<?php echo e(asset("assets/vendor/select2/css/select2.min.css")); ?>" rel="stylesheet" type="text/css" />
+ <link href="https://erplive.net/premiertax/public/build/assets/app.css" rel="stylesheet" type="text/css" />
+ <link href="https://erplive.net/premiertax/public/build/assets/app2.css" rel="stylesheet" type="text/css" />
   
 
  <!-- Daterangepicker css -->
- <link href="<?php echo e(asset('printingcell/public/assets/vendor/daterangepicker/daterangepicker.css')); ?>" rel="stylesheet" type="text/css" />
+ <link href="<?php echo e(asset('assets/vendor/daterangepicker/daterangepicker.css')); ?>" rel="stylesheet" type="text/css" />
 
  <!-- Bootstrap Touchspin css -->
- <link href="<?php echo e(asset('printingcell/public/assets/vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css')); ?>" rel="stylesheet" type="text/css" />
+ <link href="<?php echo e(asset('assets/vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css')); ?>" rel="stylesheet" type="text/css" />
 
  <!-- Bootstrap Datepicker css -->
- <link href="<?php echo e(asset('printingcell/public/assets/vendor/bootstrap-datepicker/css/bootstrap-datepicker.min.css')); ?>" rel="stylesheet" type="text/css" />
+ <link href="<?php echo e(asset('assets/vendor/bootstrap-datepicker/css/bootstrap-datepicker.min.css')); ?>" rel="stylesheet" type="text/css" />
 
  <!-- Bootstrap Timepicker css -->
- <link href="<?php echo e(asset('printingcell/public/assets/vendor/bootstrap-timepicker/css/bootstrap-timepicker.min.css')); ?>" rel="stylesheet" type="text/css" />
+ <link href="<?php echo e(asset('assets/vendor/bootstrap-timepicker/css/bootstrap-timepicker.min.css')); ?>" rel="stylesheet" type="text/css" />
 
  <!-- Flatpickr Timepicker css -->
- <link href="<?php echo e(asset('printingcell/public/assets/vendor/flatpickr/flatpickr.min.css')); ?>" rel="stylesheet" type="text/css" />
+ <link href="<?php echo e(asset('assets/vendor/flatpickr/flatpickr.min.css')); ?>" rel="stylesheet" type="text/css" />
 
     <!-- Plugin css -->
-    <link href="<?php echo e(asset('printingcell/public/assets/vendor/daterangepicker/daterangepicker.css')); ?>" rel="stylesheet" type="text/css">
-    <link href="<?php echo e(asset('printingcell/public/assets/vendor/jsvectormap/css/jsvectormap.min.css')); ?>" rel="stylesheet" type="text/css">
+    <link href="<?php echo e(asset('assets/vendor/daterangepicker/daterangepicker.css')); ?>" rel="stylesheet" type="text/css">
+    <link href="<?php echo e(asset('assets/vendor/jsvectormap/css/jsvectormap.min.css')); ?>" rel="stylesheet" type="text/css">
 
     <!-- Theme Config Js -->
-    <script src="<?php echo e(asset('printingcell/public/assets/js/hyper-config.js')); ?>"></script>
-    <script src="https://erplive.net/premiertax/printingcell/public/build/assets/app1.js"></script>
+    <script src="<?php echo e(asset('assets/js/hyper-config.js')); ?>"></script>
+    <script src="https://erplive.net/premiertax/public/build/assets/app1.js"></script>
 
     <!-- App css -->
-    <link href="<?php echo e(asset('printingcell/public/assets/css/app-modern.min.css')); ?>" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="<?php echo e(asset('assets/css/app-modern.min.css')); ?>" rel="stylesheet" type="text/css" id="app-style" />
 
     <!-- Icons css -->
-    <link href="<?php echo e(asset('printingcell/public/assets/css/icons.min.css')); ?>" rel="stylesheet" type="text/css" />
+    <link href="<?php echo e(asset('assets/css/icons.min.css')); ?>" rel="stylesheet" type="text/css" />
     <style>
         @media print {
             @page {
@@ -69,7 +70,6 @@
     </style>
 
 </head>
-
 <body>
     <!-- Begin page -->
     <div class="wrapper">
@@ -812,61 +812,61 @@
     <script src="<?php echo e(asset('assets/vendor/datatables.net-select/js/dataTables.select.min.js')); ?>"></script>
 
     <!-- Datatable Demo Aapp js -->
-    <script src="<?php echo e(asset('printingcell/public/assets/js/pages/demo.datatable-init.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/js/pages/demo.datatable-init.js')); ?>"></script>
     <!-- Vendor js -->
-    <script src="<?php echo e(asset('printingcell/public/assets/js/vendor.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/js/vendor.min.js')); ?>"></script>
   <!-- Code Highlight js -->
-  <script src="<?php echo e(asset('printingcell/public/assets/vendor/highlightjs/highlight.pack.min.js')); ?>"></script>
-  <script src="<?php echo e(asset('printingcell/public/assets/vendor/clipboard/clipboard.min.js')); ?>"></script>
-  <script src="<?php echo e(asset('printingcell/public/assets/js/hyper-syntax.js')); ?>"></script>
+  <script src="<?php echo e(asset('assets/vendor/highlightjs/highlight.pack.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('assets/vendor/clipboard/clipboard.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('assets/js/hyper-syntax.js')); ?>"></script>
 <!-- Include jQuery from a local file -->
-<script src="<?php echo e(asset('printingcell/public/assets/js/jquery-item.js')); ?>"></script>
-<script src="<?php echo e(asset('printingcell/public/assets/js/jquery-status.min.js')); ?>"></script>
+<script src="<?php echo e(asset('assets/js/jquery-item.js')); ?>"></script>
+<script src="<?php echo e(asset('assets/js/jquery-status.min.js')); ?>"></script>
   <!--  Select2 Plugin Js -->
-  <script src="<?php echo e(asset('printingcell/public/assets/vendor/select2/js/select2.min.js')); ?>"></script>
+  <script src="<?php echo e(asset('assets/vendor/select2/js/select2.min.js')); ?>"></script>
     <!-- Daterangepicker js -->
-    <script src="<?php echo e(asset('printingcell/public/assets/vendor/daterangepicker/moment.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('printingcell/public/assets/vendor/daterangepicker/daterangepicker.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendor/daterangepicker/moment.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendor/daterangepicker/daterangepicker.js')); ?>"></script>
 
     <!-- Charts js -->
-    <script src="<?php echo e(asset('printingcell/public/assets/vendor/chart.js/chart.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('printingcell/public/assets/vendor/apexcharts/apexcharts.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendor/chart.js/chart.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendor/apexcharts/apexcharts.min.js')); ?>"></script>
 
     <!-- Vector Map js -->
-    <script src="<?php echo e(asset('printingcell/public/assets/vendor/jsvectormap/js/jsvectormap.min.js')); ?>"></script>
-    <script src="<?php echo e(asset('printingcell/public/assets/vendor/jsvectormap/maps/world-merc.js')); ?>"></script>
-    <script src="<?php echo e(asset('printingcell/public/assets/vendor/jsvectormap/maps/world.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendor/jsvectormap/js/jsvectormap.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendor/jsvectormap/maps/world-merc.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/vendor/jsvectormap/maps/world.js')); ?>"></script>
     <!-- Analytics Dashboard App js -->
-    <script src="<?php echo e(asset('printingcell/public/assets/js/pages/demo.dashboard-analytics.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/js/pages/demo.dashboard-analytics.js')); ?>"></script>
  <!-- Bootstrap Datepicker Plugin js -->
- <script src="<?php echo e(asset('printingcell/public/assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js')); ?>"></script>
+ <script src="<?php echo e(asset('assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js')); ?>"></script>
 
  <!-- Bootstrap Timepicker Plugin js -->
- <script src="<?php echo e(asset('printingcell/public/assets/vendor/bootstrap-timepicker/js/bootstrap-timepicker.min.js')); ?>"></script>
+ <script src="<?php echo e(asset('assets/vendor/bootstrap-timepicker/js/bootstrap-timepicker.min.js')); ?>"></script>
 
  <!-- Input Mask Plugin js -->
- <script src="<?php echo e(asset('printingcell/public/assets/vendor/jquery-mask-plugin/jquery.mask.min.js')); ?>"></script>
+ <script src="<?php echo e(asset('assets/vendor/jquery-mask-plugin/jquery.mask.min.js')); ?>"></script>
 
  <!-- Bootstrap Touchspin Plugin js -->
- <script src="<?php echo e(asset('printingcell/public/assets/vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js')); ?>"></script>
+ <script src="<?php echo e(asset('assets/vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js')); ?>"></script>
 
  <!-- Bootstrap Maxlength Plugin js -->
- <script src="<?php echo e(asset('printingcell/public/assets/vendor/bootstrap-maxlength/bootstrap-maxlength.min.js')); ?>"></script>
+ <script src="<?php echo e(asset('assets/vendor/bootstrap-maxlength/bootstrap-maxlength.min.js')); ?>"></script>
 
  <!-- Typehead Plugin js -->
- <script src="<?php echo e(asset('printingcell/public/assets/vendor/handlebars/handlebars.min.js')); ?>"></script>
- <script src="<?php echo e(asset('printingcell/public/assets/vendor/typeahead.js/typeahead.bundle.min.js')); ?>"></script>
+ <script src="<?php echo e(asset('assets/vendor/handlebars/handlebars.min.js')); ?>"></script>
+ <script src="<?php echo e(asset('assets/vendor/typeahead.js/typeahead.bundle.min.js')); ?>"></script>
 
  <!-- Flatpickr Timepicker Plugin js -->
- <script src="<?php echo e(asset('printingcell/public/assets/vendor/flatpickr/flatpickr.min.js')); ?>"></script>
+ <script src="<?php echo e(asset('assets/vendor/flatpickr/flatpickr.min.js')); ?>"></script>
 
  <!-- Typehead Demo js -->
- <script src="<?php echo e(asset('printingcell/public/assets/js/pages/demo.typehead.js')); ?>"></script>
+ <script src="<?php echo e(asset('assets/js/pages/demo.typehead.js')); ?>"></script>
 
  <!-- Timepicker Demo js -->
- <script src="<?php echo e(asset('printingcell/public/assets/js/pages/demo.timepicker.js')); ?>"></script>
+ <script src="<?php echo e(asset('assets/js/pages/demo.timepicker.js')); ?>"></script>
     <!-- App js -->
-    <script src="<?php echo e(asset('printingcell/public/assets/js/app.min.js')); ?>"></script>
+    <script src="<?php echo e(asset('assets/js/app.min.js')); ?>"></script>
 
 </body>
 

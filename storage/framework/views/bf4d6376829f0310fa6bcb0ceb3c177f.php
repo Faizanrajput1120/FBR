@@ -7,20 +7,20 @@
                 <!-- Logo light -->
                 <a href="index.html" class="logo-light">
                     <span class="logo-lg">
-                        <img src="<?php echo e(asset('printingcell/public/assets/images/logo.png')); ?>" alt="logo">
+                        <img src="<?php echo e(asset('assets/images/logo.png')); ?>" alt="logo">
                     </span>
                     <span class="logo-sm">
-                        <img src="<?php echo e(asset('printingcell/public/assets/images/logo-sm.png')); ?>" alt="small logo">
+                        <img src="<?php echo e(asset('assets/images/logo-sm.png')); ?>" alt="small logo">
                     </span>
                 </a>
 
                 <!-- Logo Dark -->
                 <a href="index.html" class="logo-dark">
                     <span class="logo-lg">
-                        <img src="<?php echo e(asset('printingcell/public/assets/images/logo-dark.png')); ?>" alt="dark logo">
+                        <img src="<?php echo e(asset('assets/images/logo-dark.png')); ?>" alt="dark logo">
                     </span>
                     <span class="logo-sm">
-                        <img src="<?php echo e(asset('printingcell/public/assets/images/logo-dark-sm.png')); ?>" alt="small logo">
+                        <img src="<?php echo e(asset('assets/images/logo-dark-sm.png')); ?>" alt="small logo">
                     </span>
                 </a>
             </div>
@@ -82,7 +82,7 @@
                         <!-- item-->
                         <a href="javascript:void(0);" class="dropdown-item notify-item">
                             <div class="d-flex">
-                                <img class="d-flex me-2 rounded-circle" src="<?php echo e(asset('printingcell/public/assets/images/users/avatar-2.jpg')); ?>" alt="Generic placeholder image" height="32">
+                                <img class="d-flex me-2 rounded-circle" src="<?php echo e(asset('assets/images/users/avatar-2.jpg')); ?>" alt="Generic placeholder image" height="32">
                                 <div class="w-100">
                                     <h5 class="m-0 font-14">Erwin Brown</h5>
                                     <span class="font-12 mb-0">UI Designer</span>
@@ -93,7 +93,7 @@
                         <!-- item-->
                         <a href="javascript:void(0);" class="dropdown-item notify-item">
                             <div class="d-flex">
-                                <img class="d-flex me-2 rounded-circle" src="<?php echo e(asset('printingcell/public/assets/images/users/avatar-5.jpg')); ?>" alt="Generic placeholder image" height="32">
+                                <img class="d-flex me-2 rounded-circle" src="<?php echo e(asset('assets/images/users/avatar-5.jpg')); ?>" alt="Generic placeholder image" height="32">
                                 <div class="w-100">
                                     <h5 class="m-0 font-14">Jacob Deo</h5>
                                     <span class="font-12 mb-0">Developer</span>
@@ -207,7 +207,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
                                         <div class="notify-icon">
-                                            <img src="<?php echo e(asset('printingcell/public/assets/images/users/avatar-2.jpg')); ?>" class="img-fluid rounded-circle" alt="" />
+                                            <img src="<?php echo e(asset('assets/images/users/avatar-2.jpg')); ?>" class="img-fluid rounded-circle" alt="" />
                                         </div>
                                     </div>
                                     <div class="flex-grow-1 text-truncate ms-2">
@@ -245,7 +245,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0">
                                         <div class="notify-icon">
-                                            <img src="<?php echo e(asset('printingcell/public/assets/images/users/avatar-4.jpg')); ?>" class="img-fluid rounded-circle" alt="" />
+                                            <img src="<?php echo e(asset('assets/images/users/avatar-4.jpg')); ?>" class="img-fluid rounded-circle" alt="" />
                                         </div>
                                     </div>
                                     <div class="flex-grow-1 text-truncate ms-2">
@@ -279,19 +279,19 @@
                         <div class="row g-0">
                             <div class="col">
                                 <a class="dropdown-icon-item" href="#">
-                                    <img src="<?php echo e(asset('printingcell/public/assets/images/brands/slack.png')); ?>" alt="slack">
+                                    <img src="<?php echo e(asset('assets/images/brands/slack.png')); ?>" alt="slack">
                                     <span>Slack</span>
                                 </a>
                             </div>
                             <div class="col">
                                 <a class="dropdown-icon-item" href="#">
-                                    <img src="<?php echo e(asset('printingcell/public/assets/images/brands/github.png')); ?>" alt="Github">
+                                    <img src="<?php echo e(asset('assets/images/brands/github.png')); ?>" alt="Github">
                                     <span>GitHub</span>
                                 </a>
                             </div>
                             <div class="col">
                                 <a class="dropdown-icon-item" href="#">
-                                    <img src="<?php echo e(asset('printingcell/public/assets/images/brands/dribbble.png')); ?>" alt="dribbble">
+                                    <img src="<?php echo e(asset('assets/images/brands/dribbble.png')); ?>" alt="dribbble">
                                     <span>Dribbble</span>
                                 </a>
                             </div>
@@ -300,19 +300,19 @@
                         <div class="row g-0">
                             <div class="col">
                                 <a class="dropdown-icon-item" href="#">
-                                    <img src="<?php echo e(asset('printingcell/public/assets/images/brands/bitbucket.png')); ?>" alt="bitbucket">
+                                    <img src="<?php echo e(asset('assets/images/brands/bitbucket.png')); ?>" alt="bitbucket">
                                     <span>Bitbucket</span>
                                 </a>
                             </div>
                             <div class="col">
                                 <a class="dropdown-icon-item" href="#">
-                                    <img src="<?php echo e(asset('printingcell/public/assets/images/brands/dropbox.png')); ?>" alt="dropbox">
+                                    <img src="<?php echo e(asset('assets/images/brands/dropbox.png')); ?>" alt="dropbox">
                                     <span>Dropbox</span>
                                 </a>
                             </div>
                             <div class="col">
                                 <a class="dropdown-icon-item" href="#">
-                                    <img src="<?php echo e(asset('printingcell/public/assets/images/brands/g-suite.png')); ?>" alt="G Suite">
+                                    <img src="<?php echo e(asset('assets/images/brands/g-suite.png')); ?>" alt="G Suite">
                                     <span>G Suite</span>
                                 </a>
                             </div>
