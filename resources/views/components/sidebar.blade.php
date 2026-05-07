@@ -75,12 +75,15 @@
                             <li>
                                 <a href="{{ route('drafts.index') }}">Draft Invoice</a>
                             </li>
+                            <li>
+                                <a href="{{ route('custommer.index') }}">Customer List</a>
+                            </li>
+                            <li>
+                                <a href="{{ route('premiertax.sale.buyer-summary') }}">Buyer Summary Report</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
-
-        
-
 
             {{-- USER MENU --}}
             @elseif ($user?->is_admin == 3)
@@ -95,9 +98,6 @@
                         <ul class="side-nav-second-level">
                             <li>
                                 <a href="{{ route('premiertax.companies.index') }}">Company</a>
-                            </li>
-                            <li>
-                                <a href="{{ route('users.index') }}">Users</a>
                             </li>
                         </ul>
                     </div>

@@ -46,6 +46,7 @@ class ReportController extends Controller
     public function SaleReport(Request $request)
 {
     $query = SaleInvoiceFbr::query();
+    $query->where('cid',auth()->user()->c_id);
     $user=Auth::user();
     // Apply date filters
     if ($request->filled('start_date')) {
@@ -65,6 +66,7 @@ class ReportController extends Controller
     $salesInvoices = $query->where( 'cid',$user->c_id)->get();
 
 $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)
+    ->whereNotNull('fbr_invoice_no')
     ->distinct()
     ->pluck('fbr_invoice_no');
 

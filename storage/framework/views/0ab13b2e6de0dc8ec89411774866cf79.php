@@ -21,8 +21,8 @@
     <link rel="shortcut icon" href="<?php echo e(asset("printingcell/public/assets/images/favicon.ico")); ?>">
  <!-- Select2 css -->
  <link href="<?php echo e(asset("printingcell/public/assets/vendor/select2/css/select2.min.css")); ?>" rel="stylesheet" type="text/css" />
- <link href="https://erplive.net/premiertax/printingcell/public/build/assets/app.css" rel="stylesheet" type="text/css" />
- <link href="https://erplive.net/premiertax/printingcell/public/build/assets/app2.css" rel="stylesheet" type="text/css" />
+ <link href="<?php echo e(asset('printingcell/public/build/assets/app.css')); ?>" rel="stylesheet" type="text/css" />
+ <link href="<?php echo e(asset('printingcell/public/build/assets/app2.css')); ?>" rel="stylesheet" type="text/css" />
   
 
  <!-- Daterangepicker css -->
@@ -46,7 +46,7 @@
 
     <!-- Theme Config Js -->
     <script src="<?php echo e(asset('printingcell/public/assets/js/hyper-config.js')); ?>"></script>
-    <script src="https://erplive.net/premiertax/printingcell/public/build/assets/app1.js"></script>
+    <script src="<?php echo e(asset('printingcell/public/build/assets/app1.js')); ?>"></script>
 
     <!-- App css -->
     <link href="<?php echo e(asset('printingcell/public/assets/css/app-modern.min.css')); ?>" rel="stylesheet" type="text/css" id="app-style" />
@@ -867,10 +867,11 @@
  <script src="<?php echo e(asset('printingcell/public/assets/js/pages/demo.timepicker.js')); ?>"></script>
     <!-- App js -->
     <script src="<?php echo e(asset('printingcell/public/assets/js/app.min.js')); ?>"></script>
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 
 </body>
 
 
 <!-- Mirrored from coderthemes.com/hyper_2/modern/dashboard-analytics.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 08 Sep 2024 09:07:46 GMT -->
 </html>
-<?php /**PATH /home/erplive/public_html/premiertax/resources/views/layouts/condition.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\Shahan Developer\FBR\FBR\resources\views/layouts/condition.blade.php ENDPATH**/ ?>

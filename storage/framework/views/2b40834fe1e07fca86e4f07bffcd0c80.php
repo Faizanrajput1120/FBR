@@ -16,4 +16,4 @@
     </div>
 </footer>
 <!-- end Footer -->
-<?php /**PATH /home/erplive/public_html/premiertax/resources/views/components/footer.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\Shahan Developer\FBR\FBR\resources\views/components/footer.blade.php ENDPATH**/ ?>

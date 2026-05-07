@@ -76,12 +76,15 @@
                             <li>
                                 <a href="<?php echo e(route('drafts.index')); ?>">Draft Invoice</a>
                             </li>
+                            <li>
+                                <a href="<?php echo e(route('custommer.index')); ?>">Customer List</a>
+                            </li>
+                            <li>
+                                <a href="<?php echo e(route('premiertax.sale.buyer-summary')); ?>">Buyer Summary Report</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
-
-        
-
 
             
             <?php elseif($user?->is_admin == 3): ?>
@@ -97,9 +100,6 @@
                             <li>
                                 <a href="<?php echo e(route('premiertax.companies.index')); ?>">Company</a>
                             </li>
-                            <li>
-                                <a href="<?php echo e(route('users.index')); ?>">Users</a>
-                            </li>
                         </ul>
                     </div>
                 </li>
@@ -108,4 +108,4 @@
 
         </ul>
     </div>
-</div><?php /**PATH /home/erplive/public_html/premiertax/resources/views/components/sidebar.blade.php ENDPATH**/ ?>
+</div><?php /**PATH C:\Users\Shahan Developer\FBR\FBR\resources\views/components/sidebar.blade.php ENDPATH**/ ?>

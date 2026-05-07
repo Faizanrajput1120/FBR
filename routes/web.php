@@ -226,6 +226,8 @@ Route::get('premiertax/purchase/invoice/{id}', [PurchaseDetail::class, 'invoice'
      ->name('premiertax.purchase.invoice');
 Route::get('premiertax/sale/invoice/{id}', [SaleDetails::class, 'invoice'])
      ->name('premiertax.sale.invoice');
+Route::post('premiertax/sale/print-multiple', [SaleDetails::class, 'printMultiple'])
+     ->name('premiertax.sale.print-multiple');
 Route::get('/premiertax/create-storage-link', [StorageLinkController::class, 'createLink']);
 
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -832,6 +834,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/premiertax/corrugation_purchase/{v_no}/updateBoxboard', [CorrugationPurchaseController::class, 'updateBoxboard'])->name('corrugation_purchase.updateBoxboard');
     // Data Backup 
 Route::resource('premiertax/sales', SaleDetails::class)->names('premiertax.sales');
+Route::get('premiertax/sale/buyer-summary', [SaleDetails::class, 'buyerSummary'])->name('premiertax.sale.buyer-summary');
 Route::resource('premiertax/purchase', PurchaseDetail::class)->names('premiertax.purchase');
 Route::resource('premiertax/Units', ItemUnit::class)->names('unit');
     Route::resource('premiertax/data-backup', Backup::class );

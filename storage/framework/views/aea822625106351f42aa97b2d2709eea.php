@@ -32,4 +32,4 @@
         </div>
     </body>
 </html>
-<?php /**PATH /home/erplive/public_html/premiertax/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/views/minimal.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\Shahan Developer\FBR\FBR\vendor\laravel\framework\src\Illuminate\Foundation\Exceptions/views/minimal.blade.php ENDPATH**/ ?>

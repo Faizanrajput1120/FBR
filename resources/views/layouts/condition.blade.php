@@ -21,8 +21,8 @@
     <link rel="shortcut icon" href="{{asset("printingcell/public/assets/images/favicon.ico")}}">
  <!-- Select2 css -->
  <link href="{{asset("printingcell/public/assets/vendor/select2/css/select2.min.css")}}" rel="stylesheet" type="text/css" />
- <link href="https://erplive.net/premiertax/printingcell/public/build/assets/app.css" rel="stylesheet" type="text/css" />
- <link href="https://erplive.net/premiertax/printingcell/public/build/assets/app2.css" rel="stylesheet" type="text/css" />
+ <link href="{{asset('printingcell/public/build/assets/app.css')}}" rel="stylesheet" type="text/css" />
+ <link href="{{asset('printingcell/public/build/assets/app2.css')}}" rel="stylesheet" type="text/css" />
   
 
  <!-- Daterangepicker css -->
@@ -46,7 +46,7 @@
 
     <!-- Theme Config Js -->
     <script src="{{asset('printingcell/public/assets/js/hyper-config.js')}}"></script>
-    <script src="https://erplive.net/premiertax/printingcell/public/build/assets/app1.js"></script>
+    <script src="{{asset('printingcell/public/build/assets/app1.js')}}"></script>
 
     <!-- App css -->
     <link href="{{asset('printingcell/public/assets/css/app-modern.min.css')}}" rel="stylesheet" type="text/css" id="app-style" />
@@ -867,6 +867,7 @@
  <script src="{{asset('printingcell/public/assets/js/pages/demo.timepicker.js')}}"></script>
     <!-- App js -->
     <script src="{{asset('printingcell/public/assets/js/app.min.js')}}"></script>
+    @stack('scripts')
 
 </body>
 

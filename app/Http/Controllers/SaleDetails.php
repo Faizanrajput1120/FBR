@@ -27,9 +27,22 @@ class SaleDetails extends Controller
 public function invoice($id)
 {
     // dd("WORKING");
-       $invoice = SaleInvoiceFbr::findOrFail($id);
+       $invoice = SaleInvoiceFbr::where('cid', Auth::user()->c_id)->findOrFail($id);
+
     return view('SaleInvoice.invoice', compact('invoice'));
 
+}
+
+public function printMultiple(Request $request)
+{
+    $request->validate([
+        'invoice_ids' => 'required|array',
+        'invoice_ids.*' => 'exists:sale_invoice_fbr,id',
+    ]);
+
+    $invoices = SaleInvoiceFbr::where('cid', Auth::user()->c_id)->whereIn('id', $request->invoice_ids)->get();
+
+    return view('SaleInvoice.print_multiple', compact('invoices'));
 }
     
 public function index(Request $request)
@@ -49,13 +62,21 @@ public function index(Request $request)
         $query->where('fbr_invoice_no', $request->bill_no);
     }
 
-    // You might also want to filter by party_id here, depending on your DB
+    // Apply client filter
+    if ($request->filled('client_name')) {
+        $query->where('buyer_business_name', 'like', '%' . $request->client_name . '%');
+    }
+
+    // Apply item filter (search in JSON items)
+    if ($request->filled('item_name')) {
+        $query->where('items', 'like', '%' . $request->item_name . '%');
+    }
 
     $salesInvoices = $query->where('cid',auth()->user()->c_id)->get();
 
-    // Pass the filtered results + data for dropdowns (e.g., availableBillNumbers, parties)
-    $availableBillNumbers = SaleInvoiceFbr::distinct()->pluck('fbr_invoice_no');
-    $parties = Party::all(); // adjust Party model name
+    // Pass the filtered results + data for dropdowns
+    $availableBillNumbers = SaleInvoiceFbr::where('cid', auth()->user()->c_id)->whereNotNull('fbr_invoice_no')->distinct()->pluck('fbr_invoice_no');
+    $parties = Party::all();
 
     return view('SaleInvoice.index', compact('salesInvoices', 'availableBillNumbers', 'parties'));
 }
@@ -98,8 +119,8 @@ public function index(Request $request)
     $cashId = $request->s_account;
     $preparedBy = auth()->user()->name;
 
-    $vno = SalesInvoice::max('v_no') + 1;
-    $bill = SalesInvoice::max('bill_no') + 1;
+    $vno = SalesInvoice::where('c_id', $userCId)->max('v_no') + 1;
+    $bill = SalesInvoice::where('c_id', $userCId)->max('bill_no') + 1;
     $totalCredit = 0;
 
    foreach ($entries as $entry) {
@@ -195,15 +216,19 @@ public function index(Request $request)
 
     try {
         // Find all sales entries with this bill_no
-        $sales = SalesInvoice::where('bill_no', $billNo)->get();
+        $sales = SalesInvoice::where('bill_no', $billNo)
+                             ->where('c_id', Auth::user()->c_id)
+                             ->get();
         
         // Delete related TRNDTL entries for each sale
         foreach ($sales as $sale) {
             TRNDTL::where('r_id', $sale->id)->delete();
         }
         
-        // Delete all sales entries with this bill_no
-        SalesInvoice::where('bill_no', $billNo)->delete();
+        // Delete all sales entries with this bill_no for this company
+        SalesInvoice::where('bill_no', $billNo)
+                    ->where('c_id', Auth::user()->c_id)
+                    ->delete();
         
         // Commit the transaction if all operations succeed
         DB::commit();
@@ -216,7 +241,85 @@ public function index(Request $request)
         DB::rollBack();
         
         return redirect()->back()
-               ->with('error', 'Failed to delete invoice: ' . $e->getMessage());
+                ->with('error', 'Failed to delete invoice: ' . $e->getMessage());
     }
 }
+
+    public function buyerSummary(Request $request)
+    {
+        $user = Auth::user();
+        $query = SaleInvoiceFbr::where('cid', $user->c_id);
+
+        $buyers = $query->select('buyer_business_name')
+            ->distinct()
+            ->whereNotNull('buyer_business_name')
+            ->orderBy('buyer_business_name')
+            ->pluck('buyer_business_name');
+
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+        $selectedBuyer = $request->buyer_name;
+        $rows = collect();
+        $totals = [
+            'quantity' => 0,
+            'valueExcl' => 0,
+            'salesTax' => 0,
+            'furtherTax' => 0,
+            'valueIncl' => 0,
+        ];
+
+        if ($selectedBuyer) {
+            $invoiceQuery = SaleInvoiceFbr::where('cid', $user->c_id)
+                ->where('buyer_business_name', $selectedBuyer);
+
+            if ($startDate) {
+                $invoiceQuery->whereDate('invoice_date', '>=', $startDate);
+            }
+            if ($endDate) {
+                $invoiceQuery->whereDate('invoice_date', '<=', $endDate);
+            }
+
+            $invoices = $invoiceQuery->orderBy('invoice_date', 'desc')->get();
+
+            foreach ($invoices as $invoice) {
+                $items = is_string($invoice->items) ? json_decode($invoice->items, true) : ($invoice->items ?? []);
+                foreach ($items as $item) {
+                    $itemArray = is_array($item) ? $item : (array) $item;
+                    $qty = floatval($itemArray['quantity'] ?? 0);
+                    $valueExcl = floatval($itemArray['valueSalesExcludingST'] ?? 0);
+                    $salesTax = floatval($itemArray['salesTaxApplicable'] ?? 0);
+                    $furtherTax = floatval($itemArray['furtherTax'] ?? 0);
+                    $unitPrice = $qty > 0 ? $valueExcl / $qty : 0;
+                    $valueIncl = $valueExcl + $salesTax + $furtherTax;
+
+                    $rows->push([
+                        'invoice_date' => $invoice->invoice_date,
+                        'invoice_ref_no' => $invoice->invoice_ref_no,
+                        'fbr_invoice_no' => $invoice->fbr_invoice_no,
+                        'buyer_name' => $invoice->buyer_business_name,
+                        'buyer_ntn' => $invoice->buyer_ntn_cnic,
+                        'item_name' => $itemArray['product_description'] ?? $itemArray['productDescription'] ?? '-',
+                        'hs_code' => $itemArray['hsCode'] ?? '-',
+                        'quantity' => $qty,
+                        'unit_price' => $unitPrice,
+                        'value_excl' => $valueExcl,
+                        'sales_tax_rate' => $itemArray['rate'] ?? '-',
+                        'sales_tax' => $salesTax,
+                        'further_tax' => $furtherTax,
+                        'value_incl' => $valueIncl,
+                    ]);
+
+                    $totals['quantity'] += $qty;
+                    $totals['valueExcl'] += $valueExcl;
+                    $totals['salesTax'] += $salesTax;
+                    $totals['furtherTax'] += $furtherTax;
+                    $totals['valueIncl'] += $valueIncl;
+                }
+            }
+        }
+
+        return view('SaleInvoice.buyer_summary', compact(
+            'user', 'buyers', 'selectedBuyer', 'startDate', 'endDate', 'rows', 'totals'
+        ));
+    }
 }
