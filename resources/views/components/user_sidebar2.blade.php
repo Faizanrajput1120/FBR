@@ -9,20 +9,20 @@
     <!-- Brand Logo Light -->
     <a href="index.html" class="logo logo-light">
         <span class="logo-lg">
-            <img src="{{ asset('printingcell/public/assets/images/logo.png') }}" alt="logo">
+            <img src="{{ asset('assets/images/logo.png') }}" alt="logo">
         </span>
         <span class="logo-sm">
-            <img src="{{ asset('printingcell/public/assets/images/logo-sm.png') }}" alt="small logo">
+            <img src="{{ asset('assets/images/logo-sm.png') }}" alt="small logo">
         </span>
     </a>
 
     <!-- Brand Logo Dark -->
     <a href="index.html" class="logo logo-dark">
         <span class="logo-lg">
-            <img src="{{ asset('printingcell/public/assets/images/logo-dark.png') }}" alt="dark logo">
+            <img src="{{ asset('assets/images/logo-dark.png') }}" alt="dark logo">
         </span>
         <span class="logo-sm">
-            <img src="{{ asset('printingcell/public/assets/images/logo-dark-sm.png') }}" alt="small logo">
+            <img src="{{ asset('assets/images/logo-dark-sm.png') }}" alt="small logo">
         </span>
     </a>
 
@@ -41,7 +41,7 @@
         <!-- Leftbar User -->
         <div class="leftbar-user">
             <a href="pages-profile.html">
-                <img src="{{ asset('printingcell/public/assets/images/users/avatar-1.jpg') }}" alt="user-image"
+                <img src="{{ asset('assets/images/users/avatar-1.jpg') }}" alt="user-image"
                     height="42" class="rounded-circle shadow-sm">
                 <span class="leftbar-user-name mt-2">Faizan Keller</span>
                 <h1>Faizan</h1>

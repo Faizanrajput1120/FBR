@@ -1892,12 +1892,42 @@ const result = JSON.parse(cleanText);
             }
 
         }
-     
+     $('#modalHsCode').on('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const hsCode = selectedOption.value;
+    const fullDescription = selectedOption.textContent;
+    
+    // Remove the HS code prefix if needed
+    const descriptionOnly = fullDescription.replace(hsCode + ' - ', '');
+    
+    console.log('HS Code:', hsCode);
+    console.log('Full description:', fullDescription);
+    console.log('Description only:', descriptionOnly);
+    
+    // Use the description as needed
+    // e.g., populate another field, store in variable, etc.
+});
 
         // Fetch UOM based on HS code with caching
         async function fetchUomByHsCode(hsCodeSelect, skipCacheCheck = false) {
             let uomSelect;
+            console.log("Triger DONE Softix")
+            console.log(hsCodeSelect)
+            const firstOption = hsCodeSelect.options[1];
 
+console.log("DONE ITEM DONE"); // 6909.1200
+console.log(firstOption.text);  // Full text
+const fullText = firstOption.text;
+
+// Split by " - " and remove the first part (the code)
+const parts = fullText.split(' - ');
+parts.shift(); // Remove the first element (HS code)
+const description = parts.join(' - ');
+
+console.log(description);
+$('#modalProductDescription').val(description);
+
+// Output: "GLASS AND GLASSWARE. - GLASS FIBRES (INCLUDING GLASS WOOL) AND ARTICLES THEREOF (FOR EXAMPLE, YEARN, WOVEN FABRICS). - OPEN WOVEN FABRICS OF A WIDTH NOT EXCEEDING 30 CM"
             // Check if we're in the modal context
             if (hsCodeSelect.id === 'modalHsCode') {
                 uomSelect = document.getElementById('modalUoM');
@@ -1912,7 +1942,6 @@ const result = JSON.parse(cleanText);
             if (!hsCode) {
                 // Reset UOM select when HS code is cleared
                 if (uomSelect) {
-                    uomSelect.innerHTML = '<option value="">Select Unit of Measure</option>';
                     $(uomSelect).val('').trigger('change');
                     uomSelect.classList.remove('bg-green-50', 'bg-blue-50', 'bg-yellow-50', 'bg-red-50');
                     uomSelect.classList.add('bg-gray-50');
@@ -1953,7 +1982,7 @@ const result = JSON.parse(cleanText);
                 });
 
                 const text = await response.text();
-console.log('RAW RATE RESPONSE:', text);
+                console.log('RAW RATE RESPONSE:', text);
 
 const cleanText = text.trim().startsWith('{')
     ? text
@@ -2011,47 +2040,70 @@ const result = JSON.parse(cleanText);
         }
 
         // Helper function to populate UOM select
-        function populateUomSelect(uomSelect, uomData, hsCode, fallback = false) {
-            if (!uomSelect || !uomData || uomData.length === 0) {
-                return;
-            }
+function populateUomSelect(uomSelect, uomData, hsCode, fallback = false) {
+    if (!uomSelect || !uomData || uomData.length === 0) {
+        return;
+    }
 
-            uomSelect.innerHTML = '<option value="">Select Unit of Measure</option>';
-
-            uomData.forEach(uom => {
-                const uomId = uom.uoM_ID || uom.id;
-                const uomDesc = uom.uoM_DESC || uom.description;
-
-                if (uomId && uomDesc) {
-                    const option = document.createElement('option');
-                    option.value = uomId;
-                    option.textContent = uomDesc;
-                    uomSelect.appendChild(option);
-                }
-            });
-
-            // Visual feedback and enable the select
-            uomSelect.classList.remove('bg-blue-50', 'bg-gray-50');
-            uomSelect.classList.add('bg-green-50');
-            uomSelect.title = `${uomData.length} UOM option(s) available for HS Code: ${hsCode}`;
-            uomSelect.disabled = false;
-
-            // Show fallback message if applicable
-            if (fallback) {
-                uomSelect.title += ' (using general UOM options)';
-            }
-
-            // Re-initialize Select2 for the updated UOM select
-            $(uomSelect).select2('destroy').select2({
-                placeholder: 'Select Unit of Measure',
-                allowClear: true,
-                width: 'resolve',
-                
-                dropdownParent: uomSelect.closest('#addItemModal') ? $('#addItemModal') : $('body')
-            });
+    // Clear all existing options
+    uomSelect.innerHTML = '';
+    
+    // Use a Set to track unique UOM values and prevent duplicates
+    const uniqueUoms = new Map();
+    
+    uomData.forEach(uom => {
+        const uomId = uom.uoM_ID || uom.id;
+        const uomDesc = uom.uoM_DESC || uom.description;
+        
+        if (uomId && uomDesc && !uniqueUoms.has(uomId)) {
+            uniqueUoms.set(uomId, uomDesc);
         }
+    });
+    
+    // Add unique options to select
+    uniqueUoms.forEach((desc, id) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = desc;
+        uomSelect.appendChild(option);
+    });
 
-        // Fetch SRO Schedule based on rate ID, date, and province
+    // Visual feedback and enable the select
+    uomSelect.classList.remove('bg-blue-50', 'bg-gray-50');
+    uomSelect.classList.add('bg-green-50');
+    uomSelect.title = `${uniqueUoms.size} UOM option(s) available for HS Code: ${hsCode}`;
+    uomSelect.disabled = false;
+
+    // Show fallback message if applicable
+    if (fallback) {
+        uomSelect.title += ' (using general UOM options)';
+    }
+
+    // Destroy existing Select2 completely
+    if ($(uomSelect).data('select2')) {
+        $(uomSelect).select2('destroy');
+    }
+    
+    // Remove the hidden-accessible class and any select2 attributes
+    $(uomSelect).removeClass('select2-hidden-accessible');
+    $(uomSelect).removeAttr('data-select2-id');
+    $(uomSelect).removeAttr('tabindex');
+    $(uomSelect).removeAttr('aria-hidden');
+    
+    // Re-initialize Select2
+    $(uomSelect).select2({
+        placeholder: 'Select Unit of Measure',
+        allowClear: true,
+        width: 'resolve',
+        dropdownParent: uomSelect.closest('#addItemModal') ? $('#addItemModal') : $('body')
+    });
+    
+    // Auto-select the first option
+    if (uomSelect.options.length > 0) {
+        $(uomSelect).val(uomSelect.options[0].value).trigger('change');
+    }
+}
+// Fetch SRO Schedule based on rate ID, date, and province
         async function fetchSroSchedule(rateId, date, provinceCode, itemContainer) {
             try {
                
@@ -2957,7 +3009,14 @@ const result = JSON.parse(cleanText);
                     body: JSON.stringify(data) // Send original data with IDs, not converted labels
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success) {
                     showMessage('Invoice validation successful!', 'success');
@@ -2996,7 +3055,14 @@ const result = JSON.parse(cleanText);
             body: JSON.stringify(data)
         });
 
-                const result = await response.json();
+               const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success) {
                     showMessage('Invoice submitted successfully to FBR!', 'success');
@@ -3048,7 +3114,14 @@ const result = JSON.parse(cleanText);
             body: JSON.stringify(data)
         });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success) {
                     showMessage('Invoice Saved in Draft Successfully !', 'success');

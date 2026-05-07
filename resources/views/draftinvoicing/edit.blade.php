@@ -556,7 +556,14 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
                 console.log('Document Types API response:', result);
 
                 if (result.success && result.data && Array.isArray(result.data)) {
@@ -738,7 +745,14 @@
                     body: JSON.stringify(data)
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success) {
                     showMessage('Draft saved successfully!', 'success');
@@ -784,7 +798,14 @@
             body: JSON.stringify(data)
         });
 
-        const result = await response.json();
+const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
         if (result.success) {
             showMessage('Invoice submitted successfully to FBR!', 'success');
@@ -1381,7 +1402,14 @@
                     })
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success && result.data && result.data.length > 0) {
                     // Populate UOM dropdown
@@ -1461,7 +1489,14 @@
                     })
                 });
 
-                const result = await response.json();
+                const text = await response.text();
+console.log('RAW RATE RESPONSE:', text);
+
+const cleanText = text.trim().startsWith('{')
+    ? text
+    : text.substring(text.indexOf('{'));
+
+const result = JSON.parse(cleanText);
 
                 if (result.success && result.data && result.data.length > 0) {
                     if (rateSelect) {

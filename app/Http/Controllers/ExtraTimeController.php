@@ -56,8 +56,11 @@ public function edit($id)
 public function update(Request $request, $id)
 {
   
+   
+
+   
     $printSection = ExtraTime::findOrFail($id);
-    $printSection->name = $request->type_title;
+    $printSection->title = $request->title;
     $printSection->rate = $request->rate;
     $printSection->save();
 

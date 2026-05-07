@@ -1305,8 +1305,7 @@ $result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $i
         $limit = min((int) $request->query('limit', 10), 50);
 
         try {
-            $query = Buyer;
-
+$query = \App\Models\Buyer::query();
             if (!empty($search)) {
                 $query->search($search);
             }
