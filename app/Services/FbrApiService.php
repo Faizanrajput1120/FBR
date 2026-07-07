@@ -76,13 +76,13 @@ class FbrApiService
             ]);
             $response = Http::timeout(config('fbr.timeout', 30))
                 ->connectTimeout(config('fbr.connect_timeout', 10))
+                ->asJson()
                 ->withHeaders([
-    'Authorization' => 'Bearer ' . $accessToken,
-    'Accept' => 'application/json',
-    'Accept-Encoding' => 'gzip, deflate, br',
-])->post($apiUrl, $invoiceData);
+                    'Authorization' => 'Bearer ' . $accessToken,
+                    'Accept' => 'application/json',
+                    'Accept-Encoding' => 'gzip, deflate, br',
+                ])->post($apiUrl, $invoiceData);
 
-            
             return $this->handleResponse($response, $apiUrl, $accessToken);
         } catch (Exception $e) {
             Log::error('FBR API Error in postInvoiceData: ' . $e->getMessage());
@@ -123,10 +123,10 @@ class FbrApiService
 
             $response = Http::timeout(config('fbr.timeout', 30))
                 ->connectTimeout(config('fbr.connect_timeout', 10))
+                ->asJson()
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $accessToken,
                     'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
                 ])->post($apiUrl, $invoiceData);
 
             return $this->handleResponse($response, $apiUrl, $accessToken);

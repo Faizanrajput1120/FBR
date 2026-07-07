@@ -101,8 +101,7 @@
                 </div>
 
                 <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" name="use_sandbox" value="0" id="use_sandbox" checked>
-                    <input class="form-check-input" type="checkbox" name="use_sandbox" value="1" id="use_sandbox" checked>
+                    <input class="form-check-input" type="checkbox" name="use_sandbox" value="1" id="use_sandbox">
                     <label class="form-check-label" for="use_sandbox">
                         Use Sandbox
                     </label>
@@ -111,6 +110,10 @@
                 <button type="submit" class="btn btn-primary w-100">
                     Save User
                 </button>
+
+                <a href="{{ route('users.index') }}" class="btn btn-secondary w-100 mt-2">
+                    Cancel
+                </a>
 
             </form>
         </div>

@@ -117,6 +117,9 @@ class InvoicingController extends Controller
         // Get invoice data
      $invoiceData = $request->all();
 
+        // Remove non-FBR fields that leak from the form
+    unset($invoiceData['_token'], $invoiceData['furtherexpense']);
+
     // Clean sellerAddress if it exists
     if (!empty($invoiceData['sellerAddress'])) {
         $invoiceData['sellerAddress'] = $this->cleanAddress($invoiceData['sellerAddress']);
@@ -129,9 +132,9 @@ class InvoicingController extends Controller
 
 foreach ($invoiceData['items'] as &$item) {
 
-    // Round numeric fields to 2 decimals
+    // Convert numeric fields to float (FBR expects numbers, not strings)
     if (isset($item['furtherTax'])) {
-        $item['furtherTax'] = number_format((float)$item['furtherTax'], 2, '.', '');
+        $item['furtherTax'] = (float) $item['furtherTax'];
     }
        if (isset($item['productDescription'])) {
            $item['productDescription'] = $this->cleanAddress($item['productDescription']);
@@ -139,24 +142,23 @@ foreach ($invoiceData['items'] as &$item) {
 
 
     if (isset($item['valueSalesExcludingST'])) {
-        $item['valueSalesExcludingST'] = number_format((float)$item['valueSalesExcludingST'], 2, '.', '');
+        $item['valueSalesExcludingST'] = (float) $item['valueSalesExcludingST'];
     }
 
     if (isset($item['rateValues'])) {
-        $item['rateValues'] = number_format((float)$item['rateValues'], 2, '.', '');
+        $item['rateValues'] = (float) $item['rateValues'];
     }
 
     if (isset($item['totalValues'])) {
-        $item['totalValues'] = number_format((float)$item['totalValues'], 2, '.', '');
+        $item['totalValues'] = (float) $item['totalValues'];
     }
 
     if (isset($item['salesTaxApplicable'])) {
-        $item['salesTaxApplicable'] = number_format((float)$item['salesTaxApplicable'], 2, '.', '');
+        $item['salesTaxApplicable'] = (float) $item['salesTaxApplicable'];
     }
 
     if (isset($item['quantity'])) {
-        // Quantity can have up to 4 decimals
-        $item['quantity'] = number_format((float)$item['quantity'], 4, '.', '');
+        $item['quantity'] = (float) $item['quantity'];
     }
 }
 
@@ -1277,18 +1279,19 @@ $result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $i
         if (isset($invoiceData['buyerRegistrationType']) &&
             $invoiceData['buyerRegistrationType'] === 'Unregistered') {
 
-            // Set required values for unregistered suppliers
-            $invoiceData['buyerNTNCNIC'] = '';
-            $invoiceData['buyerBusinessName'] = 'Unregistered Supplies';
-            $invoiceData['buyerAddress'] = '';
+            // Keep original buyerNTNCNIC — FBR still requires a valid 7-digit NTN or 13-digit CNIC
+            // Set fallback for business name and address if empty
+            if (empty($invoiceData['buyerBusinessName'])) {
+                $invoiceData['buyerBusinessName'] = 'Unregistered Supplies';
+            }
+            if (empty($invoiceData['buyerAddress'])) {
+                $invoiceData['buyerAddress'] = '';
+            }
 
             Log::info('Applied unregistered supplier logic', [
-                'original_ntn_cnic' => $invoiceData['buyerNTNCNIC'] ?? 'not set',
-                'original_business_name' => $invoiceData['buyerBusinessName'] ?? 'not set',
-                'original_address' => $invoiceData['buyerAddress'] ?? 'not set',
-                'new_ntn_cnic' => '',
-                'new_business_name' => 'Unregistered Supplies',
-                'new_address' => ''
+                'kept_ntn_cnic' => $invoiceData['buyerNTNCNIC'] ?? 'not set',
+                'business_name' => $invoiceData['buyerBusinessName'] ?? 'not set',
+                'address' => $invoiceData['buyerAddress'] ?? 'not set'
             ]);
         }
 

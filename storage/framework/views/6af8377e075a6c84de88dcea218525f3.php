@@ -1,5 +1,4 @@
-@extends('layouts.app')
-@section('content')
+<?php $__env->startSection('content'); ?>
       <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -15,7 +14,7 @@
                             </div>
                             <h1 class="text-3xl font-bold text-gray-900">Digital Invoicing</h1>
                         </div>
-                        @if(!auth()->user()->fbr_access_token)
+                        <?php if(!auth()->user()->fbr_access_token): ?>
                             <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6">
                                 <div class="flex">
                                     <div class="flex-shrink-0">
@@ -32,7 +31,7 @@
                                         </div>
                                         <div class="mt-4">
                                             <div class="-mx-2 -my-1.5 flex">
-                                                <a href="{{ route('profile.edit') }}" class="bg-yellow-50 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600">
+                                                <a href="<?php echo e(route('profile.edit')); ?>" class="bg-yellow-50 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600">
                                                     Set Token in Profile
                                                 </a>
                                             </div>
@@ -40,13 +39,13 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div> -->
 
 
                     <!-- Invoice Form -->
-                    <form id="invoiceForm" method="POST" action="{{ route('invoicing.submit') }}" class="space-y-8">
-                        @csrf
+                    <form id="invoiceForm" method="POST" action="<?php echo e(route('invoicing.submit')); ?>" class="space-y-8">
+                        <?php echo csrf_field(); ?>
 
                                                     <!-- Seller Information -->
                         <div class="bg-gray-50 rounded-lg">
@@ -65,11 +64,11 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label for="sellerNTNCNIC" class="block text-sm font-medium text-gray-700 mb-1" required>CNIC/NTN</label>
-                                        <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="{{ $user->cinc_ntn ?? '' }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="<?php echo e($user->cinc_ntn ?? ''); ?>" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     </div>
                                     <div>
                                         <label for="sellerBusinessName" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                                        <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Your Business Name" value="{{ $user->business_name ?? $user->name }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Your Business Name" value="<?php echo e($user->business_name ?? $user->name); ?>" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     </div>
                                     <div>
                                         <label for="sellerProvince" class="block text-sm font-medium text-gray-700 mb-1">Province</label>
@@ -78,7 +77,7 @@
                                     </div>
                                     <div class="md:col-span-2 mb-4">
                                         <label for="sellerAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                        <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ $user->address ?? '' }}</textarea>
+                                        <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"><?php echo e($user->address ?? ''); ?></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -107,12 +106,12 @@
                                     <label for="invoiceRefNo" class="block text-sm font-medium text-gray-700 mb-1">Invoice Reference No.</label>
                                     <input type="text" id="invoiceRefNo" name="invoiceRefNo" placeholder="Enter reference number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
-                                @if($user->use_sandbox)
+                                <?php if($user->use_sandbox): ?>
                                 <div>
                                     <label for="scenarioId" class="block text-sm font-medium text-gray-700 mb-1">Scenario ID</label>
                                     <input type="text" id="scenarioId" name="scenarioId" value="SN000" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -424,23 +423,23 @@
 
     <script>
         // Configuration
-        const API_BASE = '{{ url('/') }}';
-        const CSRF_TOKEN = '{{ csrf_token() }}';
+        const API_BASE = '<?php echo e(url('/')); ?>';
+        const CSRF_TOKEN = '<?php echo e(csrf_token()); ?>';
     </script>
 
     <script>
         // Pass data from backend to JavaScript
         window.appData = {
-            provinces: @json($provinces ?? []),
-            hsCodes: @json($hsCodes ?? []),
-            uoMs: @json($uoMs ?? []),
-            transactionTypes: @json($transactionTypes ?? []),
+            provinces: <?php echo json_encode($provinces ?? [], 15, 512) ?>,
+            hsCodes: <?php echo json_encode($hsCodes ?? [], 15, 512) ?>,
+            uoMs: <?php echo json_encode($uoMs ?? [], 15, 512) ?>,
+            transactionTypes: <?php echo json_encode($transactionTypes ?? [], 15, 512) ?>,
             user: {
-                cinc_ntn: @json($user->cinc_ntn ?? ''),
-                business_name: @json($user->business_name ?? $user->name ?? ''),
-                province: @json($user->province ?? ''),
-                address: @json($user->address ?? ''),
-                use_sandbox: @json($user->use_sandbox ?? true)
+                cinc_ntn: <?php echo json_encode($user->cinc_ntn ?? '', 15, 512) ?>,
+                business_name: <?php echo json_encode($user->business_name ?? $user->name ?? '', 15, 512) ?>,
+                province: <?php echo json_encode($user->province ?? '', 15, 512) ?>,
+                address: <?php echo json_encode($user->address ?? '', 15, 512) ?>,
+                use_sandbox: <?php echo json_encode($user->use_sandbox ?? true, 15, 512) ?>
             }
         };
     </script>
@@ -3381,4 +3380,5 @@ const result = JSON.parse(cleanText);
 }
 
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Shahan Developer\FBR\resources\views/invoicing/index.blade.php ENDPATH**/ ?>

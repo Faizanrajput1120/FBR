@@ -76,7 +76,7 @@ class UserManagement extends Controller
             'c_id' => $request->c_id,
         ]);
 
-        return redirect()->back()->with('success', 'User created successfully!');
+        return redirect()->route('users.index')->with('success', 'User created successfully!');
     }
     public function update(Request $request, $id)
     {
@@ -94,8 +94,8 @@ class UserManagement extends Controller
             $data['password'] = bcrypt($request->password);
         }
 
-        $data['is_admin'] = $request->has('is_admin')??1;
-        $data['use_sandbox'] = $request->has('use_sandbox');
+        $data['is_admin'] = $request->has('is_admin') ? 1 : 0;
+        $data['use_sandbox'] = $request->has('use_sandbox') ? 1 : 0;
 
         $data['business_name'] = $request->business_name;
         $data['province'] = $request->province;
@@ -113,8 +113,20 @@ class UserManagement extends Controller
         if (auth()->user()->is_admin == 1) {
             return redirect()->back()->with('error', 'You do not have permission to access this page.');
         }
-        $company = Company::findOrFail($id);
+        $user = User::findOrFail($id);
+        $company = Company::all();
 
-        return view('companies.edit', compact('company'));
+        return view('User.edit', compact('user', 'company'));
+    }
+
+    public function destroy($id)
+    {
+        if (auth()->user()->is_admin == 1) {
+            return redirect()->back()->with('error', 'You do not have permission to access this page.');
+        }
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->route('users.index')->with('success', 'User deleted successfully!');
     }
 }

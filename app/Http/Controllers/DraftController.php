@@ -215,12 +215,93 @@ public function saveDraft(Request $request)
         return response()->json(['success' => true, 'message' => 'Draft updated successfully']);
     }
 
-    // Submit the draft as a final invoice (stub)
+    // Submit the draft as a final invoice to FBR
     public function submit($id)
     {
-        // Implement your logic to submit the draft as a final invoice
-        // For now, just return a success response
-        return response()->json(['success' => true, 'message' => 'Invoice submitted']);
+        $user = Auth::user();
+        $draftInvoice = DraftInvoice::where('user_id', $user->id)->findOrFail($id);
+
+        if (!$user->fbr_access_token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'FBR Access Token is required.'
+            ], 400);
+        }
+
+        try {
+            // Build FBR payload from draft data
+            $invoiceData = [
+                'invoiceType' => $draftInvoice->invoice_type,
+                'invoiceDate' => $draftInvoice->invoice_date,
+                'sellerNTNCNIC' => $draftInvoice->seller_ntn_cnic,
+                'sellerBusinessName' => $draftInvoice->seller_business_name,
+                'sellerProvince' => $draftInvoice->seller_province,
+                'sellerAddress' => $draftInvoice->seller_address ?? '',
+                'buyerNTNCNIC' => $draftInvoice->buyer_ntn_cnic ?? '',
+                'buyerBusinessName' => $draftInvoice->buyer_business_name ?? '',
+                'buyerProvince' => $draftInvoice->buyer_province ?? '',
+                'buyerAddress' => $draftInvoice->buyer_address ?? '',
+                'buyerRegistrationType' => $draftInvoice->buyer_registration_type ?? '',
+                'invoiceRefNo' => $draftInvoice->invoice_ref_no ?? '',
+                'scenarioId' => $draftInvoice->scenario_id ?? '',
+                'items' => $draftInvoice->items ?? [],
+            ];
+
+            // Normalize items: ensure numeric fields are numbers, remove rateValues
+            foreach ($invoiceData['items'] as &$item) {
+                foreach (['quantity', 'totalValues', 'valueSalesExcludingST', 'salesTaxApplicable',
+                         'fixedNotifiedValueOrRetailPrice', 'salesTaxWithheldAtSource',
+                         'furtherTax', 'fedPayable', 'discount', 'extraTax'] as $numField) {
+                    if (isset($item[$numField])) {
+                        $item[$numField] = (float) $item[$numField];
+                    }
+                }
+                unset($item['rateValues']);
+            }
+
+            // Remove scenarioId in production
+            if (!$user->use_sandbox) {
+                unset($invoiceData['scenarioId']);
+            }
+
+            // Submit to FBR
+            $result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $invoiceData);
+
+            if ($result['success'] ?? false) {
+                // Update draft status
+                $draftInvoice->update(['status' => 1]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Invoice submitted successfully to FBR',
+                    'data' => $result
+                ]);
+            }
+
+            Log::warning('Draft submission failed', [
+                'user_id' => $user->id,
+                'draft_id' => $id,
+                'error' => $result['message'] ?? 'Unknown error'
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'] ?? 'Invoice submission failed',
+                'errors' => $result['errors'] ?? null
+            ], $result['status_code'] ?? 400);
+
+        } catch (\Exception $e) {
+            Log::error('Draft submission exception', [
+                'user_id' => $user->id,
+                'draft_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
     }
   public function destroy($id)
 {
