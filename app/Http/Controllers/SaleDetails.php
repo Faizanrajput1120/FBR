@@ -31,6 +31,12 @@ public function invoice($id)
     return view('SaleInvoice.invoice', compact('invoice'));
 
 }
+
+public function thirdSchedule($id)
+{
+    $invoice = SaleInvoiceFbr::findOrFail($id);
+    return view('SaleInvoice.third_schedule', compact('invoice'));
+}
     
 public function index(Request $request)
 {

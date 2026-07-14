@@ -226,6 +226,8 @@ Route::get('premiertax/purchase/invoice/{id}', [PurchaseDetail::class, 'invoice'
      ->name('premiertax.purchase.invoice');
 Route::get('premiertax/sale/invoice/{id}', [SaleDetails::class, 'invoice'])
      ->name('premiertax.sale.invoice');
+Route::get('premiertax/sale/invoice/{id}/third-schedule', [SaleDetails::class, 'thirdSchedule'])
+     ->name('premiertax.sale.third-schedule');
 Route::get('/premiertax/create-storage-link', [StorageLinkController::class, 'createLink']);
 
 Route::middleware(['auth', 'admin'])->group(function () {

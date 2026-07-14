@@ -344,15 +344,15 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Quantity <span class="text-red-500">*</span></label>
                                 <input type="number" id="modalQuantity" name="quantity" placeholder="0" min="0" step="any" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
-                            <div>
+                            <div class="schedule-standard-field">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Rate <span class="text-red-500">*</span></label>
                                 <input type="number" id="modalRateValues" name="rateValues" placeholder="0" min="0" step="any" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
-                            <div>
+                            <div class="schedule-standard-field">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Total Values <span class="text-red-500">*</span></label>
                                 <input type="number" id="modalTotalValues" name="totalValues" placeholder="0" min="0" step="any" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
-                            <div>
+                            <div class="schedule-standard-field">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Value Sales Excluding ST <span class="text-red-500">*</span></label>
                                 <input type="number" id="modalValueSalesExcludingST" name="valueSalesExcludingST" placeholder="0" min="0" step="any" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
@@ -361,8 +361,34 @@
                                 <input type="number" id="modalSalesTaxApplicable" name="salesTaxApplicable" placeholder="Auto-calculated" min="0" step="any" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sales-tax-field">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Fixed Notified Value/Retail Price</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Fixed Notified Value/Retail Price <span class="text-red-500 schedule-3rd-fn-required hidden">*</span></label>
                                 <input type="number" id="modalFixedNotifiedValueOrRetailPrice" name="fixedNotifiedValueOrRetailPrice" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                            </div>
+                            <!-- 3rd Schedule specific fields (shown when 3rd Schedule selected) -->
+                            <div class="schedule-3rd-field hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">G/H (%)</label>
+                                <select id="modalGhPercent" name="ghPercent" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                    <option value="0">0%</option>
+                                    <option value="0.5">0.5%</option>
+                                    <option value="1">1%</option>
+                                    <option value="1.5">1.5%</option>
+                                    <option value="2">2%</option>
+                                    <option value="3">3%</option>
+                                    <option value="5">5%</option>
+                                    <option value="10">10%</option>
+                                </select>
+                            </div>
+                            <div class="schedule-3rd-field hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">G/H Amount</label>
+                                <input type="number" id="modalGhAmount" name="ghAmount" placeholder="Auto-calculated" min="0" step="any" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                            </div>
+                            <div class="schedule-3rd-field hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
+                                <input type="number" id="modalDiscountPercent" name="discountPercent" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                            </div>
+                            <div class="schedule-3rd-field hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Discount Amount</label>
+                                <input type="number" id="modalDiscountAmount" name="discountAmount" placeholder="Auto-calculated" min="0" step="any" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Sales Tax Withheld at Source</label>
@@ -389,7 +415,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">FED Payable</label>
                                 <input type="number" id="modalFedPayable" name="fedPayable" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
-                            <div>
+                            <div class="schedule-standard-field">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Discount</label>
                                 <input type="number" id="modalDiscount" name="discount" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                             </div>
@@ -784,14 +810,16 @@ const data = JSON.parse(cleanText);
 });
 
             // Add event listener for rate*quantity and fixedNotifiedValueOrRetailPrice
-            $(document).on('input', 'input[name*="[rateValues]"],input[name*="[quantity]"], #modalRateValues,#modalQuantity,#modalFixedNotifiedValueOrRetailPrice', function(e) {
-           // Calculate sales tax for a specific item
+            let _updatingFixedNotified = false;
+            $(document).on('input', 'input[name*="[rateValues]"],input[name*="[quantity]"], #modalRateValues,#modalQuantity,#modalFixedNotifiedValueOrRetailPrice,#modalDiscount,#modalValueSalesExcludingST', function(e) {
 
 // Check if we're in the modal context
 const isModal =
     e.target.closest('#addItemModal') !== null ||
     e.target.id === 'modalRateValues' ||
-    e.target.id === 'modalFixedNotifiedValueOrRetailPrice';
+    e.target.id === 'modalFixedNotifiedValueOrRetailPrice' ||
+    e.target.id === 'modalDiscount' ||
+    e.target.id === 'modalValueSalesExcludingST';
 
 if (isModal) {
     const saleTypeSelect = document.getElementById('modalSaleType');
@@ -808,64 +836,86 @@ if (isModal) {
     } catch (e) {
         rateData = { rate_value: 0 };
     }
-    console.log(rateData.rate_id);
-    console.log(rateData.rate_value);
-    console.log(rateData.rate_desc);
 
-    // Use Fixed Notified Value/Retail Price as rate when 3rd Schedule
-    let rater;
-    if (isThirdParty) {
-        rater = parseFloat(document.getElementById('modalFixedNotifiedValueOrRetailPrice').value) || 0;
-    } else {
-        rater = parseFloat(rateSelecter.value) || 0;
-    }
-    const qty = parseFloat(quantity.value) || 0;
-    const taxter = parseFloat(rateData.rate_value) || 0;
-    
-    let valueSalesField, salesTaxField;
-
-    rateSelect = document.getElementById('modalRate');
-    valueSalesField = document.getElementById('modalValueSalesExcludingST');
-    valueFurtherField = document.getElementById('modalFurtherTax');
-    salesTaxField = document.getElementById('modalSalesTaxApplicable');
-
-    if (!rateSelect || !valueSalesField || !salesTaxField) {
-        console.warn('Could not find required fields for sales tax calculation');
-        return;
-    }
-
-    // Extract rate value from the selected option's JSON data
     let rate = 0;
-    if (rateSelect.value) {
+    if (rateTax.value) {
         try {
-            const rateData = JSON.parse(rateSelect.value);
-            rate = parseFloat(rateData.rate_value) || 0;
+            const rd = JSON.parse(rateTax.value);
+            rate = parseFloat(rd.rate_value) || 0;
         } catch (e) {
-            console.warn('Could not parse rate data:', e);
             rate = 0;
         }
     }
 
-    let total, totalDM;
+    let valueSalesField = document.getElementById('modalValueSalesExcludingST');
+    let valueFurtherField = document.getElementById('modalFurtherTax');
+    let salesTaxField = document.getElementById('modalSalesTaxApplicable');
+    let discountField = document.getElementById('modalDiscount');
+
+    if (!rateTax || !valueSalesField || !salesTaxField) {
+        console.warn('Could not find required fields for sales tax calculation');
+        return;
+    }
+
+    const qty = parseFloat(quantity.value) || 0;
+    const taxter = parseFloat(rateData.rate_value) || 0;
+
     if (isThirdParty) {
-        // 3rd Schedule: valueSalesExcludingST = 0, sales tax on fixedNotifiedValue
-        totalDM = 0;
-        total = rater * qty;
-        $('#modalValueSalesExcludingST').val(0);
-        $('#modalTotalValues').val(total.toFixed(2));
-        // Sales tax = fixedNotifiedValue × rate%
-        const fixedVal = rater;
-        const salesTax3rd = (fixedVal * rate) / 100;
+        // Guard: skip if we're auto-updating FixedNotifiedValue
+        if (_updatingFixedNotified) return;
+        _updatingFixedNotified = true;
+
+        const basePrice = parseFloat(document.getElementById('modalFixedNotifiedValueOrRetailPrice').value) || 0;
+        
+        // Get percentage values for 3rd Schedule
+        const ghPercent = parseFloat(document.getElementById('modalGhPercent').value) || 0;
+        const discountPercent = parseFloat(document.getElementById('modalDiscountPercent').value) || 0;
+
+        // Rate per unit = base price (forward calc)
+        $('#modalRateValues').val(basePrice.toFixed(2));
+
+        // Discount Amount = FNV * Discount% / 100
+        const discountAmount = basePrice * discountPercent / 100;
+        $('#modalDiscountAmount').val(discountAmount.toFixed(2));
+        discountField.value = discountAmount.toFixed(2); // Update hidden discount field
+
+        // G/H Amount = FNV * GH% / 100
+        const ghAmount = basePrice * ghPercent / 100;
+        $('#modalGhAmount').val(ghAmount.toFixed(2));
+
+        // Sales Tax = basePrice × rate% × qty (on the base exclusive price)
+        const salesTax3rd = basePrice * rate / 100 * qty;
         salesTaxField.value = salesTax3rd.toFixed(2);
-        if (rate > 0 && fixedVal > 0) {
+
+        // Value Sales Excluding ST = FNV - Discount Amount (per user requirement)
+        const exclVal = (basePrice - discountAmount) * qty;
+        $('#modalValueSalesExcludingST').val(exclVal.toFixed(2));
+
+        const total3rd = exclVal + salesTax3rd;
+        $('#modalTotalValues').val(total3rd.toFixed(2));
+
+        // Auto-update FixedNotifiedValue = base + tax (inclusive MRP)
+        const mrpInclusive = basePrice + salesTax3rd;
+        $('#modalFixedNotifiedValueOrRetailPrice').val(mrpInclusive.toFixed(2));
+
+        _updatingFixedNotified = false;
+
+        if (rate > 0 && basePrice > 0) {
             salesTaxField.classList.remove('bg-gray-50', 'bg-red-50');
             salesTaxField.classList.add('bg-green-50');
-            salesTaxField.title = `Calculated: ${fixedVal} × ${rate}% = ${salesTax3rd.toFixed(2)}`;
+            salesTaxField.title = `3rd Schedule Tax: ${basePrice.toFixed(2)} × ${rate}% × ${qty} = ${salesTax3rd.toFixed(2)}`;
+        }
+        
+        const furtherTaxAmt = exclVal * 4 / 100;
+        if ($('#buyerRegistrationType').val() === 'Unregistered') {
+            valueFurtherField.value = furtherTaxAmt.toFixed(2);
         }
     } else {
+        // ===== Standard Calculation =====
+        const rater = parseFloat(rateSelecter.value) || 0;
         const totalTaxvalue = (rater * taxter) / 100;
-        total = (rater + totalTaxvalue) * qty;
-        totalDM = rater * qty;
+        const total = (rater + totalTaxvalue) * qty;
+        const totalDM = rater * qty;
         
         $('#modalTotalValues').val(total.toFixed(2));
         $('#modalValueSalesExcludingST').val(totalDM.toFixed(2));
@@ -882,22 +932,12 @@ if (isModal) {
             salesTaxField.classList.add('bg-gray-50');
             salesTaxField.title = 'Enter rate and value sales to calculate';
         }
+        
+        // Further Tax for unregistered buyers
+        if ($('#buyerRegistrationType').val() === 'Unregistered') {
+            valueFurtherField.value = (totalDM * 4 / 100).toFixed(2);
+        }
     }
-    
-    const salesfur = (totalDM * 4) / 100;
-    const taxTyper=$('#buyerRegistrationType').val();
-    if (taxTyper === 'Unregistered') {
-        valueFurtherField.value=salesfur.toFixed(2);
-    }
-    
-    const Ftax = parseFloat($('#modalFurtherTax').val()) || 0;
-    const saleTaxer = parseFloat($('#modalTotalValues').val()) || 0;
-    const saleExclTaxer = parseFloat($('#modalValueSalesExcludingST').val()) || 0;
-
-    const ftaxincludesaleTaxer = saleTaxer + Ftax;
-    const ftaxincludesaleExclTaxer = saleExclTaxer + Ftax;
-
-    $('#modalTotalValues').val(ftaxincludesaleTaxer.toFixed(2));
 }
 
             });
@@ -929,6 +969,12 @@ if (isModal) {
             // Modal-specific event listeners
             $(document).on('select2:select', '#modalSaleType', function(e) {
                 calculateRatesForItem(e.target);
+                toggleScheduleFields(e.target);
+            });
+
+            // Also handle clear event for sale type
+            $(document).on('select2:clear', '#modalSaleType', function(e) {
+                toggleScheduleFields(e.target);
             });
 
             $(document).on('select2:select', '#modalHsCode', function(e) {
@@ -950,9 +996,117 @@ if (isModal) {
 
             $(document).on('select2:clear', '#modalSroItemSerialNo', function(e) {
                 updateSroRequiredIndicators(e.target);
-            });
+});
 
-            // Buyer autocomplete event listeners
+// Toggle 3rd Schedule specific fields
+        function toggleScheduleFields(saleTypeSelect) {
+            const selectedOption = saleTypeSelect.options[saleTypeSelect.selectedIndex];
+            const saleTypeText = selectedOption ? selectedOption.text : '';
+            const is3rdSchedule = saleTypeText.toLowerCase().includes('3rd schedule') || saleTypeText.toLowerCase().includes('3rd party');
+            
+            // Show/hide 3rd Schedule fields
+            document.querySelectorAll('.schedule-3rd-field').forEach(el => {
+                if (is3rdSchedule) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+            
+            // Show/hide standard fields
+            document.querySelectorAll('.schedule-standard-field').forEach(el => {
+                if (is3rdSchedule) {
+                    el.classList.add('hidden');
+                } else {
+                    el.classList.remove('hidden');
+                }
+            });
+            
+            // Toggle required attributes for FixedNotifiedValue
+            const fnField = document.getElementById('modalFixedNotifiedValueOrRetailPrice');
+            const fnRequired = document.querySelector('.schedule-3rd-fn-required');
+            
+            if (is3rdSchedule) {
+                fnField.required = true;
+                fnField.setAttribute('aria-required', 'true');
+                if (fnRequired) fnRequired.classList.remove('hidden');
+            } else {
+                fnField.required = false;
+                fnField.removeAttribute('aria-required');
+                if (fnRequired) fnRequired.classList.add('hidden');
+            }
+            
+            // Toggle required for standard fields (Rate, TotalValues, Discount)
+            document.querySelectorAll('.schedule-standard-field input[required], .schedule-standard-field select[required]').forEach(el => {
+                if (is3rdSchedule) {
+                    el.required = false;
+                    el.removeAttribute('aria-required');
+                } else {
+                    // Restore original required state - these were originally required
+                    if (el.id === 'modalRateValues' || el.id === 'modalTotalValues') {
+                        el.required = true;
+                        el.setAttribute('aria-required', 'true');
+                    }
+                }
+            });
+            
+            // Recalculate when switching to 3rd Schedule
+            if (is3rdSchedule) {
+                recalculate3rdSchedule();
+            }
+        }
+        
+        // Recalculate 3rd Schedule fields
+        function recalculate3rdSchedule() {
+            const fnField = document.getElementById('modalFixedNotifiedValueOrRetailPrice');
+            const ghPercentField = document.getElementById('modalGhPercent');
+            const ghAmountField = document.getElementById('modalGhAmount');
+            const discountPercentField = document.getElementById('modalDiscountPercent');
+            const discountAmountField = document.getElementById('modalDiscountAmount');
+            const discountField = document.getElementById('modalDiscount');
+            const valueSalesField = document.getElementById('modalValueSalesExcludingST');
+            
+            const fnv = parseFloat(fnField.value) || 0;
+            const ghPercent = parseFloat(ghPercentField.value) || 0;
+            const discountPercent = parseFloat(discountPercentField.value) || 0;
+            
+            // G/H Amount = FNV * GH% / 100
+            const ghAmount = fnv * ghPercent / 100;
+            ghAmountField.value = ghAmount.toFixed(2);
+            
+            // Discount Amount = FNV * Discount% / 100
+            const discountAmount = fnv * discountPercent / 100;
+            discountAmountField.value = discountAmount.toFixed(2);
+            
+            // Update hidden discount field for form submission
+            discountField.value = discountAmount.toFixed(2);
+            
+            // Value Sales Excluding ST = FNV - Discount Amount
+            const valueSales = fnv - discountAmount;
+            valueSalesField.value = valueSales.toFixed(2);
+        }
+        
+        // G/H % change handler
+        $(document).on('change', '#modalGhPercent', function() {
+            recalculate3rdSchedule();
+        });
+        
+        // Discount % change handler
+        $(document).on('input', '#modalDiscountPercent', function() {
+            recalculate3rdSchedule();
+        });
+        
+        // Also recalculate when FixedNotifiedValue changes for 3rd Schedule
+        $(document).on('input', '#modalFixedNotifiedValueOrRetailPrice', function() {
+            const saleTypeSelect = document.getElementById('modalSaleType');
+            const saleTypeText = saleTypeSelect.options[saleTypeSelect.selectedIndex]?.text || '';
+            const is3rdSchedule = saleTypeText.toLowerCase().includes('3rd schedule') || saleTypeText.toLowerCase().includes('3rd party');
+            if (is3rdSchedule) {
+                recalculate3rdSchedule();
+            }
+        });
+
+        // Buyer autocomplete event listeners
             document.getElementById('buyerNTNCNIC').addEventListener('input', handleBuyerNTNInput);
             document.getElementById('buyerNTNCNIC').addEventListener('focus', handleBuyerNTNFocus);
             document.getElementById('buyerNTNCNIC').addEventListener('blur', handleBuyerNTNBlur);
@@ -1887,9 +2041,39 @@ const result = JSON.parse(cleanText);
                 const saleTypeText = saleTypeSelect.options[saleTypeSelect.selectedIndex]?.text || '';
                 const isThirdParty = saleTypeText.toLowerCase().includes('3rd schedule') || saleTypeText.toLowerCase().includes('3rd party');
                 if (isThirdParty) {
-                    // 3rd Schedule: use fixedNotifiedValue as tax base, not valueSalesExcludingST (which is 0)
-                    baseForTax = parseFloat(document.getElementById('modalFixedNotifiedValueOrRetailPrice').value) || 0;
-                    salesTax = (baseForTax * rate) / 100;
+                    // 3rd Schedule: Sales Tax = basePrice × rate% × qty (forward)
+                    const basePrice = parseFloat(document.getElementById('modalFixedNotifiedValueOrRetailPrice').value) || 0;
+                    const qty = parseFloat(document.getElementById('modalQuantity').value) || 0;
+                    salesTax = basePrice * rate / 100 * qty;
+                    salesTaxField.value = salesTax.toFixed(2);
+
+                    // Calculate Discount Amount from Discount %
+                    const discountPercent = parseFloat(document.getElementById('modalDiscountPercent').value) || 0;
+                    const discountAmount = basePrice * discountPercent / 100;
+                    $('#modalDiscountAmount').val(discountAmount.toFixed(2));
+                    
+                    // Calculate G/H Amount from G/H %
+                    const ghPercent = parseFloat(document.getElementById('modalGhPercent').value) || 0;
+                    const ghAmount = basePrice * ghPercent / 100;
+                    $('#modalGhAmount').val(ghAmount.toFixed(2));
+                    
+                    // Value Sales Excluding ST = FixedNotifiedValue - Discount Amount
+                    const exclVal = (basePrice - discountAmount) * qty;
+                    $('#modalValueSalesExcludingST').val(exclVal.toFixed(2));
+                    const total3rd = exclVal + salesTax;
+                    $('#modalTotalValues').val(total3rd.toFixed(2));
+                    $('#modalFixedNotifiedValueOrRetailPrice').val((basePrice + salesTax).toFixed(2));
+
+                    if (rate > 0 && basePrice > 0) {
+                        salesTaxField.classList.remove('bg-gray-50', 'bg-red-50');
+                        salesTaxField.classList.add('bg-green-50');
+                        salesTaxField.title = `3rd Schedule Tax: ${basePrice.toFixed(2)} × ${rate}% × ${qty} = ${salesTax.toFixed(2)}`;
+                    } else {
+                        salesTaxField.classList.remove('bg-green-50');
+                        salesTaxField.classList.add('bg-gray-50');
+                        salesTaxField.title = 'Enter rate and base price to calculate';
+                    }
+                    return;
                 } else {
                     baseForTax = valueSales;
                     salesTax = (valueSales * rate) / 100;
@@ -2761,7 +2945,7 @@ const result = JSON.parse(cleanText);
             // Populate modal selects with data
             populateModalSelects();
 
-            // Fill form with item data
+                // Fill form with item data
             setTimeout(async () => {
                 // First, populate non-dependent fields
                 Object.keys(item).forEach(key => {
@@ -2774,6 +2958,26 @@ const result = JSON.parse(cleanText);
                         }
                     }
                 });
+
+                // When editing a 3rd Schedule item, FixedNotifiedValue was saved as inclusive MRP.
+                // Convert back to exclusive base price so forward calculation works correctly.
+                const saleTypeText = item.saleTypeText || '';
+                if (saleTypeText.toLowerCase().includes('3rd schedule') || saleTypeText.toLowerCase().includes('3rd party')) {
+                    const savedInclusiveMrp = parseFloat(item.fixedNotifiedValueOrRetailPrice) || 0;
+                    const savedTax = parseFloat(item.salesTaxApplicable) || 0;
+                    const exclusiveBase = savedInclusiveMrp - savedTax;
+                    document.getElementById('modalFixedNotifiedValueOrRetailPrice').value = exclusiveBase;
+
+                    // Restore 3rd Schedule percentage fields
+                    if (item.ghPercent !== undefined) {
+                        document.getElementById('modalGhPercent').value = item.ghPercent;
+                    }
+                    if (item.discountPercent !== undefined) {
+                        document.getElementById('modalDiscountPercent').value = item.discountPercent;
+                    }
+                    // Trigger recalculation for 3rd Schedule fields
+                    recalculate3rdSchedule();
+                }
 
                 // Handle HS Code and UoM dependency
                 const hsCodeElement = document.getElementById('modalHsCode');

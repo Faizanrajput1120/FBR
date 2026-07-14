@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -16,42 +14,44 @@
         </div>
     </div>
 
-    @if (session('success'))
+    <?php if(session('success')): ?>
         <div class="alert alert-success alert-dismissible text-bg-success border-0 fade show" role="alert">
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
-            {{ session('success') }}
+            <?php echo e(session('success')); ?>
+
         </div>
-    @endif
+    <?php endif; ?>
 
     <div class="row mb-3">
         <div class="col-md-8">
-            <form method="GET" action="{{ route('premiertax.sales.index') }}" class="row g-3">
+            <form method="GET" action="<?php echo e(route('premiertax.sales.index')); ?>" class="row g-3">
                 <div class="col-md-3">
                     <label for="start_date" class="form-label">Start Date</label>
                     <input type="date" class="form-control" id="start_date" name="start_date" 
-                           value="{{ request('start_date') }}">
+                           value="<?php echo e(request('start_date')); ?>">
                 </div>
                 <div class="col-md-3">
                     <label for="end_date" class="form-label">End Date</label>
                     <input type="date" class="form-control" id="end_date" name="end_date" 
-                           value="{{ request('end_date') }}">
+                           value="<?php echo e(request('end_date')); ?>">
                 </div>
                 <div class="col-md-3">
                     <label for="bill_no" class="form-label">Bill No</label>
                     <select class="form-control select2" id="bill_no" name="bill_no">
                         <option value="">All Bill Numbers</option>
-                        @foreach($availableBillNumbers as $billNo)
-                            <option value="{{ $billNo }}" 
-                                {{ request('bill_no') == $billNo ? 'selected' : '' }}>
-                                {{ $billNo }}
+                        <?php $__currentLoopData = $availableBillNumbers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $billNo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($billNo); ?>" 
+                                <?php echo e(request('bill_no') == $billNo ? 'selected' : ''); ?>>
+                                <?php echo e($billNo); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
                 
                 <div class="col-md-12 mt-3">
                     <button type="submit" class="btn btn-primary">Search</button>
-                    <a href="{{ route('premiertax.sales.index') }}" class="btn btn-secondary">Reset</a>
+                    <a href="<?php echo e(route('premiertax.sales.index')); ?>" class="btn btn-secondary">Reset</a>
                 </div>
             </form>
         </div>
@@ -71,17 +71,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($salesInvoices as $invoice)
+                        <?php $__empty_1 = true; $__currentLoopData = $salesInvoices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $invoice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $invoice->fbr_invoice_no }}</td>
-                                <td>{{ $invoice->buyer_business_name ?? 'N/A' }}</td>
-                                <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('Y-m-d') }}</td>
+                                <td><?php echo e($invoice->fbr_invoice_no); ?></td>
+                                <td><?php echo e($invoice->buyer_business_name ?? 'N/A'); ?></td>
+                                <td><?php echo e(\Carbon\Carbon::parse($invoice->invoice_date)->format('Y-m-d')); ?></td>
                                 <td>
-                                                                        <a href="{{ route('premiertax.sale.invoice', $invoice->id) }}" 
+                                                                        <a href="<?php echo e(route('premiertax.sale.invoice', $invoice->id)); ?>" 
                                        class="btn btn-primary btn-sm" target="_blank">
                                         <i class="mdi mdi-printer"></i> Print
                                     </a>
-                                    <a href="{{ route('premiertax.sale.third-schedule', $invoice->id) }}" 
+                                    <a href="<?php echo e(route('premiertax.sale.third-schedule', $invoice->id)); ?>" 
                                        class="btn btn-warning btn-sm" target="_blank">
                                         <i class="mdi mdi-printer"></i> Print (3rd Schedule)
                                     </a>
@@ -92,11 +92,11 @@
                         
                                 </td>
                             </tr>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr>
                                 <td colspan="4" class="text-center">No sales invoices found</td>
                             </tr>
-                        @endforelse
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -104,7 +104,7 @@
     </div>
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
@@ -118,5 +118,7 @@
         });
     });
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Shahan Developer\FBR\resources\views/SaleInvoice/index.blade.php ENDPATH**/ ?>
