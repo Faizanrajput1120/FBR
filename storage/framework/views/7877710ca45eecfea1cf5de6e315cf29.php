@@ -1,5 +1,4 @@
-@extends('layouts.app')
-@section('content')
+<?php $__env->startSection('content'); ?>
       <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -15,7 +14,7 @@
                             </div>
                             <h1 class="text-3xl font-bold text-gray-900">Digital Invoicing</h1>
                         </div>
-                        @if(!auth()->user()->fbr_access_token)
+                        <?php if(!auth()->user()->fbr_access_token): ?>
                             <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4 mb-6">
                                 <div class="flex">
                                     <div class="flex-shrink-0">
@@ -32,7 +31,7 @@
                                         </div>
                                         <div class="mt-4">
                                             <div class="-mx-2 -my-1.5 flex">
-                                                <a href="{{ route('profile.edit') }}" class="bg-yellow-50 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600">
+                                                <a href="<?php echo e(route('profile.edit')); ?>" class="bg-yellow-50 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600">
                                                     Set Token in Profile
                                                 </a>
                                             </div>
@@ -40,13 +39,13 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div> -->
 
 
                     <!-- Invoice Form -->
-                    <form id="invoiceForm" method="POST" action="{{ route('invoicing.submit') }}" class="space-y-8">
-                        @csrf
+                    <form id="invoiceForm" method="POST" action="<?php echo e(route('invoicing.submit')); ?>" class="space-y-8">
+                        <?php echo csrf_field(); ?>
 
                                                     <!-- Seller Information -->
                         <div class="bg-gray-50 rounded-lg">
@@ -65,11 +64,11 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label for="sellerNTNCNIC" class="block text-sm font-medium text-gray-700 mb-1" required>CNIC/NTN</label>
-                                        <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="{{ $user->cinc_ntn ?? '' }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="<?php echo e($user->cinc_ntn ?? ''); ?>" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     </div>
                                     <div>
                                         <label for="sellerBusinessName" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                                        <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Your Business Name" value="{{ $user->business_name ?? $user->name }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Your Business Name" value="<?php echo e($user->business_name ?? $user->name); ?>" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     </div>
                                     <div>
                                         <label for="sellerProvince" class="block text-sm font-medium text-gray-700 mb-1">Province</label>
@@ -78,7 +77,7 @@
                                     </div>
                                     <div class="md:col-span-2 mb-4">
                                         <label for="sellerAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                        <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ $user->address ?? '' }}</textarea>
+                                        <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"><?php echo e($user->address ?? ''); ?></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -107,12 +106,12 @@
                                     <label for="invoiceRefNo" class="block text-sm font-medium text-gray-700 mb-1">Invoice Reference No.</label>
                                     <input type="text" id="invoiceRefNo" name="invoiceRefNo" placeholder="Enter reference number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
-                                @if($user->use_sandbox)
+                                <?php if($user->use_sandbox): ?>
                                 <div>
                                     <label for="scenarioId" class="block text-sm font-medium text-gray-700 mb-1">Scenario ID</label>
                                     <input type="text" id="scenarioId" name="scenarioId" value="SN000" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -447,23 +446,23 @@
 
     <script>
         // Configuration
-        const API_BASE = '{{ url('/') }}';
-        const CSRF_TOKEN = '{{ csrf_token() }}';
+        const API_BASE = '<?php echo e(url('/')); ?>';
+        const CSRF_TOKEN = '<?php echo e(csrf_token()); ?>';
     </script>
 
     <script>
         // Pass data from backend to JavaScript
         window.appData = {
-            provinces: @json($provinces ?? []),
-            hsCodes: @json($hsCodes ?? []),
-            uoMs: @json($uoMs ?? []),
-            transactionTypes: @json($transactionTypes ?? []),
+            provinces: <?php echo json_encode($provinces ?? [], 15, 512) ?>,
+            hsCodes: <?php echo json_encode($hsCodes ?? [], 15, 512) ?>,
+            uoMs: <?php echo json_encode($uoMs ?? [], 15, 512) ?>,
+            transactionTypes: <?php echo json_encode($transactionTypes ?? [], 15, 512) ?>,
             user: {
-                cinc_ntn: @json($user->cinc_ntn ?? ''),
-                business_name: @json($user->business_name ?? $user->name ?? ''),
-                province: @json($user->province ?? ''),
-                address: @json($user->address ?? ''),
-                use_sandbox: @json($user->use_sandbox ?? true)
+                cinc_ntn: <?php echo json_encode($user->cinc_ntn ?? '', 15, 512) ?>,
+                business_name: <?php echo json_encode($user->business_name ?? $user->name ?? '', 15, 512) ?>,
+                province: <?php echo json_encode($user->province ?? '', 15, 512) ?>,
+                address: <?php echo json_encode($user->address ?? '', 15, 512) ?>,
+                use_sandbox: <?php echo json_encode($user->use_sandbox ?? true, 15, 512) ?>
             }
         };
     </script>
@@ -772,7 +771,8 @@ const data = JSON.parse(cleanText);
             document.getElementById('invoiceDate').addEventListener('change', calculateRates);
 
             // Delegate event listener for sale type changes in dynamic items using Select2
-            $(document).on('select2:select', '.sale-type-select', function(e) {
+            // Exclude modal since it has its own dedicated handler below
+            $(document).on('select2:select', '.sale-type-select:not(#modalSaleType)', function(e) {
                 calculateRatesForItem(e.target);
             });
 
@@ -966,7 +966,7 @@ if (isModal) {
             });
 
             // Modal-specific event listeners
-            $(document).on('select2:select', '#modalSaleType', function(e) {
+            $(document).on('select2:select change', '#modalSaleType', function(e) {
                 calculateRatesForItem(e.target);
                 toggleScheduleFields(e.target);
             });
@@ -1529,12 +1529,8 @@ const result = JSON.parse(cleanText);
             }
 
             const invoiceDate = document.getElementById('invoiceDate').value;
-            // Use Select2 val() to get the actual selected value (more reliable than .value)
-            const buyerProvince = $('#buyerProvince').val() || document.getElementById('buyerProvince').value;
-            // Read from Select2 first, fall back to native .value
-            const saleType = ($(saleTypeField).hasClass('select2-hidden-accessible') ? $(saleTypeField).val() : null) || saleTypeField.value || '';
-
-            console.log('[Rate Fetch] invoiceDate:', invoiceDate, '| buyerProvince:', buyerProvince, '| saleType:', saleType);
+            const buyerProvince = $('#buyerProvince').val();
+            const saleType = saleTypeField.value;
 
 
             // Reset rate select if any required field is missing
@@ -1586,7 +1582,6 @@ const result = JSON.parse(cleanText);
                         origination_supplier: parseInt(provinceCode)
                     })
                 });
-                console.log('[Rate Fetch] Sent payload:', { date: invoiceDate, trans_type_id: parseInt(transTypeId), origination_supplier: parseInt(provinceCode) });
 
                 const text = await response.text();
 console.log('RAW RATE RESPONSE:', text);
@@ -1594,7 +1589,6 @@ console.log('RAW RATE RESPONSE:', text);
 const cleanText = text.trim().startsWith('{')
     ? text
     : text.substring(text.indexOf('{'));
-
 
 const result = JSON.parse(cleanText);
 
@@ -1653,6 +1647,24 @@ const result = JSON.parse(cleanText);
                     // Trigger Select2 change to update the display
                     $(rateSelect).val(finalVal).trigger('change');
 
+                    // Refresh Select2 to recognize the newly added options
+                    if (rateSelect.id === 'modalRate') {
+                        $(rateSelect).select2('destroy').select2({
+                            placeholder: 'Select Rate',
+                            allowClear: true,
+                            width: '100%',
+                            dropdownParent: $('#addItemModal')
+                        });
+                    } else {
+                        $(rateSelect).select2('destroy').select2({
+                            placeholder: 'Select Rate',
+                            allowClear: true,
+                            width: 'resolve'
+                        });
+                    }
+                    // Re-set value after recreating Select2
+                    $(rateSelect).val(finalVal).trigger('change');
+
                     rateSelect.classList.remove('bg-blue-50');
                     rateSelect.classList.add('bg-green-50');
                     rateSelect.title = `${result.data.length} rate(s) available`;
@@ -1674,16 +1686,30 @@ const result = JSON.parse(cleanText);
                         await fetchSroSchedule(result.data[0].ratE_ID, invoiceDate, provinceCode, sroContainer);
                     }
                 } else {
-                    // No rate found or API returned failure
-                    const errMsg = result.message || 'No rates found';
-                    rateSelect.innerHTML = `<option value="">⚠ ${errMsg} — change sale type or retry</option>`;
+                    // No rate found or API error
+                    rateSelect.innerHTML = '<option value="">No rates available</option>';
+                    $(rateSelect).val('').trigger('change');
+                    // Refresh Select2
+                    if (rateSelect.id === 'modalRate') {
+                        $(rateSelect).select2('destroy').select2({
+                            placeholder: 'Select Rate',
+                            allowClear: true,
+                            width: '100%',
+                            dropdownParent: $('#addItemModal')
+                        });
+                    } else {
+                        $(rateSelect).select2('destroy').select2({
+                            placeholder: 'Select Rate',
+                            allowClear: true,
+                            width: 'resolve'
+                        });
+                    }
                     $(rateSelect).val('').trigger('change');
                     rateSelect.classList.remove('bg-blue-50');
                     rateSelect.classList.add('bg-yellow-50');
-                    rateSelect.title = 'No rates found — try changing sale type or click Retry below';
+                    rateSelect.title = 'No rates found for the selected criteria';
 
-                    console.warn('No rates found for the given criteria. API response:', result);
-                    showMessage('No rates found. Please try a different sale type or check FBR connectivity.', 'warning');
+                    console.warn('No rates found for the given criteria');
 
                     // Trigger sales tax calculation when no rates available
                     calculateSalesTaxForItem(rateSelect);
@@ -1691,15 +1717,29 @@ const result = JSON.parse(cleanText);
 
             } catch (error) {
                 console.error('Error calculating rates:', error);
-                const isTimeout = error.message && (error.message.includes('timeout') || error.message.includes('network'));
-                const errLabel = isTimeout ? 'FBR timeout - Retry' : 'Error loading rates';
-                rateSelect.innerHTML = `<option value="">${errLabel}</option>`;
+                rateSelect.innerHTML = '<option value="">Error loading rates</option>';
+                $(rateSelect).val('').trigger('change');
+                // Refresh Select2
+                if (rateSelect.id === 'modalRate') {
+                    $(rateSelect).select2('destroy').select2({
+                        placeholder: 'Select Rate',
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#addItemModal')
+                    });
+                } else {
+                    $(rateSelect).select2('destroy').select2({
+                        placeholder: 'Select Rate',
+                        allowClear: true,
+                        width: 'resolve'
+                    });
+                }
                 $(rateSelect).val('').trigger('change');
                 rateSelect.classList.remove('bg-blue-50');
                 rateSelect.classList.add('bg-red-50');
-                rateSelect.title = 'Error loading rates — ' + error.message;
+                rateSelect.title = 'Error loading rates';
 
-                showMessage('Failed to load rates from FBR server. Please check your internet/FBR access token and try again.', 'error');
+                showMessage('Failed to load rates: ' + error.message, 'error');
 
                 // Trigger sales tax calculation when error occurs
                 calculateSalesTaxForItem(rateSelect);
@@ -2769,12 +2809,6 @@ const result = JSON.parse(cleanText);
                 dropdownParent: $('#addItemModal')
             });
 
-            // Direct change handler for modal sale type (ensures rate fetching works)
-            $('#modalSaleType').off('select2:select change').on('select2:select change', function() {
-                calculateRatesForItem(this);
-                toggleScheduleFields(this);
-            });
-
             // Initialize Select2 for modal HS Code with AJAX
             $('#modalHsCode').select2({
                 placeholder: 'Search HS Code...',
@@ -3669,4 +3703,5 @@ const result = JSON.parse(cleanText);
 }
 
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\PC\FBR\FBR\resources\views/invoicing/index.blade.php ENDPATH**/ ?>

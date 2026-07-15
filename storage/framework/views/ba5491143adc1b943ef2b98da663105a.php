@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sales Tax Invoice - M/S {{ $invoice->seller_business_name ?? '' }}</title>
+<title>Sales Tax Invoice - M/S <?php echo e($invoice->seller_business_name ?? ''); ?></title>
 <style>
   @page { size: A4; margin: 10mm 8mm; }
   * { box-sizing: border-box; }
@@ -180,18 +180,18 @@
   <div class="logos-container">
     <div class="qr-fbr-wrap">
       <div id="qrcode"></div>
-      @if(file_exists(public_path('fbr.jpg')))
-        <img src="{{ asset('fbr.jpg') }}" alt="FBR Logo" class="fbr-img">
-      @else
+      <?php if(file_exists(public_path('fbr.jpg'))): ?>
+        <img src="<?php echo e(asset('fbr.jpg')); ?>" alt="FBR Logo" class="fbr-img">
+      <?php else: ?>
         <div style="text-align:center;padding:10px;"><p>FBR Logo</p></div>
-      @endif
+      <?php endif; ?>
     </div>
   </div>
   
   <div class="company-header">
-    <p class="company-name">M/S {{ $invoice->seller_business_name ?? '' }}</p>
-    <p class="company-address">{{ $invoice->seller_address ?? '' }}</p>
-    <p class="digital-invoice-num">Digital Invoice Nmbr: {{ $invoice->fbr_invoice_no ?? 'N/A' }}</p>
+    <p class="company-name">M/S <?php echo e($invoice->seller_business_name ?? ''); ?></p>
+    <p class="company-address"><?php echo e($invoice->seller_address ?? ''); ?></p>
+    <p class="digital-invoice-num">Digital Invoice Nmbr: <?php echo e($invoice->fbr_invoice_no ?? 'N/A'); ?></p>
   </div>
   <div class="title-bar">SALES TAX INVOICE</div>
 
@@ -199,23 +199,23 @@
   <div class="meta-row">
     <div class="customer-box">
       <div class="customer-title">Customer's Detail</div>
-      <div class="line"><span class="label">Buyer's Name:</span> <span class="buyer-name" id="buyerName">{{ $invoice->buyer_business_name ?? '' }}</span></div>
-      <div class="line"><span class="label">Address:</span> <span id="buyerAddress">{{ $invoice->buyer_address ?? '' }}</span></div>
-      <div class="line taxno"><span class="label">Sales Tax Reg No.</span> <span id="buyerSTRN">{{ $invoice->buyer_ntn_cnic ?? '' }}</span> &nbsp;&nbsp; <span class="label">NTN:</span> <span id="buyerNTN">{{ $invoice->buyer_ntn_cnic ?? '' }}</span></div>
+      <div class="line"><span class="label">Buyer's Name:</span> <span class="buyer-name" id="buyerName"><?php echo e($invoice->buyer_business_name ?? ''); ?></span></div>
+      <div class="line"><span class="label">Address:</span> <span id="buyerAddress"><?php echo e($invoice->buyer_address ?? ''); ?></span></div>
+      <div class="line taxno"><span class="label">Sales Tax Reg No.</span> <span id="buyerSTRN"><?php echo e($invoice->buyer_ntn_cnic ?? ''); ?></span> &nbsp;&nbsp; <span class="label">NTN:</span> <span id="buyerNTN"><?php echo e($invoice->buyer_ntn_cnic ?? ''); ?></span></div>
     </div>
     <div class="invoice-meta">
       <table>
-        <tr><td class="label">Invoice No.</td><td id="invNo">{{ $invoice->fbr_invoice_no ?? 'N/A' }}</td></tr>
-        <tr><td class="label">Invoice Date</td><td id="invDate">{{ \Carbon\Carbon::parse($invoice->invoice_date ?? now())->format('d-M-y') }}</td></tr>
-        <tr><td class="label">Sales Tax Reg No.</td><td id="sellerSTRN">{{ $invoice->seller_ntn_cnic ?? '' }}</td></tr>
-        <tr><td class="label">NTN No.</td><td id="sellerNTN">{{ $invoice->seller_ntn_cnic ?? '' }}</td></tr>
-        <tr><td class="label">P-Order No.</td><td id="poNo">{{ $invoice->invoice_ref_no ?? '-' }}</td></tr>
+        <tr><td class="label">Invoice No.</td><td id="invNo"><?php echo e($invoice->fbr_invoice_no ?? 'N/A'); ?></td></tr>
+        <tr><td class="label">Invoice Date</td><td id="invDate"><?php echo e(\Carbon\Carbon::parse($invoice->invoice_date ?? now())->format('d-M-y')); ?></td></tr>
+        <tr><td class="label">Sales Tax Reg No.</td><td id="sellerSTRN"><?php echo e($invoice->seller_ntn_cnic ?? ''); ?></td></tr>
+        <tr><td class="label">NTN No.</td><td id="sellerNTN"><?php echo e($invoice->seller_ntn_cnic ?? ''); ?></td></tr>
+        <tr><td class="label">P-Order No.</td><td id="poNo"><?php echo e($invoice->invoice_ref_no ?? '-'); ?></td></tr>
       </table>
     </div>
   </div>
 
   <!-- ============ ITEMS TABLE ============ -->
-  @php
+  <?php
       $items = is_string($invoice->items) ? json_decode($invoice->items, true) : ($invoice->items ?? []);
       $itemsCollection = collect($items);
       $grandQty = 0;
@@ -229,7 +229,7 @@
       $grandFurtherTax = 0;
       $grandUS236 = 0; // if GH amount is present
       $grandAmount = 0;
-  @endphp
+  ?>
 
   <table class="items" id="itemsTable">
     <thead>
@@ -253,8 +253,8 @@
       </tr>
     </thead>
     <tbody id="itemsBody">
-      @foreach($itemsCollection as $index => $item)
-      @php
+      <?php $__currentLoopData = $itemsCollection; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+      <?php
           $itemArray = is_array($item) ? $item : (array) $item;
           $qty = floatval($itemArray['quantity'] ?? 0);
           $rateVal = floatval($itemArray['rateValues'] ?? 0);
@@ -289,29 +289,29 @@
           $grandFurtherTax += $furtherTax;
           $grandUS236 += $us236;
           $grandAmount += $amount;
-      @endphp
+      ?>
       <tr>
-        <td>{{ $index + 1 }}</td>
-        <td class="desc">{{ $itemArray['product_description'] ?? $itemArray['productDescription'] ?? '-' }}</td>
-        <td>{{ number_format($qty, 3) }}</td>
-        <td class="num">{{ number_format($retailExcl) }}</td>
-        <td class="num">{{ number_format($salesTax) }}</td>
-        <td class="num">{{ number_format($retailIncl) }}</td>
-        <td class="num">{{ $discount > 0 ? number_format($discount) : '-' }}</td>
-        <td class="num">{{ number_format($tradeExcl) }}</td>
-        <td class="num">{{ number_format($salesTax) }}</td>
-        <td class="num">{{ number_format($tradeWithTax) }}</td>
-        <td class="num">{{ $us236 > 0 ? number_format($us236, 2) : '-' }}</td>
-        <td class="num">{{ number_format($amount) }}</td>
+        <td><?php echo e($index + 1); ?></td>
+        <td class="desc"><?php echo e($itemArray['product_description'] ?? $itemArray['productDescription'] ?? '-'); ?></td>
+        <td><?php echo e(number_format($qty, 3)); ?></td>
+        <td class="num"><?php echo e(number_format($retailExcl)); ?></td>
+        <td class="num"><?php echo e(number_format($salesTax)); ?></td>
+        <td class="num"><?php echo e(number_format($retailIncl)); ?></td>
+        <td class="num"><?php echo e($discount > 0 ? number_format($discount) : '-'); ?></td>
+        <td class="num"><?php echo e(number_format($tradeExcl)); ?></td>
+        <td class="num"><?php echo e(number_format($salesTax)); ?></td>
+        <td class="num"><?php echo e(number_format($tradeWithTax)); ?></td>
+        <td class="num"><?php echo e($us236 > 0 ? number_format($us236, 2) : '-'); ?></td>
+        <td class="num"><?php echo e(number_format($amount)); ?></td>
       </tr>
-      @endforeach
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-      @php
+      <?php
           $extraAmount = floatval($invoice->expense_col ?? 0);
-      @endphp
-      @if($extraAmount > 0 && $itemsCollection->count() > 0)
+      ?>
+      <?php if($extraAmount > 0 && $itemsCollection->count() > 0): ?>
       <tr>
-        <td>{{ $itemsCollection->count() + 1 }}</td>
+        <td><?php echo e($itemsCollection->count() + 1); ?></td>
         <td class="desc">Transportation Charges</td>
         <td>-</td>
         <td class="num">-</td>
@@ -322,13 +322,13 @@
         <td class="num">-</td>
         <td class="num">-</td>
         <td class="num">-</td>
-        <td class="num">{{ number_format($extraAmount) }}</td>
+        <td class="num"><?php echo e(number_format($extraAmount)); ?></td>
       </tr>
-      @php
+      <?php
           $grandAmount += $extraAmount;
           $grandTradeWithTax += $extraAmount;
-      @endphp
-      @endif
+      ?>
+      <?php endif; ?>
       
 
 
@@ -336,16 +336,16 @@
     <tfoot>
       <tr>
         <td colspan="2">Total Value Exclusive of Sales Tax</td>
-        <td id="totQty" class="num">{{ number_format($grandQty, 3) }}</td>
-        <td id="totExcl" class="num">{{ number_format($grandRetailExcl) }}</td>
-        <td id="totTax1" class="num">{{ number_format($grandRetailTax) }}</td>
-        <td id="totIncl" class="num">{{ number_format($grandRetailIncl) }}</td>
-        <td id="totDisc" class="num">{{ number_format($grandDiscount) }}</td>
-        <td id="totDV" class="num">{{ number_format($grandTradeExcl) }}</td>
-        <td id="totTax2" class="num">{{ number_format($grandTradeTax) }}</td>
-        <td id="totVWST" class="num">{{ number_format($grandTradeWithTax) }}</td>
-        <td id="totUS236" class="num">{{ number_format($grandUS236, 2) }}</td>
-        <td id="totAmt" class="num">{{ number_format($grandAmount) }}</td>
+        <td id="totQty" class="num"><?php echo e(number_format($grandQty, 3)); ?></td>
+        <td id="totExcl" class="num"><?php echo e(number_format($grandRetailExcl)); ?></td>
+        <td id="totTax1" class="num"><?php echo e(number_format($grandRetailTax)); ?></td>
+        <td id="totIncl" class="num"><?php echo e(number_format($grandRetailIncl)); ?></td>
+        <td id="totDisc" class="num"><?php echo e(number_format($grandDiscount)); ?></td>
+        <td id="totDV" class="num"><?php echo e(number_format($grandTradeExcl)); ?></td>
+        <td id="totTax2" class="num"><?php echo e(number_format($grandTradeTax)); ?></td>
+        <td id="totVWST" class="num"><?php echo e(number_format($grandTradeWithTax)); ?></td>
+        <td id="totUS236" class="num"><?php echo e(number_format($grandUS236, 2)); ?></td>
+        <td id="totAmt" class="num"><?php echo e(number_format($grandAmount)); ?></td>
       </tr>
     </tfoot>
   </table>
@@ -354,16 +354,16 @@
   <table class="totals-block">
     <tr>
       <td class="t-label">(+) Further Tax Payable (if applicable)</td>
-      <td class="t-val">{{ $grandFurtherTax > 0 ? number_format($grandFurtherTax) : '-' }}</td>
+      <td class="t-val"><?php echo e($grandFurtherTax > 0 ? number_format($grandFurtherTax) : '-'); ?></td>
     </tr>
     <tr>
       <td class="t-label grand">Total Amount Payable (Rs.)</td>
-      <td class="t-val grand" id="grandTotal">{{ number_format($grandAmount + $grandFurtherTax) }}</td>
+      <td class="t-val grand" id="grandTotal"><?php echo e(number_format($grandAmount + $grandFurtherTax)); ?></td>
     </tr>
   </table>
 
   <div class="sign-block">
-    <div class="box">For M/S {{ $invoice->seller_business_name ?? 'CASIO NON STICK COATINGS' }}</div>
+    <div class="box">For M/S <?php echo e($invoice->seller_business_name ?? 'CASIO NON STICK COATINGS'); ?></div>
   </div>
 
   <div class="note">
@@ -374,7 +374,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var qrData = "{{ $invoice->fbr_invoice_no ?? 'N/A' }}";
+        var qrData = "<?php echo e($invoice->fbr_invoice_no ?? 'N/A'); ?>";
         if (qrData && qrData !== 'N/A') {
             new QRCode(document.getElementById("qrcode"), {
                 text: qrData,
@@ -388,3 +388,4 @@
 </script>
 </body>
 </html>
+<?php /**PATH C:\Users\PC\FBR\FBR\resources\views/SaleInvoice/third_schedule.blade.php ENDPATH**/ ?>
