@@ -47,6 +47,8 @@ class ReportController extends Controller
 {
     $query = SaleInvoiceFbr::query();
     $user=Auth::user();
+    // Filter by user's company
+    $query->where('cid', $user->c_id);
     // Apply date filters
     if ($request->filled('start_date')) {
         $query->whereDate('created_at', '>=', $request->start_date);
@@ -60,9 +62,7 @@ class ReportController extends Controller
         $query->where('fbr_invoice_no', $request->bill_no);
     }
 
-    // You might also want to filter by party_id here, depending on your DB
-    
-    $salesInvoices = $query->where( 'cid',$user->c_id)->get();
+    $salesInvoices = $query->orderBy('created_at', 'asc')->get();
 
 $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)
     ->distinct()
