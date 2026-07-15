@@ -263,10 +263,8 @@
           $retailExcl = $fixedNotified > 0 ? ($fixedNotified * $qty) : ($rateVal * $qty);
           $tradeExcl = floatval($itemArray['valueSalesExcludingST'] ?? $retailExcl);
           
-          $discount = floatval($itemArray['discount'] ?? 0);
-          if (isset($itemArray['discountAmount']) && floatval($itemArray['discountAmount']) > 0) {
-              $discount += floatval($itemArray['discountAmount']);
-          }
+            // Use discountAmount if stored (calculated amount), fallback to discount field
+            $discount = floatval($itemArray['discountAmount'] ?? $itemArray['discount'] ?? 0);
 
           $salesTax = floatval($itemArray['salesTaxApplicable'] ?? 0);
           $furtherTax = floatval($itemArray['furtherTax'] ?? 0);
