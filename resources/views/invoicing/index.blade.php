@@ -3090,15 +3090,9 @@ const result = JSON.parse(cleanText);
                     document.getElementById('modalDiscount').value = item.discountPercentInput;
                 }
 
-                // When editing a 3rd Schedule item, FixedNotifiedValue was saved as inclusive MRP.
-                // Convert back to exclusive base price so forward calculation works correctly.
+                // Check if this is a 3rd Schedule item
                 const saleTypeText = item.saleTypeText || '';
                 if (saleTypeText.toLowerCase().includes('3rd schedule') || saleTypeText.toLowerCase().includes('3rd party')) {
-                    const savedInclusiveMrp = parseFloat(item.fixedNotifiedValueOrRetailPrice) || 0;
-                    const savedTax = parseFloat(item.salesTaxApplicable) || 0;
-                    const exclusiveBase = savedInclusiveMrp - savedTax;
-                    document.getElementById('modalFixedNotifiedValueOrRetailPrice').value = exclusiveBase;
-
                     // Restore 3rd Schedule percentage fields
                     if (item.ghPercent !== undefined) {
                         document.getElementById('modalGhPercent').value = item.ghPercent;

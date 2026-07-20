@@ -20,7 +20,6 @@
     padding: 14px;
   }
 
-  /* ===== Header ===== */
   .logos-container { text-align: center; margin-bottom: 10px; }
   .logos-container .qr-fbr-wrap { display: inline-flex; align-items: center; gap: 15px; }
   .logos-container #qrcode { width: 70px; height: 70px; }
@@ -56,7 +55,6 @@
     border-bottom: none;
   }
 
-  /* ===== Customer / Invoice meta ===== */
   .meta-row {
     display: flex;
     width: 100%;
@@ -89,7 +87,6 @@
   }
   .invoice-meta td.label { font-weight: 700; width: 45%; background: #f2f2f2; }
 
-  /* ===== Items table ===== */
   table.items {
     width: 100%;
     border-collapse: collapse;
@@ -120,7 +117,6 @@
   }
   .num { text-align: right; font-variant-numeric: tabular-nums; }
 
-  /* ===== Totals block ===== */
   .totals-block {
     width: 100%;
     margin-top: 0;
@@ -137,7 +133,6 @@
   .totals-block .t-val { text-align: right; font-weight: 700; width: 22%; }
   .totals-block .grand { font-size: 13px; background: #eaeaea; }
 
-  /* ===== Signature ===== */
   .sign-block {
     margin-top: 46px;
     display: flex;
@@ -176,7 +171,7 @@
 
 <div class="sheet">
 
-  <!-- ============ HEADER ============ -->
+  <!-- HEADER -->
   <div class="logos-container">
     <div class="qr-fbr-wrap">
       <div id="qrcode"></div>
@@ -195,7 +190,7 @@
   </div>
   <div class="title-bar">SALES TAX INVOICE</div>
 
-  <!-- ============ CUSTOMER + INVOICE META ============ -->
+  <!-- CUSTOMER + INVOICE META -->
   <div class="meta-row">
     <div class="customer-box">
       <div class="customer-title">Customer's Detail</div>
@@ -209,15 +204,17 @@
         <tr><td class="label">Invoice Date</td><td id="invDate"><?php echo e(\Carbon\Carbon::parse($invoice->invoice_date ?? now())->format('d-M-y')); ?></td></tr>
         <tr><td class="label">Sales Tax Reg No.</td><td id="sellerSTRN"><?php echo e($invoice->seller_ntn_cnic ?? ''); ?></td></tr>
         <tr><td class="label">NTN No.</td><td id="sellerNTN"><?php echo e($invoice->seller_ntn_cnic ?? ''); ?></td></tr>
-        <tr><td class="label">P-Order No.</td><td id="poNo"><?php echo e($invoice->invoice_ref_no ?? '-'); ?></td></tr>
+        <tr><td class="label">Serial No.</td><td id="poNo"><?php echo e($invoice->invoice_ref_no ?? '-'); ?></td></tr>
       </table>
     </div>
   </div>
 
-  <!-- ============ ITEMS TABLE ============ -->
+  <!-- ITEMS TABLE -->
   <?php
       $items = is_string($invoice->items) ? json_decode($invoice->items, true) : ($invoice->items ?? []);
       $itemsCollection = collect($items);
+      
+      // Grand totals (all per-unit sums)
       $grandQty = 0;
       $grandRetailExcl = 0;
       $grandRetailTax = 0;
@@ -226,9 +223,9 @@
       $grandTradeExcl = 0;
       $grandTradeTax = 0;
       $grandTradeWithTax = 0;
-      $grandFurtherTax = 0;
-      $grandUS236 = 0; // if GH amount is present
+      $grandUS236 = 0;
       $grandAmount = 0;
+      $grandFurtherTax = 0;
   ?>
 
   <table class="items" id="itemsTable">
@@ -257,50 +254,86 @@
       <?php
           $itemArray = is_array($item) ? $item : (array) $item;
           $qty = floatval($itemArray['quantity'] ?? 0);
-          $rateVal = floatval($itemArray['rateValues'] ?? 0);
           $fixedNotified = floatval($itemArray['fixedNotifiedValueOrRetailPrice'] ?? 0);
-          
-          $retailExcl = $fixedNotified > 0 ? ($fixedNotified * $qty) : ($rateVal * $qty);
-          $tradeExcl = floatval($itemArray['valueSalesExcludingST'] ?? $retailExcl);
-          
-            // Use discountAmount if stored (calculated amount), fallback to discount field
-            $discount = floatval($itemArray['discountAmount'] ?? $itemArray['discount'] ?? 0);
-
-          $salesTax = floatval($itemArray['salesTaxApplicable'] ?? 0);
+          $discountPerUnit = floatval($itemArray['discountAmount'] ?? 0);
+          if ($discountPerUnit == 0) {
+              $discountPerUnit = floatval($itemArray['discount'] ?? 0);
+          }
+          $ghPerUnit = floatval($itemArray['ghAmount'] ?? 0);
           $furtherTax = floatval($itemArray['furtherTax'] ?? 0);
           
-          $us236 = floatval($itemArray['ghAmount'] ?? 0);
-
-          $retailIncl = $retailExcl + $salesTax;
-          $tradeWithTax = $tradeExcl + $salesTax;
+          $isThirdSchedule = ($fixedNotified > 0);
           
-          $amount = $tradeWithTax + $us236; // Based on note: Amount = Value With Sales Tax + U/S 236 G/H
-
+          if ($isThirdSchedule) {
+              // ---- 3rd Schedule: all values are per‑unit ----
+              $retailExcl = $fixedNotified;                          
+              $retailTax = $fixedNotified * 0.18;                    
+              $retailIncl = $retailExcl + $retailTax;               
+              $discount = $discountPerUnit;                          
+              $tradeExcl = $fixedNotified - $discount;               
+              $tradeTax = $retailTax;                                
+              $tradeWithTax = $tradeExcl + $tradeTax;                
+              $us236 = $ghPerUnit;                                   
+              // Amount is per‑unit, NOT multiplied by quantity
+              $amount = $tradeWithTax + $us236;
+          } else {
+              // ---- Standard item: values are totals (already per unit or total?) ----
+              // To keep consistent, we treat them as per‑unit if qty > 0
+              // We'll assume the stored values are per‑unit (or we can divide by qty)
+              // For simplicity, we'll use the stored values as is (they should be per‑unit for standard as well)
+              $retailExcl = floatval($itemArray['rateValues'] ?? 0);
+              $retailTax = floatval($itemArray['salesTaxApplicable'] ?? 0);
+              // But salesTaxApplicable might be total, so we divide by qty if qty > 0
+              if ($qty > 0) {
+                  $retailTax = $retailTax / $qty;
+              }
+              $retailIncl = $retailExcl + $retailTax;
+              $discount = floatval($itemArray['discount'] ?? 0);
+              // discount might be total, convert to per unit
+              if ($qty > 0 && $discount > 0) {
+                  $discount = $discount / $qty;
+              }
+              $tradeExcl = floatval($itemArray['valueSalesExcludingST'] ?? $retailExcl);
+              // tradeExcl might be total, convert to per unit
+              if ($qty > 0) {
+                  $tradeExcl = $tradeExcl / $qty;
+              }
+              $tradeTax = $retailTax;
+              $tradeWithTax = $tradeExcl + $tradeTax;
+              $us236 = floatval($itemArray['ghAmount'] ?? 0);
+              if ($qty > 0 && $us236 > 0) {
+                  $us236 = $us236 / $qty;
+              }
+              $amount = $tradeWithTax + $us236;
+          }
+          
+          // Accumulate grand totals (all per-unit)
           $grandQty += $qty;
           $grandRetailExcl += $retailExcl;
-          $grandRetailTax += $salesTax;
+          $grandRetailTax += $retailTax;
           $grandRetailIncl += $retailIncl;
           $grandDiscount += $discount;
           $grandTradeExcl += $tradeExcl;
-          $grandTradeTax += $salesTax;
+          $grandTradeTax += $tradeTax;
           $grandTradeWithTax += $tradeWithTax;
-          $grandFurtherTax += $furtherTax;
           $grandUS236 += $us236;
           $grandAmount += $amount;
+          $grandFurtherTax += $furtherTax;
       ?>
       <tr>
         <td><?php echo e($index + 1); ?></td>
         <td class="desc"><?php echo e($itemArray['product_description'] ?? $itemArray['productDescription'] ?? '-'); ?></td>
         <td><?php echo e(number_format($qty, 3)); ?></td>
-        <td class="num"><?php echo e(number_format($retailExcl)); ?></td>
-        <td class="num"><?php echo e(number_format($salesTax)); ?></td>
-        <td class="num"><?php echo e(number_format($retailIncl)); ?></td>
-        <td class="num"><?php echo e($discount > 0 ? number_format($discount) : '-'); ?></td>
-        <td class="num"><?php echo e(number_format($tradeExcl)); ?></td>
-        <td class="num"><?php echo e(number_format($salesTax)); ?></td>
-        <td class="num"><?php echo e(number_format($tradeWithTax)); ?></td>
-        <td class="num"><?php echo e($us236 > 0 ? number_format($us236, 2) : '-'); ?></td>
-        <td class="num"><?php echo e(number_format($amount)); ?></td>
+        <!-- All values are integers (no decimals) -->
+        <td class="num"><?php echo e(number_format($retailExcl, 0)); ?></td>
+        <td class="num"><?php echo e(number_format($retailTax, 0)); ?></td>
+        <td class="num"><?php echo e(number_format($retailIncl, 0)); ?></td>
+        <td class="num"><?php echo e($discount > 0 ? number_format($discount, 0) : '-'); ?></td>
+        <td class="num"><?php echo e(number_format($tradeExcl, 0)); ?></td>
+        <td class="num"><?php echo e(number_format($tradeTax, 0)); ?></td>
+        <td class="num"><?php echo e(number_format($tradeWithTax, 0)); ?></td>
+        <td class="num"><?php echo e($us236 > 0 ? number_format($us236, 0) : '-'); ?></td>
+        <td class="num"><?php echo e(number_format($amount, 0)); ?></td>
       </tr>
       <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
@@ -320,43 +353,41 @@
         <td class="num">-</td>
         <td class="num">-</td>
         <td class="num">-</td>
-        <td class="num"><?php echo e(number_format($extraAmount)); ?></td>
+        <td class="num"><?php echo e(number_format($extraAmount, 0)); ?></td>
       </tr>
       <?php
+          // Add extra amount to grand total (it is already a total, not per-unit)
           $grandAmount += $extraAmount;
-          $grandTradeWithTax += $extraAmount;
       ?>
       <?php endif; ?>
-      
-
 
     </tbody>
     <tfoot>
       <tr>
         <td colspan="2">Total Value Exclusive of Sales Tax</td>
         <td id="totQty" class="num"><?php echo e(number_format($grandQty, 3)); ?></td>
-        <td id="totExcl" class="num"><?php echo e(number_format($grandRetailExcl)); ?></td>
-        <td id="totTax1" class="num"><?php echo e(number_format($grandRetailTax)); ?></td>
-        <td id="totIncl" class="num"><?php echo e(number_format($grandRetailIncl)); ?></td>
-        <td id="totDisc" class="num"><?php echo e(number_format($grandDiscount)); ?></td>
-        <td id="totDV" class="num"><?php echo e(number_format($grandTradeExcl)); ?></td>
-        <td id="totTax2" class="num"><?php echo e(number_format($grandTradeTax)); ?></td>
-        <td id="totVWST" class="num"><?php echo e(number_format($grandTradeWithTax)); ?></td>
-        <td id="totUS236" class="num"><?php echo e(number_format($grandUS236, 2)); ?></td>
-        <td id="totAmt" class="num"><?php echo e(number_format($grandAmount)); ?></td>
+        <td id="totExcl" class="num"><?php echo e(number_format($grandRetailExcl, 0)); ?></td>
+        <td id="totTax1" class="num"><?php echo e(number_format($grandRetailTax, 0)); ?></td>
+        <td id="totIncl" class="num"><?php echo e(number_format($grandRetailIncl, 0)); ?></td>
+        <td id="totDisc" class="num"><?php echo e(number_format($grandDiscount, 0)); ?></td>
+        <td id="totDV" class="num"><?php echo e(number_format($grandTradeExcl, 0)); ?></td>
+        <td id="totTax2" class="num"><?php echo e(number_format($grandTradeTax, 0)); ?></td>
+        <td id="totVWST" class="num"><?php echo e(number_format($grandTradeWithTax, 0)); ?></td>
+        <td id="totUS236" class="num"><?php echo e(number_format($grandUS236, 0)); ?></td>
+        <td id="totAmt" class="num"><?php echo e(number_format($grandAmount, 0)); ?></td>
       </tr>
     </tfoot>
   </table>
 
-  <!-- ============ TOTALS BLOCK ============ -->
+  <!-- TOTALS BLOCK -->
   <table class="totals-block">
     <tr>
       <td class="t-label">(+) Further Tax Payable (if applicable)</td>
-      <td class="t-val"><?php echo e($grandFurtherTax > 0 ? number_format($grandFurtherTax) : '-'); ?></td>
+      <td class="t-val"><?php echo e($grandFurtherTax > 0 ? number_format($grandFurtherTax, 0) : '-'); ?></td>
     </tr>
     <tr>
       <td class="t-label grand">Total Amount Payable (Rs.)</td>
-      <td class="t-val grand" id="grandTotal"><?php echo e(number_format($grandAmount + $grandFurtherTax)); ?></td>
+      <td class="t-val grand" id="grandTotal"><?php echo e(number_format($grandAmount + $grandFurtherTax, 0)); ?></td>
     </tr>
   </table>
 
@@ -385,5 +416,4 @@
     });
 </script>
 </body>
-</html>
-<?php /**PATH C:\Users\Shahan Developer\FBR\resources\views/SaleInvoice/third_schedule.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\Users\Shahan Developer\FBR\resources\views/SaleInvoice/third_schedule.blade.php ENDPATH**/ ?>

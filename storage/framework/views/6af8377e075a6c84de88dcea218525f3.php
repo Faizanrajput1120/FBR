@@ -880,12 +880,12 @@ if (isModal) {
             $('#modalDiscountAmount').val(discountAmount.toFixed(2));
             discountField.value = discountAmount.toFixed(2); // Update hidden discount field
 
-            // Sales Tax = basePrice × rate% × qty (on the base exclusive price)
-            const salesTax3rd = basePrice * rate / 100 * qty;
+            // *** FIX 1: Sales Tax = basePrice × rate% (quantity NOT applied) ***
+            const salesTax3rd = basePrice * rate / 100;
             salesTaxField.value = salesTax3rd.toFixed(2);
 
-            // Value Sales Excluding ST = FNV - Discount Amount (per user requirement)
-            const exclVal = (basePrice - discountAmount) * qty;
+            // *** FIX 2: Value Sales Excluding ST = FNV - Discount Amount (quantity NOT applied) ***
+            const exclVal = basePrice - discountAmount;
             $('#modalValueSalesExcludingST').val(exclVal.toFixed(2));
 
             // G/H Amount = (Value Sales Excluding ST + Sales Tax Applicable) * GH% / 100
@@ -895,7 +895,7 @@ if (isModal) {
             if (rate > 0 && basePrice > 0) {
                 salesTaxField.classList.remove('bg-gray-50', 'bg-red-50');
                 salesTaxField.classList.add('bg-green-50');
-                salesTaxField.title = `3rd Schedule Tax: ${basePrice.toFixed(2)} × ${rate}% × ${qty} = ${salesTax3rd.toFixed(2)}`;
+                salesTaxField.title = `3rd Schedule Tax: ${basePrice.toFixed(2)} × ${rate}% = ${salesTax3rd.toFixed(2)}`;
             }
             
             const furtherTaxAmt = exclVal * 4 / 100;
@@ -1123,7 +1123,7 @@ if (isModal) {
             }
         }
         
-        // Recalculate 3rd Schedule fields
+        // *** FIX 3: Recalculate 3rd Schedule fields WITHOUT multiplying by quantity ***
         function recalculate3rdSchedule() {
             const fnField = document.getElementById('modalFixedNotifiedValueOrRetailPrice');
             const ghPercentField = document.getElementById('modalGhPercent');
@@ -1133,24 +1133,35 @@ if (isModal) {
             const discountField = document.getElementById('modalDiscount');
             const valueSalesField = document.getElementById('modalValueSalesExcludingST');
             const salesTaxField = document.getElementById('modalSalesTaxApplicable');
-            
+            const rateSelect = document.getElementById('modalRate');
+
             const fnv = parseFloat(fnField.value) || 0;
             const ghPercent = parseFloat(ghPercentField.value) || 0;
             const discountPercent = parseFloat(discountPercentField.value) || 0;
-            
-            // G/H Amount = (Value Sales Excluding ST + Sales Tax Applicable) * GH% / 100
-            const ghBase = (parseFloat(valueSalesField.value) || 0) + (parseFloat(salesTaxField.value) || 0);
-            const ghAmount = ghBase * ghPercent / 100;
-            ghAmountField.value = ghAmount.toFixed(2);
-            
-            // Discount Amount = FNV * Discount% / 100
+
+            let rate = 0;
+            if (rateSelect.value) {
+                try {
+                    rate = parseFloat(JSON.parse(rateSelect.value).rate_value) || 0;
+                } catch (e) {}
+            }
+
+            // Discount Amount = FNV * Discount% / 100 (per-unit)
             const discountAmount = fnv * discountPercent / 100;
             discountAmountField.value = discountAmount.toFixed(2);
-            
             discountField.value = discountAmount.toFixed(2);
-            
+
+            // Value Sales Excluding ST = FNV - Discount (quantity NOT applied)
             const valueSales = fnv - discountAmount;
             valueSalesField.value = valueSales.toFixed(2);
+
+            // Sales Tax = FNV × rate% (quantity NOT applied)
+            const salesTax = fnv * rate / 100;
+            salesTaxField.value = salesTax.toFixed(2);
+
+            // G/H Amount = (Value Sales Excluding ST + Sales Tax) * GH% / 100
+            const ghAmount = (valueSales + salesTax) * ghPercent / 100;
+            ghAmountField.value = ghAmount.toFixed(2);
         }
 
         // Global variables for buyer autocomplete
@@ -2110,10 +2121,11 @@ const result = JSON.parse(cleanText);
             if (isModal) {
                 const isThirdParty = is3rdScheduleSelected();
                 if (isThirdParty) {
-                    // 3rd Schedule: Sales Tax = basePrice × rate% × qty (forward)
+                    // *** FIX: 3rd Schedule calculations (quantity NOT applied) ***
                     const basePrice = parseFloat(document.getElementById('modalFixedNotifiedValueOrRetailPrice').value) || 0;
                     const qty = parseFloat(document.getElementById('modalQuantity').value) || 0;
-                    salesTax = basePrice * rate / 100 * qty;
+                    // Sales Tax = basePrice × rate% (no qty)
+                    salesTax = basePrice * rate / 100;
                     salesTaxField.value = salesTax.toFixed(2);
 
                     // Calculate Discount Amount from Discount %
@@ -2121,8 +2133,8 @@ const result = JSON.parse(cleanText);
                     const discountAmount = basePrice * discountPercent / 100;
                     $('#modalDiscountAmount').val(discountAmount.toFixed(2));
 
-                    // Value Sales Excluding ST = FixedNotifiedValue - Discount Amount
-                    const exclVal = (basePrice - discountAmount) * qty;
+                    // Value Sales Excluding ST = FixedNotifiedValue - Discount Amount (no qty)
+                    const exclVal = basePrice - discountAmount;
                     $('#modalValueSalesExcludingST').val(exclVal.toFixed(2));
                     
                     // Calculate G/H Amount = (Value Sales Excluding ST + Sales Tax) * GH% / 100
@@ -2134,7 +2146,7 @@ const result = JSON.parse(cleanText);
                     if (rate > 0 && basePrice > 0) {
                         salesTaxField.classList.remove('bg-gray-50', 'bg-red-50');
                         salesTaxField.classList.add('bg-green-50');
-                        salesTaxField.title = `3rd Schedule Tax: ${basePrice.toFixed(2)} × ${rate}% × ${qty} = ${salesTax.toFixed(2)}`;
+                        salesTaxField.title = `3rd Schedule Tax: ${basePrice.toFixed(2)} × ${rate}% = ${salesTax.toFixed(2)}`;
                     } else {
                         salesTaxField.classList.remove('bg-green-50');
                         salesTaxField.classList.add('bg-gray-50');
@@ -3077,15 +3089,9 @@ const result = JSON.parse(cleanText);
                     document.getElementById('modalDiscount').value = item.discountPercentInput;
                 }
 
-                // When editing a 3rd Schedule item, FixedNotifiedValue was saved as inclusive MRP.
-                // Convert back to exclusive base price so forward calculation works correctly.
+                // Check if this is a 3rd Schedule item
                 const saleTypeText = item.saleTypeText || '';
                 if (saleTypeText.toLowerCase().includes('3rd schedule') || saleTypeText.toLowerCase().includes('3rd party')) {
-                    const savedInclusiveMrp = parseFloat(item.fixedNotifiedValueOrRetailPrice) || 0;
-                    const savedTax = parseFloat(item.salesTaxApplicable) || 0;
-                    const exclusiveBase = savedInclusiveMrp - savedTax;
-                    document.getElementById('modalFixedNotifiedValueOrRetailPrice').value = exclusiveBase;
-
                     // Restore 3rd Schedule percentage fields
                     if (item.ghPercent !== undefined) {
                         document.getElementById('modalGhPercent').value = item.ghPercent;

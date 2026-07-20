@@ -73,7 +73,7 @@ class UserManagement extends Controller
             'address' => $request->address,
             'business_name' => $request->business_name,
             'province' => $request->province,
-            'c_id' => $request->c_id,
+            'c_id' => $request->company_id,
         ]);
 
         return redirect()->route('users.index')->with('success', 'User created successfully!');

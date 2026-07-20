@@ -228,6 +228,10 @@ Route::get('premiertax/sale/invoice/{id}', [SaleDetails::class, 'invoice'])
      ->name('premiertax.sale.invoice');
 Route::get('premiertax/sale/invoice/{id}/third-schedule', [SaleDetails::class, 'thirdSchedule'])
      ->name('premiertax.sale.third-schedule');
+Route::get('premiertax/sale/invoice/{id}/standard', [SaleDetails::class, 'standardInvoice'])
+     ->name('premiertax.sale.standard-invoice');
+Route::get('premiertax/sale/invoice/{id}/commercial-print', [SaleDetails::class, 'commercialPrint'])
+     ->name('premiertax.sale.commercial-print');
 Route::get('/premiertax/create-storage-link', [StorageLinkController::class, 'createLink']);
 
 Route::middleware(['auth', 'admin'])->group(function () {

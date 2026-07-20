@@ -1,12 +1,12 @@
-@extends('layouts.app')
-@section('content')
-  <x-slot name="header">
+<?php $__env->startSection('content'); ?>
+   <?php $__env->slot('header', null, []); ?> 
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Edit Draft Invoice') }}: {{ $draftInvoice->generateTitle() }}
+                <?php echo e(__('Edit Draft Invoice')); ?>: <?php echo e($draftInvoice->generateTitle()); ?>
+
             </h2>
             <div class="flex items-center space-x-4">
-                <a href="{{ route('drafts.index') }}"
+                <a href="<?php echo e(route('drafts.index')); ?>"
                    class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-500 focus:outline-none focus:border-gray-700 focus:ring focus:ring-gray-200 active:bg-gray-600 disabled:opacity-25 transition">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
@@ -15,16 +15,16 @@
                 </a>
             </div>
         </div>
-    </x-slot>
+     <?php $__env->endSlot(); ?>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <!-- Invoice Form -->
-                    <form id="invoiceForm" method="POST" action="{{ route('drafts.update', $draftInvoice) }}" class="space-y-8">
-                        @csrf
-                        @method('PUT')
+                    <form id="invoiceForm" method="POST" action="<?php echo e(route('drafts.update', $draftInvoice)); ?>" class="space-y-8">
+                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('PUT'); ?>
 
                         <!-- Draft Title Section -->
                         <div class="bg-blue-50 rounded-lg p-4">
@@ -37,11 +37,11 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Draft Title</label>
-                                    <input type="text" id="title" name="title" placeholder="Enter a title for this draft" value="{{ $draftInvoice->title ?: $draftInvoice->generateTitle() }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="text" id="title" name="title" placeholder="Enter a title for this draft" value="<?php echo e($draftInvoice->title ?: $draftInvoice->generateTitle()); ?>" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                                    <textarea id="notes" name="notes" placeholder="Add any notes about this draft" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ $draftInvoice->notes }}</textarea>
+                                    <textarea id="notes" name="notes" placeholder="Add any notes about this draft" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"><?php echo e($draftInvoice->notes); ?></textarea>
                                 </div>
                             </div>
                         </div>
@@ -63,29 +63,30 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label for="sellerNTNCNIC" class="block text-sm font-medium text-gray-700 mb-1">CNIC/NTN</label>
-                                        <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="{{ $draftInvoice->seller_ntn_cnic ?: ($user->cinc_ntn ?? '') }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="<?php echo e($draftInvoice->seller_ntn_cnic ?: ($user->cinc_ntn ?? '')); ?>" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     </div>
                                     <div>
                                         <label for="sellerBusinessName" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                                        <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Your Business Name" value="{{ $draftInvoice->seller_business_name ?: ($user->business_name ?? $user->name) }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Your Business Name" value="<?php echo e($draftInvoice->seller_business_name ?: ($user->business_name ?? $user->name)); ?>" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     </div>
                                     <div>
                                         <label for="sellerProvince" class="block text-sm font-medium text-gray-700 mb-1">Province</label>
                                         <select id="sellerProvince" name="sellerProvince" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 province-select">
                                             <option value="">Select Province</option>
-                                            @if($provinces)
-                                                @foreach($provinces as $province)
-                                                    <option value="{{ $province['stateProvinceCode'] }}"
-                                                        {{ ($draftInvoice->seller_province == $province['stateProvinceCode'] || ($user->province == $province['stateProvinceCode'] && !$draftInvoice->seller_province)) ? 'selected' : '' }}>
-                                                        {{ $province['stateProvinceDesc'] }}
+                                            <?php if($provinces): ?>
+                                                <?php $__currentLoopData = $provinces; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $province): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($province['stateProvinceCode']); ?>"
+                                                        <?php echo e(($draftInvoice->seller_province == $province['stateProvinceCode'] || ($user->province == $province['stateProvinceCode'] && !$draftInvoice->seller_province)) ? 'selected' : ''); ?>>
+                                                        <?php echo e($province['stateProvinceDesc']); ?>
+
                                                     </option>
-                                                @endforeach
-                                            @endif
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            <?php endif; ?>
                                         </select>
                                     </div>
                                     <div class="md:col-span-2 mb-4">
                                         <label for="sellerAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                        <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ $draftInvoice->seller_address ?: ($user->address ?? '') }}</textarea>
+                                        <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"><?php echo e($draftInvoice->seller_address ?: ($user->address ?? '')); ?></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -108,18 +109,18 @@
                                 </div>
                                 <div>
                                     <label for="invoiceDate" class="block text-sm font-medium text-gray-700 mb-1">Invoice Date</label>
-                                    <input type="date" id="invoiceDate" name="invoiceDate" value="{{ $draftInvoice->invoice_date ? $draftInvoice->invoice_date->format('Y-m-d') : '' }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="date" id="invoiceDate" name="invoiceDate" value="<?php echo e($draftInvoice->invoice_date ? $draftInvoice->invoice_date->format('Y-m-d') : ''); ?>" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label for="invoiceRefNo" class="block text-sm font-medium text-gray-700 mb-1">Invoice Reference No.</label>
-                                    <input type="text" id="invoiceRefNo" name="invoiceRefNo" placeholder="Enter reference number" value="{{ $draftInvoice->invoice_ref_no }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="text" id="invoiceRefNo" name="invoiceRefNo" placeholder="Enter reference number" value="<?php echo e($draftInvoice->invoice_ref_no); ?>" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
-                                @if($user->use_sandbox)
+                                <?php if($user->use_sandbox): ?>
                                 <div>
                                     <label for="scenarioId" class="block text-sm font-medium text-gray-700 mb-1">Scenario ID</label>
-                                    <input type="text" id="scenarioId" name="scenarioId" value="{{ $draftInvoice->scenario_id ?: 'SN000' }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="text" id="scenarioId" name="scenarioId" value="<?php echo e($draftInvoice->scenario_id ?: 'SN000'); ?>" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -134,7 +135,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                 <div class="relative">
                                     <label for="buyerNTNCNIC" class="block text-sm font-medium text-gray-700 mb-1">NTN/CNIC</label>
-                                    <input type="text" id="buyerNTNCNIC" name="buyerNTNCNIC" placeholder="0000000000000" value="{{ $draftInvoice->buyer_ntn_cnic }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" autocomplete="off">
+                                    <input type="text" id="buyerNTNCNIC" name="buyerNTNCNIC" placeholder="0000000000000" value="<?php echo e($draftInvoice->buyer_ntn_cnic); ?>" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" autocomplete="off">
 
                                     <!-- Autocomplete suggestions dropdown -->
                                     <div id="buyerNTNAutocomplete" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden">
@@ -145,20 +146,21 @@
                                 </div>
                                 <div>
                                     <label for="buyerBusinessName" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                                    <input type="text" id="buyerBusinessName" name="buyerBusinessName" placeholder="Buyer Business Name" value="{{ $draftInvoice->buyer_business_name }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="text" id="buyerBusinessName" name="buyerBusinessName" placeholder="Buyer Business Name" value="<?php echo e($draftInvoice->buyer_business_name); ?>" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label for="buyerProvince" class="block text-sm font-medium text-gray-700 mb-1">Province</label>
                                     <select id="buyerProvince" name="buyerProvince" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 province-select">
                                         <option value="">Select Province</option>
-                                        @if($provinces)
-                                            @foreach($provinces as $province)
-                                                <option value="{{ $province['stateProvinceCode'] }}"
-                                                    {{ $draftInvoice->buyer_province == $province['stateProvinceCode'] ? 'selected' : '' }}>
-                                                    {{ $province['stateProvinceDesc'] }}
+                                        <?php if($provinces): ?>
+                                            <?php $__currentLoopData = $provinces; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $province): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($province['stateProvinceCode']); ?>"
+                                                    <?php echo e($draftInvoice->buyer_province == $province['stateProvinceCode'] ? 'selected' : ''); ?>>
+                                                    <?php echo e($province['stateProvinceDesc']); ?>
+
                                                 </option>
-                                            @endforeach
-                                        @endif
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        <?php endif; ?>
                                     </select>
                                 </div>
                                 <div>
@@ -167,13 +169,13 @@
                                     </label>
                                     <select id="buyerRegistrationType" name="buyerRegistrationType" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         <option value="">Select Registration Type</option>
-                                        <option value="Unregistered" {{ $draftInvoice->buyer_registration_type == 'Unregistered' ? 'selected' : '' }}>Unregistered</option>
-                                        <option value="Registered" {{ $draftInvoice->buyer_registration_type == 'Registered' ? 'selected' : '' }}>Registered</option>
+                                        <option value="Unregistered" <?php echo e($draftInvoice->buyer_registration_type == 'Unregistered' ? 'selected' : ''); ?>>Unregistered</option>
+                                        <option value="Registered" <?php echo e($draftInvoice->buyer_registration_type == 'Registered' ? 'selected' : ''); ?>>Registered</option>
                                     </select>
                                 </div>
                                 <div class="md:col-span-4">
                                     <label for="buyerAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                    <textarea id="buyerAddress" name="buyerAddress" placeholder="Buyer Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 !h-[50px]">{{ $draftInvoice->buyer_address }}</textarea>
+                                    <textarea id="buyerAddress" name="buyerAddress" placeholder="Buyer Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 !h-[50px]"><?php echo e($draftInvoice->buyer_address); ?></textarea>
                                 </div>
                             </div>
                         </div>
@@ -249,7 +251,7 @@
                                         Transportation Charges
                                     </td>
                                     <td>
-                                        <input name="furtherexpense" value={{$draftInvoice->expense_col??0}} id='furthertaxexpense'>
+                                        <input name="furtherexpense" value=<?php echo e($draftInvoice->expense_col??0); ?> id='furthertaxexpense'>
                                     </td>
                                    
                                     
@@ -435,9 +437,9 @@
 
     <script>
         // Configuration
-        const API_BASE = '{{ url('/') }}';
-        const CSRF_TOKEN = '{{ csrf_token() }}';
-        const DRAFT_ID = {{ $draftInvoice->id }};
+        const API_BASE = '<?php echo e(url('/')); ?>';
+        const CSRF_TOKEN = '<?php echo e(csrf_token()); ?>';
+        const DRAFT_ID = <?php echo e($draftInvoice->id); ?>;
         console.log(DRAFT_ID)
         const IS_EDIT_MODE = true;
     </script>
@@ -445,27 +447,27 @@
     <script>
         // Pass data from backend to JavaScript
         window.appData = {
-            provinces: @json($provinces ?? []),
-            hsCodes: @json($hsCodes ?? []),
-            uoMs: @json($uoMs ?? []),
-            transactionTypes: @json($transactionTypes ?? []),
+            provinces: <?php echo json_encode($provinces ?? [], 15, 512) ?>,
+            hsCodes: <?php echo json_encode($hsCodes ?? [], 15, 512) ?>,
+            uoMs: <?php echo json_encode($uoMs ?? [], 15, 512) ?>,
+            transactionTypes: <?php echo json_encode($transactionTypes ?? [], 15, 512) ?>,
             user: {
-                cinc_ntn: @json($user->cinc_ntn ?? ''),
-                business_name: @json($user->business_name ?? $user->name ?? ''),
-                province: @json($user->province ?? ''),
-                address: @json($user->address ?? ''),
-                use_sandbox: @json($user->use_sandbox ?? true)
+                cinc_ntn: <?php echo json_encode($user->cinc_ntn ?? '', 15, 512) ?>,
+                business_name: <?php echo json_encode($user->business_name ?? $user->name ?? '', 15, 512) ?>,
+                province: <?php echo json_encode($user->province ?? '', 15, 512) ?>,
+                address: <?php echo json_encode($user->address ?? '', 15, 512) ?>,
+                use_sandbox: <?php echo json_encode($user->use_sandbox ?? true, 15, 512) ?>
             },
-            @php
+            <?php
     $items = $draftInvoice->items;
 
     if (!is_array($items)) {
         $items = json_decode($items ?? '[]', true);
     }
-@endphp
+?>
 
 
-            draftData:  @json($items)
+            draftData:  <?php echo json_encode($items, 15, 512) ?>
 
            
         };
@@ -673,23 +675,23 @@ const result = JSON.parse(cleanText);
                 // Wait for document types to be loaded from API
                 await loadAndPopulateDocumentTypes();
 
-                if ('{{ $draftInvoice->invoice_type }}') {
+                if ('<?php echo e($draftInvoice->invoice_type); ?>') {
                     const invoiceTypeSelect = document.getElementById('invoiceType');
                     if (invoiceTypeSelect) {
-                        invoiceTypeSelect.value = '{{ $draftInvoice->invoice_type }}';
-                        console.log('Invoice type pre-selected:', '{{ $draftInvoice->invoice_type }}');
+                        invoiceTypeSelect.value = '<?php echo e($draftInvoice->invoice_type); ?>';
+                        console.log('Invoice type pre-selected:', '<?php echo e($draftInvoice->invoice_type); ?>');
                     }
                 }
 
                 // Ensure provinces are selected correctly (using Select2 API)
-                if ('{{ $draftInvoice->seller_province }}') {
-                    const sellerProvinceValue = findProvinceCodeByName('{{ $draftInvoice->seller_province }}');
+                if ('<?php echo e($draftInvoice->seller_province); ?>') {
+                    const sellerProvinceValue = findProvinceCodeByName('<?php echo e($draftInvoice->seller_province); ?>');
                     $('#sellerProvince').val(sellerProvinceValue).trigger('change');
                     console.log('Seller province set to:', sellerProvinceValue);
                 }
 
-                if ('{{ $draftInvoice->buyer_province }}') {
-                    const buyerProvinceValue = findProvinceCodeByName('{{ $draftInvoice->buyer_province }}');
+                if ('<?php echo e($draftInvoice->buyer_province); ?>') {
+                    const buyerProvinceValue = findProvinceCodeByName('<?php echo e($draftInvoice->buyer_province); ?>');
                     $('#buyerProvince').val(buyerProvinceValue).trigger('change');
                     console.log('Buyer province set to:', buyerProvinceValue);
                 }
@@ -1862,6 +1864,8 @@ if (isModal) {
     return obj;
 }
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
   
 
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Shahan Developer\FBR\resources\views/draftinvoicing/edit.blade.php ENDPATH**/ ?>

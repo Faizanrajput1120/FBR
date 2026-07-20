@@ -85,6 +85,14 @@
                                        class="btn btn-warning btn-sm" target="_blank">
                                         <i class="mdi mdi-printer"></i> Print (3rd Schedule)
                                     </a>
+                                    <a href="<?php echo e(route('premiertax.sale.standard-invoice', $invoice->id)); ?>" 
+                                       class="btn btn-info btn-sm" target="_blank">
+                                        <i class="mdi mdi-printer"></i> Standard Invoice
+                                    </a>
+                                    <a href="<?php echo e(route('premiertax.sale.commercial-print', $invoice->id)); ?>" 
+                                       class="btn btn-success btn-sm" target="_blank">
+                                        <i class="mdi mdi-printer"></i> Commercial Print
+                                    </a>
 
                         
 
