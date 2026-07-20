@@ -80,7 +80,11 @@ class InvoicingController extends Controller
                 'error' => $e->getMessage()
             ]);
         }
-
+$provincesResult = $fbrService->getProvinceCodes($user->fbr_access_token);
+if ($provincesResult['success']) {
+    $provinces = $provincesResult['data'] ?? [];
+    Log::info('=== FULL PROVINCE LIST FROM FBR ===', ['provinces' => $provinces]);
+}
         return view('invoicing.index', compact('provinces', 'hsCodes', 'uoMs', 'transactionTypes', 'user'));
     }
 

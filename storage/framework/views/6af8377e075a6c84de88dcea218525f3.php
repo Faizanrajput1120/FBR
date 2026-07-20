@@ -781,6 +781,16 @@ const data = JSON.parse(cleanText);
                 updateSroRequiredIndicators(e.target);
             });
 
+            // FIX: select2:select does not fire when SRO Schedule value is set
+            // programmatically (e.g. auto-select after rate change). This ensures
+            // SRO Items still populate in that case, without touching the existing flow.
+            $(document).on('change', '.sro-schedule-select, #modalSroScheduleNo', function(e) {
+                if ($(this).val()) {
+                    fetchSroItems(e.target);
+                    updateSroRequiredIndicators(e.target);
+                }
+            });
+
             // Delegate event listener for SRO Schedule clear/unselect
             $(document).on('select2:clear', '.sro-schedule-select', function(e) {
                 updateSroRequiredIndicators(e.target);
@@ -2445,18 +2455,30 @@ const result = JSON.parse(cleanText);
                 // Update required indicators now that options are available
                 updateSroRequiredIndicators(sroScheduleSelect);
 
-                // Re-initialize Select2 to reflect new options
-                if ($(sroScheduleSelect).data('select2')) {
-                    $(sroScheduleSelect).select2('destroy');
-                }
-                $(sroScheduleSelect).removeClass('select2-hidden-accessible');
-                $(sroScheduleSelect).removeAttr('data-select2-id tabindex aria-hidden');
-                $(sroScheduleSelect).select2({
-                    placeholder: 'Select SRO Schedule',
-                    allowClear: true,
-                    width: 'resolve',
-                    dropdownParent: sroScheduleSelect.closest('#addItemModal') ? $('#addItemModal') : $('body')
-                });
+                    // Re-initialize Select2 to reflect new options
+                 if ($(sroScheduleSelect).data('select2')) {
+                     $(sroScheduleSelect).select2('destroy');
+                 }
+                 $(sroScheduleSelect).removeClass('select2-hidden-accessible');
+                 $(sroScheduleSelect).removeAttr('data-select2-id tabindex aria-hidden');
+                 $(sroScheduleSelect).select2({
+                     placeholder: 'Select SRO Schedule',
+                     allowClear: true,
+                     width: 'resolve',
+                     dropdownParent: sroScheduleSelect.closest('#addItemModal') ? $('#addItemModal') : $('body')
+                 });
+
+                 // FIX: if exactly one SRO schedule is returned, auto-select it and
+                 // explicitly fetch its SRO Items — programmatic .trigger('change')
+                 // alone does not fire select2:select, so this was previously skipped.
+                 if (sroData.length === 1) {
+                     const onlyOption = sroScheduleSelect.options[1]; // index 0 is the placeholder
+                     if (onlyOption) {
+                         $(sroScheduleSelect).val(onlyOption.value).trigger('change');
+                         fetchSroItems(sroScheduleSelect);
+                         updateSroRequiredIndicators(sroScheduleSelect);
+                     }
+                 }
             }
         }
 
