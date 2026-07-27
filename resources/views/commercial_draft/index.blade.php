@@ -3,7 +3,7 @@
  <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Standard Draft Invoices') }}
+                {{ __('Commercial Draft Invoices') }}
             </h2>
             <a href="{{ route('invoicing.index') }}"
                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
@@ -24,7 +24,7 @@
                     <div class="mb-6">
                         <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
                             <div class="flex-1 max-w-lg">
-                                <form method="GET" action="{{ route('standard.drafts.index') }}" class="flex">
+                                <form method="GET" action="{{ route('commercial.drafts.index') }}" class="flex">
                                     <div class="relative flex-1">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -34,7 +34,7 @@
                                         <input type="text"
                                                name="search"
                                                value="{{ $search }}"
-                                               placeholder="Search Standard drafts..."
+                                               placeholder="Search Commercial drafts..."
                                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-l-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
                                     </div>
                                     <button type="submit"
@@ -48,18 +48,16 @@
                             @if($search)
                                 <div class="text-sm text-gray-600">
                                     {{ $drafts->total() }} result(s) for "{{ $search }}"
-                                    <a href="{{ route('standard.drafts.index') }}" class="ml-2 text-blue-600 hover:text-blue-800">Clear</a>
+                                    <a href="{{ route('commercial.drafts.index') }}" class="ml-2 text-blue-600 hover:text-blue-800">Clear</a>
                                 </div>
                             @endif
                         </div>
                     </div>
 
                     @if($drafts->count() > 0)
-                        <!-- Drafts Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             @foreach($drafts as $draft)
                                 <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                                    <!-- Draft Header -->
                                     <div class="p-4 border-b border-gray-100">
                                         <div class="flex items-start justify-between">
                                             <div class="flex-1">
@@ -72,16 +70,14 @@
                                             </div>
                                             <div class="ml-2 flex-shrink-0">
                                                 <div class="flex items-center">
-                                                    <!-- Status indicator -->
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                        Standard
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                        Commercial
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Draft Details -->
                                     <div class="p-4">
                                         <div class="space-y-2">
                                             @if($draft->buyer_business_name)
@@ -120,26 +116,26 @@
                                         </div>
                                     </div>
 
-                                    <!-- Draft Actions -->
                                     <div class="px-4 py-3 bg-gray-50 border-t border-gray-100 rounded-b-lg">
                                         <div class="flex items-center justify-between">
                                             <div class="flex space-x-2">
-                                                <a href="{{ route('drafts.edit', $draft) }}"
+                                                <a href="{{ route('commercial.drafts.edit', $draft) }}"
                                                    class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                                     </svg>
                                                     Edit
                                                 </a>
-                                                <a href="{{ route('getinkDetails', $draft) }}"
-                                                   class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                                    </svg>
-                                                    View
-                                                </a>
                                             </div>
                                             <div class="flex space-x-2">
+                                                <button type="button"
+                                                        onclick="submitDraft({{ $draft->id }})"
+                                                        class="inline-flex items-center px-3 py-1 border border-green-300 rounded-md text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Submit to FBR
+                                                </button>
                                                 <button type="button"
                                                         onclick="deleteDraft({{ $draft->id }}, '{{ addslashes($draft->generateTitle()) }}')"
                                                         class="inline-flex items-center px-3 py-1 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
@@ -156,18 +152,16 @@
                             @endforeach
                         </div>
 
-                        <!-- Pagination -->
                         <div class="mt-8">
                             {{ $drafts->appends(request()->query())->links() }}
                         </div>
 
                     @else
-                        <!-- Empty State -->
                         <div class="text-center py-12">
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">No Standard draft invoices</h3>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">No Commercial draft invoices</h3>
                             <p class="mt-1 text-sm text-gray-500">
                                 @if($search)
                                     No drafts found matching "{{ $search }}".
@@ -203,7 +197,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mt-2">Delete Draft Invoice</h3>
+                <h3 class="text-lg font-medium text-gray-900 mt-2">Delete Commercial Draft</h3>
                 <div class="mt-2 px-7 py-3">
                     <p class="text-sm text-gray-500">
                         Are you sure you want to delete "<span id="deleteDraftTitle"></span>"? This action cannot be undone.
@@ -242,29 +236,28 @@
 
         document.getElementById('confirmDelete').addEventListener('click', function() {
             if (draftToDelete) {
-                fetch(`${API_BASE}/premiertax/draftinvoices/${draftToDelete}`, {
+                fetch(`${API_BASE}/premiertax/commercial-drafts/${draftToDelete}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': CSRF_TOKEN,
                         'Accept': 'application/json'
                     }
-                    })
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showMessage('Draft invoice deleted successfully', 'success');
-                        
+                        showMessage('Commercial draft deleted successfully', 'success');
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
                     } else {
-                        showMessage(data.message || 'Failed to delete draft invoice', 'error');
+                        showMessage(data.message || 'Failed to delete draft', 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showMessage('An error occurred while deleting the draft invoice', 'error');
+                    showMessage('An error occurred', 'error');
                 })
                 .finally(() => {
                     document.getElementById('deleteModal').classList.add('hidden');
@@ -276,11 +269,9 @@
         function showMessage(message, type = 'info') {
             const container = document.getElementById('statusMessages');
             const messageDiv = document.createElement('div');
-
             const bgColor = type === 'success' ? 'bg-green-50 border-green-200 text-green-800' :
                            type === 'error' ? 'bg-red-50 border-red-200 text-red-800' :
                            'bg-blue-50 border-blue-200 text-blue-800';
-
             messageDiv.className = `border px-4 py-3 rounded-md ${bgColor} shadow-md`;
             messageDiv.innerHTML = `
                 <div class="flex items-center justify-between">
@@ -292,25 +283,42 @@
                     </button>
                 </div>
             `;
-
             container.appendChild(messageDiv);
-
-            // Auto-remove after 5 seconds
             setTimeout(() => {
-                if (messageDiv.parentElement) {
-                    messageDiv.remove();
-                }
+                if (messageDiv.parentElement) messageDiv.remove();
             }, 5000);
         }
 
-        // Close modal when clicking outside
         document.getElementById('deleteModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 this.classList.add('hidden');
                 draftToDelete = null;
             }
         });
+
+        async function submitDraft(draftId) {
+            if (!confirm('Are you sure you want to submit this draft to FBR?')) return;
+            try {
+                showMessage('Submitting to FBR...', 'info');
+                const response = await fetch(`${API_BASE}/premiertax/commercial-drafts/${draftId}/submit`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showMessage('Invoice submitted successfully to FBR!', 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showMessage(result.message || 'Submission failed', 'error');
+                }
+            } catch (error) {
+                console.error('Submit error:', error);
+                showMessage('An error occurred during submission', 'error');
+            }
+        }
     </script>
 @endsection
-   
-

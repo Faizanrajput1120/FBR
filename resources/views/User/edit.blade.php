@@ -84,6 +84,13 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
+                        <label class="form-label">STRN</label>
+                        <input type="text" name="strn" class="form-control"
+                               value="{{ old('strn', $user->strn) }}">
+                    </div>
+                </div>
+
+                    <div class="col-md-6 mb-3">
                         <label class="form-label">Company</label>
                         <select name="company_id" class="form-select">
                             <option value="">Select Company</option>

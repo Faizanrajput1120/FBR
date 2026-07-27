@@ -667,33 +667,35 @@ const result = JSON.parse(cleanText);
                 });
             }
 
-            // Set invoice type if available
+            // Set invoice type if available — wait for doc types API then use Select2 API to select
             // Wait for document types to load, then set the invoice type
             setTimeout(async () => {
                 // Wait for document types to be loaded from API
                 await loadAndPopulateDocumentTypes();
 
-                if ('{{ $draftInvoice->invoice_type }}') {
-                    const invoiceTypeSelect = document.getElementById('invoiceType');
-                    if (invoiceTypeSelect) {
-                        invoiceTypeSelect.value = '{{ $draftInvoice->invoice_type }}';
-                        console.log('Invoice type pre-selected:', '{{ $draftInvoice->invoice_type }}');
+                // Small extra delay so Select2 is fully re-initialized after loadAndPopulateDocumentTypes
+                setTimeout(() => {
+                    const savedInvoiceType = '{{ $draftInvoice->invoice_type }}';
+                    if (savedInvoiceType) {
+                        // Must use Select2 API (.val + .trigger) — plain .value won't update Select2 display
+                        $('#invoiceType').val(savedInvoiceType).trigger('change');
+                        console.log('Invoice type pre-selected:', savedInvoiceType);
                     }
-                }
 
-                // Ensure provinces are selected correctly (using Select2 API)
-                if ('{{ $draftInvoice->seller_province }}') {
-                    const sellerProvinceValue = findProvinceCodeByName('{{ $draftInvoice->seller_province }}');
-                    $('#sellerProvince').val(sellerProvinceValue).trigger('change');
-                    console.log('Seller province set to:', sellerProvinceValue);
-                }
+                    // Ensure provinces are selected correctly (using Select2 API)
+                    if ('{{ $draftInvoice->seller_province }}') {
+                        const sellerProvinceValue = findProvinceCodeByName('{{ $draftInvoice->seller_province }}');
+                        $('#sellerProvince').val(sellerProvinceValue).trigger('change');
+                        console.log('Seller province set to:', sellerProvinceValue);
+                    }
 
-                if ('{{ $draftInvoice->buyer_province }}') {
-                    const buyerProvinceValue = findProvinceCodeByName('{{ $draftInvoice->buyer_province }}');
-                    $('#buyerProvince').val(buyerProvinceValue).trigger('change');
-                    console.log('Buyer province set to:', buyerProvinceValue);
-                }
-            }, 1000); // Increased timeout to allow API call to complete
+                    if ('{{ $draftInvoice->buyer_province }}') {
+                        const buyerProvinceValue = findProvinceCodeByName('{{ $draftInvoice->buyer_province }}');
+                        $('#buyerProvince').val(buyerProvinceValue).trigger('change');
+                        console.log('Buyer province set to:', buyerProvinceValue);
+                    }
+                }, 300);
+            }, 1000); // Timeout to allow API call to complete
 
             // Validate buyer requirements on load - after all data is loaded
             setTimeout(() => {
@@ -791,6 +793,8 @@ const result = JSON.parse(cleanText);
         });
         return clean;
     });
+    // Remove _method field so Laravel doesn't treat this POST as a PUT
+    delete data._method;
     const apiUrl = `${API_BASE}/premiertax/invoicing/submit`;
 
     console.log('=== SUBMIT INVOICE API CALL ===');
@@ -825,6 +829,17 @@ const result = JSON.parse(cleanText);
             if (result.data?.invoiceNumber) {
                 showMessage('Invoice Number: ' + result.data.invoiceNumber, 'info');
             }
+            setTimeout(() => {
+                const isThirdSchedule = '{{ $draftInvoice->is_third_schedule ?? false }}' === '1';
+                const isCommercial = '{{ $draftInvoice->is_commercial ?? false }}' === '1';
+                if (isThirdSchedule) {
+                    window.location.href = `${API_BASE}/premiertax/third-schedule-drafts`;
+                } else if (isCommercial) {
+                    window.location.href = `${API_BASE}/premiertax/commercial-drafts`;
+                } else {
+                    window.location.href = `${API_BASE}/premiertax/standard-drafts`;
+                }
+            }, 1500);
         } else {
             showMessage('Submission failed: ' + result.message, 'error');
             if (result.errors) console.error('Validation errors:', result.errors);
@@ -979,8 +994,22 @@ const result = JSON.parse(cleanText);
                         <div class="text-xs text-gray-500 mt-1">${item.hsCodeText || 'Product description'}</div>
                     </td>
                     <td class="px-4 py-3 text-sm text-gray-900">${item.quantity || 0}</td>
-                    <td class="px-4 py-3 text-sm text-gray-900">${item.rateValue || 0}%</td>
-                    <td class="px-4 py-3 text-sm text-gray-900">${parseFloat(item.valueSalesExcludingST || 0).toFixed(2)}</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">${(() => {
+                        // rateValue is transient; parse from rate JSON if missing
+                        if (item.rateValue !== undefined && item.rateValue !== null && item.rateValue !== 0 && item.rateValue !== '') {
+                            return item.rateValue;
+                        }
+                        if (item.rate) {
+                            try { return JSON.parse(item.rate).rate_value || 0; } catch(e) {}
+                        }
+                        return 0;
+                    })()}%</td>
+                    <td class="px-4 py-3 text-sm text-gray-900">
+                        ${item.fixedNotifiedValueOrRetailPrice
+                            ? '<div class="text-xs text-gray-500">FNV: ' + parseFloat(item.fixedNotifiedValueOrRetailPrice || 0).toFixed(2) + '</div>'
+                            : ''}
+                        ${parseFloat(item.valueSalesExcludingST || 0).toFixed(2)}
+                    </td>
                     <td class="px-4 py-3 text-sm text-gray-900">${parseFloat(item.salesTaxApplicable || 0).toFixed(2)}</td>
                     <td class="px-4 py-3 text-sm text-gray-900">
                         <div class="flex space-x-2">
@@ -1046,92 +1075,139 @@ const result = JSON.parse(cleanText);
 
             setTimeout(async () => {
                 try {
-                    // Generic loop: set ALL fields by matching modal + key IDs (same as main page)
+                    // --- Step 1: Set all plain input fields ---
                     Object.keys(item).forEach(key => {
                         const element = document.getElementById('modal' + key.charAt(0).toUpperCase() + key.slice(1));
-                        if (element && key !== 'uoM' && key !== 'hsCode') {
-                            if (element.tagName === 'SELECT') {
-                                $(element).val(item[key]).trigger('change');
-                            } else {
-                                element.value = item[key];
+                        if (element && key !== 'uoM' && key !== 'hsCode' && key !== 'saleType' && key !== 'rate') {
+                            if (element.tagName !== 'SELECT') {
+                                element.value = item[key] !== null && item[key] !== undefined ? item[key] : '';
                             }
                         }
                     });
 
-                    // Restore discount percent
-                    if (item.discountType === 'percent' && item.discountPercentInput !== undefined) {
-                        document.getElementById('modalDiscount').value = item.discountPercentInput;
+                    // --- Step 2: Set Sale Type (select2 with pre-populated options) ---
+                    if (item.saleType) {
+                        $('#modalSaleType').val(item.saleType).trigger('change');
                     }
 
-                    // 3rd Schedule check using saleTypeText
+                    // --- Step 3: Set HS Code (AJAX Select2 — must inject option first) ---
+                    if (item.hsCode) {
+                        const hsCodeEl = document.getElementById('modalHsCode');
+                        // Create & append the option so Select2 can find it
+                        const hsOption = new Option(
+                            item.hsCodeText || item.hsCode,
+                            item.hsCode,
+                            true,
+                            true
+                        );
+                        $(hsCodeEl).append(hsOption).trigger('change');
+                    }
+
+                    // --- Step 4: Fetch rates for the saved saleType, then restore saved rate ---
+                    if (item.saleType) {
+                        await fetchRatesForEdit(item.saleType);
+                        // After rates are loaded, set the saved rate value
+                        if (item.rate) {
+                            const rateSelect = document.getElementById('modalRate');
+                            // Try to match by JSON value (rate_id)
+                            let matched = false;
+                            for (let i = 0; i < rateSelect.options.length; i++) {
+                                try {
+                                    const opt = JSON.parse(rateSelect.options[i].value);
+                                    const savedRate = JSON.parse(item.rate);
+                                    if (opt.rate_id === savedRate.rate_id) {
+                                        $(rateSelect).val(rateSelect.options[i].value).trigger('change');
+                                        matched = true;
+                                        break;
+                                    }
+                                } catch (e) {}
+                            }
+                            if (!matched) {
+                                // Fallback: try direct value match
+                                $(document.getElementById('modalRate')).val(item.rate).trigger('change');
+                            }
+                        }
+                    }
+
+                    // --- Step 5: Fetch UoM options for the saved HS Code, then restore saved UoM ---
+                    if (item.hsCode) {
+                        const uomElement = document.getElementById('modalUoM');
+                        await fetchUomByHsCode(item.hsCode);
+                        if (item.uoM) {
+                            setTimeout(() => {
+                                $(uomElement).val(item.uoM).trigger('change');
+                            }, 200);
+                        }
+                    } else {
+                        const uomElement = document.getElementById('modalUoM');
+                        if (uomElement) {
+                            uomElement.innerHTML = '<option value="">Select HS Code first</option>';
+                            uomElement.disabled = true;
+                        }
+                    }
+
+                    // --- Step 6: Restore fixedNotifiedValueOrRetailPrice and rateValues explicitly ---
+                    if (item.fixedNotifiedValueOrRetailPrice !== undefined && item.fixedNotifiedValueOrRetailPrice !== null) {
+                        const fnField = document.getElementById('modalFixedNotifiedValueOrRetailPrice');
+                        if (fnField) fnField.value = item.fixedNotifiedValueOrRetailPrice;
+                    }
+                    if (item.rateValues !== undefined && item.rateValues !== null) {
+                        const rvField = document.getElementById('modalRateValues');
+                        if (rvField) rvField.value = item.rateValues;
+                    }
+
+                    // --- Step 7: Restore discount percent if applicable ---
+                    if (item.discountType === 'percent' && item.discountPercentInput !== undefined) {
+                        const discEl = document.getElementById('modalDiscount');
+                        if (discEl) discEl.value = item.discountPercentInput;
+                    }
+
+                    // --- Step 8: 3rd Schedule specific fields ---
                     const saleTypeText = item.saleTypeText || '';
                     if (saleTypeText.toLowerCase().includes('3rd schedule') || saleTypeText.toLowerCase().includes('3rd party')) {
                         if (item.ghPercent !== undefined) {
-                            document.getElementById('modalGhPercent').value = item.ghPercent;
+                            const ghEl = document.getElementById('modalGhPercent');
+                            if (ghEl) ghEl.value = item.ghPercent;
                         }
                         if (item.discountPercent !== undefined) {
-                            document.getElementById('modalDiscountPercent').value = item.discountPercent;
+                            const dpEl = document.getElementById('modalDiscountPercent');
+                            if (dpEl) dpEl.value = item.discountPercent;
                         }
                         recalculate3rdSchedule();
                     }
 
-                    // HS Code and UoM dependency (same as main page)
-                    const hsCodeElement = document.getElementById('modalHsCode');
-                    const uomElement = document.getElementById('modalUoM');
-
-                    if (hsCodeElement && item.hsCode && uomElement && item.uoM) {
-                        $(hsCodeElement).val(item.hsCode).trigger('change');
-
+                    // --- Step 9: Restore SRO data if any ---
+                    if (item.sroScheduleNo) {
                         setTimeout(async () => {
-                            try {
-                                await fetchUomByHsCode(hsCodeElement);
-
-                                setTimeout(() => {
-                                    $(uomElement).val(item.uoM).trigger('change');
-
-                                    setTimeout(async () => {
-                                        if (item.sroScheduleNo) {
-                                            const rateSelect = document.getElementById('modalRate');
-                                            const invoiceDate = document.getElementById('invoiceDate').value;
-                                            const buyerProvince = $('#buyerProvince').val();
-
-                                            if (rateSelect.value) {
-                                                try {
-                                                    const rateData = JSON.parse(rateSelect.value);
-                                                    const rateId = rateData.rate_id;
-                                                    await fetchSroSchedule(rateId, invoiceDate, buyerProvince, document.getElementById('addItemModal'));
-
-                                                    setTimeout(() => {
-                                                        $('#modalSroScheduleNo').val(item.sroScheduleNo).trigger('change');
-
-                                                        setTimeout(() => {
-                                                            if (item.sroItemSerialNo) {
-                                                                $('#modalSroItemSerialNo').val(item.sroItemSerialNo).trigger('change');
-                                                            }
-                                                        }, 300);
-                                                    }, 300);
-                                                } catch (error) {
-                                                    console.error('Error setting SRO data:', error);
-                                                }
+                            const rateSelect = document.getElementById('modalRate');
+                            const invoiceDate = document.getElementById('invoiceDate').value;
+                            const buyerProvince = $('#buyerProvince').val();
+                            if (rateSelect && rateSelect.value) {
+                                try {
+                                    const rateData = JSON.parse(rateSelect.value);
+                                    const rateId = rateData.rate_id;
+                                    await fetchSroSchedule(rateId, invoiceDate, buyerProvince, document.getElementById('addItemModal'));
+                                    setTimeout(() => {
+                                        $('#modalSroScheduleNo').val(item.sroScheduleNo).trigger('change');
+                                        setTimeout(() => {
+                                            if (item.sroItemSerialNo) {
+                                                $('#modalSroItemSerialNo').val(item.sroItemSerialNo).trigger('change');
                                             }
-                                        }
+                                        }, 300);
                                     }, 300);
-                                }, 200);
-                            } catch (error) {
-                                console.error('Error loading UoM for edit mode:', error);
+                                } catch (error) {
+                                    console.error('Error setting SRO data:', error);
+                                }
                             }
-                        }, 300);
-                    } else if (uomElement) {
-                        uomElement.innerHTML = '<option value="">Select HS Code first</option>';
-                        uomElement.disabled = true;
+                        }, 500);
                     }
 
-                    console.log('All item values populated successfully!');
+                    console.log('All item values populated successfully for edit!');
 
                 } catch (error) {
                     console.error('Error populating edit form:', error);
                 }
-            }, 500);
+            }, 300);
         }
 
         // Delete item function - same as removeItem but with confirmation
@@ -1505,6 +1581,137 @@ const result = JSON.parse(cleanText);
             }
         }
 
+        // =====================================================================
+        // SRO Helper Functions (required for edit mode SRO restoration)
+        // =====================================================================
+
+        async function fetchSroSchedule(rateId, date, provinceCode, itemContainer) {
+            try {
+                const response = await fetch(`${API_BASE}/premiertax/api/fbr/sro-schedule`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN
+                    },
+                    body: JSON.stringify({
+                        rate_id: parseInt(rateId),
+                        date: date,
+                        origination_supplier_csv: parseInt(provinceCode)
+                    })
+                });
+                const text = await response.text();
+                const cleanText = text.trim().startsWith('{') ? text : text.substring(text.indexOf('{'));
+                const result = JSON.parse(cleanText);
+                if (result.success && result.data && result.data.length > 0) {
+                    displaySroInformation(result.data, itemContainer);
+                } else {
+                    clearSroInformation(itemContainer);
+                }
+            } catch (error) {
+                console.error('Error fetching SRO schedule:', error);
+                clearSroInformation(itemContainer);
+            }
+        }
+
+        function displaySroInformation(sroData, itemContainer) {
+            const sroScheduleSelect = itemContainer.querySelector('.sro-schedule-select');
+            if (sroScheduleSelect && sroData.length > 0) {
+                sroScheduleSelect.innerHTML = '<option value="">Select SRO Schedule</option>';
+                sroData.forEach(sro => {
+                    const sroId = sro.srO_ID || sro.sro_id;
+                    const sroDesc = sro.srO_DESC || sro.sro_desc || sro.description;
+                    if (sroId && sroDesc) {
+                        sroSchedules.set(String(sroId), sroDesc);
+                        const option = document.createElement('option');
+                        option.value = sroId;
+                        option.textContent = sroDesc;
+                        sroScheduleSelect.appendChild(option);
+                    }
+                });
+                if ($(sroScheduleSelect).data('select2')) $(sroScheduleSelect).select2('destroy');
+                $(sroScheduleSelect).select2({
+                    placeholder: 'Select SRO Schedule',
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#addItemModal')
+                });
+                if (sroData.length === 1) {
+                    const onlyOption = sroScheduleSelect.options[1];
+                    if (onlyOption) {
+                        $(sroScheduleSelect).val(onlyOption.value).trigger('change');
+                        fetchSroItemsForModal(sroScheduleSelect);
+                    }
+                }
+            }
+        }
+
+        function clearSroInformation(itemContainer) {
+            const sroScheduleSelect = itemContainer.querySelector('.sro-schedule-select');
+            if (sroScheduleSelect) {
+                sroScheduleSelect.innerHTML = '<option value="">Select SRO Schedule</option>';
+            }
+            const sroItemSelect = itemContainer.querySelector('.sro-item-select');
+            if (sroItemSelect) {
+                sroItemSelect.innerHTML = '<option value="">Select SRO Item</option>';
+            }
+        }
+
+        async function fetchSroItemsForModal(sroScheduleSelect) {
+            const sroItemSelect = document.getElementById('modalSroItemSerialNo');
+            if (!sroItemSelect) return;
+            sroItemSelect.innerHTML = '<option value="">Loading SRO Items...</option>';
+            const sroId = sroScheduleSelect.value;
+            const invoiceDate = document.getElementById('invoiceDate').value;
+            if (!sroId || !invoiceDate) return;
+            try {
+                const response = await fetch(`${API_BASE}/premiertax/api/fbr/sro-item`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN
+                    },
+                    body: JSON.stringify({ sro_id: parseInt(sroId), date: invoiceDate })
+                });
+                const text = await response.text();
+                const cleanText = text.trim().startsWith('{') ? text : text.substring(text.indexOf('{'));
+                const result = JSON.parse(cleanText);
+                if (result.success && result.data && result.data.length > 0) {
+                    sroItemSelect.innerHTML = '<option value="">Select SRO Item</option>';
+                    result.data.forEach(item => {
+                        const itemId = item.srO_ITEM_ID || item.sro_item_id;
+                        const itemDesc = item.srO_ITEM_DESC || item.sro_item_desc || item.description;
+                        if (itemId && itemDesc) {
+                            sroItems.set(String(itemId), itemDesc);
+                            const option = document.createElement('option');
+                            option.value = itemId;
+                            option.textContent = itemDesc;
+                            sroItemSelect.appendChild(option);
+                        }
+                    });
+                    if ($(sroItemSelect).data('select2')) $(sroItemSelect).select2('destroy');
+                    $(sroItemSelect).select2({
+                        placeholder: 'Select SRO Item',
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#addItemModal')
+                    });
+                } else {
+                    sroItemSelect.innerHTML = '<option value="">No SRO Items available</option>';
+                }
+            } catch (error) {
+                console.error('Error fetching SRO items for modal:', error);
+                sroItemSelect.innerHTML = '<option value="">Error loading SRO Items</option>';
+            }
+        }
+
+        // Wire up SRO Schedule change to load SRO Items in the modal
+        $(document).on('change', '#modalSroScheduleNo', function() {
+            fetchSroItemsForModal(this);
+        });
+
+        // =====================================================================
         // Check if 3rd Schedule is selected in the modal
         function is3rdScheduleSelected() {
             const saleTypeSelect = document.getElementById('modalSaleType');
@@ -1681,6 +1888,45 @@ const result = JSON.parse(cleanText);
         // Add event listeners
         document.getElementById('buyerProvince').addEventListener('change', validateBuyerRequirements);
         document.getElementById('buyerRegistrationType').addEventListener('change', validateBuyerRequirements);
+
+        // When sale type changes in the modal, fetch the applicable rates
+        $(document).on('change', '#modalSaleType', function() {
+            const selectedSaleType = $(this).val();
+            if (selectedSaleType) {
+                fetchRatesForEdit(selectedSaleType);
+            } else {
+                const rateSelect = document.getElementById('modalRate');
+                if (rateSelect) {
+                    rateSelect.innerHTML = '<option value="">Select Rate</option>';
+                    $(rateSelect).select2('destroy').select2({
+                        placeholder: 'Select Rate',
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#addItemModal')
+                    });
+                }
+            }
+        });
+
+        // When HS Code changes in the modal, fetch UoM
+        $(document).on('change', '#modalHsCode', function() {
+            const selectedHsCode = $(this).val();
+            if (selectedHsCode) {
+                fetchUomByHsCode(selectedHsCode);
+            } else {
+                const uomSelect = document.getElementById('modalUoM');
+                if (uomSelect) {
+                    uomSelect.innerHTML = '<option value="">Select HS Code first</option>';
+                    uomSelect.disabled = true;
+                    $(uomSelect).select2('destroy').select2({
+                        placeholder: 'Select Unit of Measure',
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#addItemModal')
+                    });
+                }
+            }
+        });
          // Add event listener for Value Sales Excluding ST changes
             // Add event listener for rate*quantity
             $(document).on('input', 'input[name*="[rateValues]"],input[name*="[quantity]"], #modalRateValues,#modalQuantity,#modalFixedNotifiedValueOrRetailPrice,#modalDiscount,#modalValueSalesExcludingST', function(e) {

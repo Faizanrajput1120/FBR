@@ -45,6 +45,23 @@ class DraftController extends Controller
         return view('draftinvoicing.index', compact('drafts', 'user', 'search'));
     }
 
+    public function indexStandard(Request $request)
+    {
+        $user = Auth::user();
+        $search = $request->input('search');
+        $query = DraftInvoice::where('user_id', $user->id)->where('cid', $user->c_id)->where('is_third_schedule', false);
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                  ->orWhere('buyer_business_name', 'like', "%$search%")
+                  ->orWhere('buyer_ntn_cnic', 'like', "%$search%")
+                  ->orWhere('invoice_ref_no', 'like', "%$search%");
+            });
+        }
+        $drafts = $query->orderByDesc('created_at')->paginate(12)->appends(['search' => $search]);
+        return view('draftinvoicing.index', compact('drafts', 'user', 'search'));
+    }
+
 
 public function saveDraft(Request $request)
 {
@@ -67,7 +84,7 @@ public function saveDraft(Request $request)
         'items' => 'required|array|min:1',
         'items.*.hsCode' => 'nullable|string|max:50',
         'items.*.productDescription' => 'nullable|string|max:500',
-        'items.*.rate' => 'nullable|string|max:20',
+        'items.*.rate' => 'nullable|string|max:500',
         'items.*.saleType' => 'nullable|string|max:100',
         'items.*.uoM' => 'nullable|string|max:50',
         'items.*.quantity' => 'nullable|string|max:50',
@@ -76,6 +93,19 @@ public function saveDraft(Request $request)
         'items.*.furtherTax' => 'nullable',
         'items.*.salesTaxApplicable' => 'nullable|string|max:50',
         'items.*.sroScheduleNo' => 'nullable|string|max:255',
+        'items.*.rateValues' => 'nullable|string|max:50',
+        'items.*.fixedNotifiedValueOrRetailPrice' => 'nullable|string|max:50',
+        'items.*.salesTaxWithheldAtSource' => 'nullable|string|max:50',
+        'items.*.extraTax' => 'nullable|string|max:255',
+        'items.*.fedPayable' => 'nullable|string|max:50',
+        'items.*.discount' => 'nullable|string|max:50',
+        'items.*.sroItemSerialNo' => 'nullable|string|max:255',
+        'items.*.discountPercent' => 'nullable|string|max:50',
+        'items.*.discountAmount' => 'nullable|string|max:50',
+        'items.*.discountPercentInput' => 'nullable|string|max:50',
+        'items.*.ghPercent' => 'nullable|string|max:50',
+        'items.*.ghAmount' => 'nullable|string|max:50',
+        'items.*.discountType' => 'nullable|string|max:50',
     ]);
 
     // Update or create buyer if NTN/CNIC is provided
@@ -268,8 +298,8 @@ public function saveDraft(Request $request)
             $result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $invoiceData);
 
             if ($result['success'] ?? false) {
-                // Update draft status
-                $draftInvoice->update(['status' => 1]);
+                // Delete draft after successful submission
+                $draftInvoice->delete();
 
                 return response()->json([
                     'success' => true,

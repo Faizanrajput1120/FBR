@@ -70,6 +70,7 @@ class UserManagement extends Controller
             'fbr_access_token' => $request->fbr_access_token,
             'use_sandbox' => $request->use_sandbox ?? 1,
             'cinc_ntn' => $request->cinc_ntn,
+            'strn' => $request->strn,
             'address' => $request->address,
             'business_name' => $request->business_name,
             'province' => $request->province,
@@ -101,6 +102,7 @@ class UserManagement extends Controller
         $data['province'] = $request->province;
         $data['address'] = $request->address;
         $data['cinc_ntn'] = $request->cinc_ntn;
+        $data['strn'] = $request->strn;
         $data['fbr_access_token'] = $request->fbr_access_token;
         $data['c_id'] = $request->company_id;
 

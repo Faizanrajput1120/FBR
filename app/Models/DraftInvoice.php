@@ -34,6 +34,8 @@ class DraftInvoice extends Model
         'buyer_address','expense_col',
         // Items will be handled via relationship or JSON
         'items', // If you store as JSON, otherwise use a separate table
+        'is_third_schedule',
+        'is_commercial',
     ];
 
     protected $casts = [
@@ -57,5 +59,24 @@ class DraftInvoice extends Model
     public function generateTitle()
     {
         return 'Draft Invoice #' . ($this->id ?? 'New');
+    }
+
+    public function getSummaryAttribute()
+    {
+        $items = $this->items ?? [];
+        $count = count($items);
+        $buyer = $this->buyer_business_name ?? 'Unknown Buyer';
+        $date = $this->invoice_date ? $this->invoice_date->format('M d, Y') : 'No date';
+        return "{$buyer} - {$count} item(s) - {$date}";
+    }
+
+    public function getItemsCountAttribute()
+    {
+        return count($this->items ?? []);
+    }
+
+    public function getFormattedLastModifiedAtAttribute()
+    {
+        return $this->updated_at ? $this->updated_at->diffForHumans() : 'N/A';
     }
 }

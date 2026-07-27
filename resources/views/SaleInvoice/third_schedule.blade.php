@@ -202,7 +202,7 @@
       <table>
         <tr><td class="label">Invoice No.</td><td id="invNo">{{ $invoice->fbr_invoice_no ?? 'N/A' }}</td></tr>
         <tr><td class="label">Invoice Date</td><td id="invDate">{{ \Carbon\Carbon::parse($invoice->invoice_date ?? now())->format('d-M-y') }}</td></tr>
-        <tr><td class="label">Sales Tax Reg No.</td><td id="sellerSTRN">{{ $invoice->seller_ntn_cnic ?? '' }}</td></tr>
+        <tr><td class="label">Sales Tax Reg No.</td><td id="sellerSTRN">{{ $invoice->user->strn ?? $invoice->seller_ntn_cnic ?? '' }}</td></tr>
         <tr><td class="label">NTN No.</td><td id="sellerNTN">{{ $invoice->seller_ntn_cnic ?? '' }}</td></tr>
         <tr><td class="label">Serial No.</td><td id="poNo">{{ $invoice->invoice_ref_no ?? '-' }}</td></tr>
       </table>
