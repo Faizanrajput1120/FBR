@@ -274,8 +274,26 @@
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 8.207a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9.5z" clip-rule="evenodd" />
                                 </svg>
                                 Draft Invoice
-                            </button>
-                        </div>
+                             </button>
+                               <button id="ThirdScheduleDraft" style="background-color: #ca8a04; color: white;" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-500 focus:outline-none focus:border-yellow-700 focus:ring focus:ring-yellow-200 active:bg-yellow-600 disabled:opacity-25 transition">
+                                      <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 8.207a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9.5z" clip-rule="evenodd" />
+                                      </svg>
+                                  3rd Schedule Draft
+                             </button>
+                              <button id="StandardDraft" style="background-color: #2563eb; color: white;" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
+                                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 8.207a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9.5z" clip-rule="evenodd" />
+                                     </svg>
+                                  Standard Draft
+                             </button>
+                              <button id="CommercialDraft" style="background-color: #9333ea; color: white;" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-500 focus:outline-none focus:border-purple-700 focus:ring focus:ring-purple-200 active:bg-purple-600 disabled:opacity-25 transition">
+                                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 8.207a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9.5z" clip-rule="evenodd" />
+                                     </svg>
+                                  Commercial Draft
+                             </button>
+                         </div>
                     </form>
                 </div>
             </div>
@@ -748,6 +766,9 @@ const data = JSON.parse(cleanText);
             document.getElementById('invoiceForm').addEventListener('submit', submitInvoice);
             document.getElementById('validateBtn').addEventListener('click', validateInvoice);
             document.getElementById('Draft').addEventListener('click', submitDraft);
+            document.getElementById('ThirdScheduleDraft').addEventListener('click', submitThirdScheduleDraft);
+            document.getElementById('StandardDraft').addEventListener('click', submitStandardDraft);
+            document.getElementById('CommercialDraft').addEventListener('click', submitCommercialDraft);
 
             // Add blur event listener for buyer NTN/CNIC field
             // document.getElementById('buyerNTNCNIC').addEventListener('blur', fetchRegistrationType);
@@ -3423,11 +3444,12 @@ const result = JSON.parse(cleanText);
                     if (result.data && result.data.invoiceNumber) {
                         showMessage('Invoice Number: ' + result.data.invoiceNumber, 'info');
                     }
-
-                    // Form values are preserved after successful submission
-                    // Users can modify and resubmit if needed
+                    setTimeout(() => {
+                        window.location.href = `${API_BASE}/premiertax/invoicing`;
+                    }, 1000);
                 } else {
-                    showMessage('Submission failed: ' + result.message, 'error');
+                    var errMsg = typeof result.message === 'object' ? JSON.stringify(result.message) : result.message;
+                    showMessage('Submission failed: ' + errMsg, 'error');
                     if (result.errors) {
                         console.error('Validation errors:', result.errors);
                     }
@@ -3486,7 +3508,8 @@ const result = JSON.parse(cleanText);
                     // Form values are preserved after successful submission
                     // Users can modify and resubmit if needed
                 } else {
-                    showMessage('Submission failed: ' + result.message, 'error');
+                    var errMsg = typeof result.message === 'object' ? JSON.stringify(result.message) : result.message;
+                    showMessage('Submission failed: ' + errMsg, 'error');
                     if (result.errors) {
                         console.error( result);
                     }
@@ -3707,6 +3730,156 @@ const result = JSON.parse(cleanText);
     obj.items = Object.values(items);
     return obj;
 }
+
+        // Submit as 3rd Schedule Draft
+        async function submitThirdScheduleDraft(e) {
+            e.preventDefault();
+            const formData = new FormData(document.getElementById('invoiceForm'));
+            const data = formDataToObjectWithLabels(formData);
+
+            // Override items with raw itemsData to preserve IDs (not descriptions)
+            // Filter out internal fields (*Text, rateValue, rowId, index)
+            data.items = itemsData.map(function(item) {
+                var cleanItem = {};
+                Object.keys(item).forEach(function(key) {
+                    if (!key.endsWith('Text') && key !== 'rateValue' && key !== 'rowId' && key !== 'index') {
+                        cleanItem[key] = item[key];
+                    }
+                });
+                return cleanItem;
+            });
+
+            const apiUrl = `${API_BASE}/premiertax/invoicing/save-third-schedule-draft`;
+            try {
+                showMessage('Saving as 3rd Schedule Draft...', 'info');
+                document.getElementById('ThirdScheduleDraft').disabled = true;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                const text = await response.text();
+                const cleanText = text.trim().startsWith('{') ? text : text.substring(text.indexOf('{'));
+                const result = JSON.parse(cleanText);
+                if (result.success) {
+                    showMessage('3rd Schedule Draft saved successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = `${API_BASE}/premiertax/third-schedule-drafts`;
+                    }, 1000);
+                } else {
+                    var errMsg = typeof result.message === 'object' ? JSON.stringify(result.message) : result.message;
+                    showMessage('Save failed: ' + errMsg, 'error');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                showMessage('Save failed: ' + error.message, 'error');
+            } finally {
+                document.getElementById('ThirdScheduleDraft').disabled = false;
+            }
+        }
+
+        // Submit as Standard Draft
+        async function submitStandardDraft(e) {
+            e.preventDefault();
+            const formData = new FormData(document.getElementById('invoiceForm'));
+            const data = formDataToObjectWithLabels(formData);
+
+            // Override items with raw itemsData to preserve IDs (not descriptions)
+            data.items = itemsData.map(function(item) {
+                var cleanItem = {};
+                Object.keys(item).forEach(function(key) {
+                    if (!key.endsWith('Text') && key !== 'rateValue' && key !== 'rowId' && key !== 'index') {
+                        cleanItem[key] = item[key];
+                    }
+                });
+                return cleanItem;
+            });
+
+            const apiUrl = `${API_BASE}/premiertax/invoicing/save-standard-draft`;
+            try {
+                showMessage('Saving as Standard Draft...', 'info');
+                document.getElementById('StandardDraft').disabled = true;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                const text = await response.text();
+                const cleanText = text.trim().startsWith('{') ? text : text.substring(text.indexOf('{'));
+                const result = JSON.parse(cleanText);
+                if (result.success) {
+                    showMessage('Standard Draft saved successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = `${API_BASE}/premiertax/standard-drafts`;
+                    }, 1000);
+                } else {
+                    var errMsg = typeof result.message === 'object' ? JSON.stringify(result.message) : result.message;
+                    showMessage('Save failed: ' + errMsg, 'error');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                showMessage('Save failed: ' + error.message, 'error');
+            } finally {
+                document.getElementById('StandardDraft').disabled = false;
+            }
+        }
+
+        // Submit as Commercial Draft
+        async function submitCommercialDraft(e) {
+            e.preventDefault();
+            const formData = new FormData(document.getElementById('invoiceForm'));
+            const data = formDataToObjectWithLabels(formData);
+
+            data.items = itemsData.map(function(item) {
+                var cleanItem = {};
+                Object.keys(item).forEach(function(key) {
+                    if (!key.endsWith('Text') && key !== 'rateValue' && key !== 'rowId' && key !== 'index') {
+                        cleanItem[key] = item[key];
+                    }
+                });
+                return cleanItem;
+            });
+
+            const apiUrl = `${API_BASE}/premiertax/invoicing/save-commercial-draft`;
+            try {
+                showMessage('Saving as Commercial Draft...', 'info');
+                document.getElementById('CommercialDraft').disabled = true;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': CSRF_TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                const text = await response.text();
+                const cleanText = text.trim().startsWith('{') ? text : text.substring(text.indexOf('{'));
+                const result = JSON.parse(cleanText);
+                if (result.success) {
+                    showMessage('Commercial Draft saved successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = `${API_BASE}/premiertax/commercial-drafts`;
+                    }, 1000);
+                } else {
+                    var errMsg = typeof result.message === 'object' ? JSON.stringify(result.message) : result.message;
+                    showMessage('Save failed: ' + errMsg, 'error');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+                showMessage('Save failed: ' + error.message, 'error');
+            } finally {
+                document.getElementById('CommercialDraft').disabled = false;
+            }
+        }
 
     </script>
 <?php $__env->stopSection(); ?>

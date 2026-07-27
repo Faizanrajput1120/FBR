@@ -228,6 +228,12 @@ $fbrItems = json_decode(json_encode($invoiceData['items']), true);
 // Remove rate only from FBR items
 foreach ($fbrItems as &$item) {
     unset($item['rateValues']);
+    if (isset($item['rate'])) {
+        $rateParsed = json_decode($item['rate'], true);
+        if (json_last_error() === JSON_ERROR_NONE && isset($rateParsed['rate_desc'])) {
+            $item['rate'] = $rateParsed['rate_desc'];
+        }
+    }
 }
 
 // Replace only for API submission

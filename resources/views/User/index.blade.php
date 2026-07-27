@@ -69,7 +69,7 @@
                                 <td>{{ $user->business_name ?? '-' }}</td>
 
                                 <!-- Show Company Name (not ID) -->
-                                <td>{{ $user->company->name ?? '-' }}</td>
+                                <td>{{ $user->company->cname ?? '-' }}</td>
 
                                 <td>
                                     <a href="{{ route('users.edit', $user->id) }}"

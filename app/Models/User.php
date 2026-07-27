@@ -23,6 +23,7 @@ class User extends Authenticatable
         'fbr_access_token',
         'use_sandbox',
         'cinc_ntn',
+        'strn',
         'address',
         'business_name',
         'province',

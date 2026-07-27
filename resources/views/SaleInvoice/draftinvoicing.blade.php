@@ -299,6 +299,12 @@
                     <div class="info-value">{{ $invoice->seller_business_name }}</div>
                 </div>
                 @endif
+                @if(isset($invoice->user->strn) && $invoice->user->strn)
+                <div class="info-row">
+                    <div class="info-label">STRN:</div>
+                    <div class="info-value">{{ $invoice->user->strn }}</div>
+                </div>
+                @endif
                 @if(isset($invoice->seller_ntn_cnic) && $invoice->seller_ntn_cnic)
                 <div class="info-row">
                     <div class="info-label">NTN/CNIC No.:</div>

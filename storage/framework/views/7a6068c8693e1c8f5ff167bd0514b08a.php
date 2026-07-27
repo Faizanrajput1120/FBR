@@ -74,7 +74,13 @@
                                 <a href="<?php echo e(route('invoicing.index')); ?>">Sale Invoice</a>
                             </li>
                             <li>
-                                <a href="<?php echo e(route('drafts.index')); ?>">Draft Invoice</a>
+                                <a href="<?php echo e(route('standard.drafts.index')); ?>">Standard Draft</a>
+                            </li>
+                            <li>
+                                <a href="<?php echo e(route('third.schedule.drafts.index')); ?>">3rd Schedule Draft</a>
+                            </li>
+                            <li>
+                                <a href="<?php echo e(route('commercial.drafts.index')); ?>">Commercial Draft</a>
                             </li>
                         </ul>
                     </div>

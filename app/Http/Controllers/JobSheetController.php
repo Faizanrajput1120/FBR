@@ -81,7 +81,7 @@ $boxboardData = DB::table('boxboard_view')
 }
     
 public function getinkDetails($item_id) {
-    $invoice = DraftInvoice::find($item_id);
+    $invoice = DraftInvoice::with('user')->find($item_id);
     return view('SaleInvoice.draftinvoicing', compact('invoice'));
 }
 

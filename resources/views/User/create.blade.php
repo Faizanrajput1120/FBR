@@ -78,6 +78,12 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
+                        <label class="form-label">STRN</label>
+                        <input type="text" name="strn" class="form-control">
+                    </div>
+                </div>
+
+                    <div class="col-md-6 mb-3">
                         <label class="form-label">Company</label>
                         <select name="company_id" id="" class="form-select select2">
                             <option value="">Select Company</option>

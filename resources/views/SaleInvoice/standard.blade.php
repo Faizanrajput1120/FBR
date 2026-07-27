@@ -146,7 +146,7 @@
     </p>
 
     <div class="stn-ntn-row">
-      <div><b>STN :</b> {{ $invoice->seller_ntn_cnic ?? '' }}</div>
+      <div><b>STN :</b> {{ $invoice->user->strn ?? $invoice->seller_ntn_cnic ?? '' }}</div>
       <div><b>NTN :</b> {{ $invoice->seller_ntn_cnic ?? '' }}</div>
     </div>
 

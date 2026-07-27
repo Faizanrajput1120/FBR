@@ -3,7 +3,7 @@
  <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Draft Invoices') }}
+                {{ __('Standard Draft Invoices') }}
             </h2>
             <a href="{{ route('invoicing.index') }}"
                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
@@ -24,7 +24,7 @@
                     <div class="mb-6">
                         <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
                             <div class="flex-1 max-w-lg">
-                                <form method="GET" action="{{ route('drafts.index') }}" class="flex">
+                                <form method="GET" action="{{ route('standard.drafts.index') }}" class="flex">
                                     <div class="relative flex-1">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -34,7 +34,7 @@
                                         <input type="text"
                                                name="search"
                                                value="{{ $search }}"
-                                               placeholder="Search drafts by title, buyer name, NTN, or reference..."
+                                               placeholder="Search Standard drafts..."
                                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-l-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
                                     </div>
                                     <button type="submit"
@@ -48,7 +48,7 @@
                             @if($search)
                                 <div class="text-sm text-gray-600">
                                     {{ $drafts->total() }} result(s) for "{{ $search }}"
-                                    <a href="{{ route('draft-invoices.index') }}" class="ml-2 text-blue-600 hover:text-blue-800">Clear</a>
+                                    <a href="{{ route('standard.drafts.index') }}" class="ml-2 text-blue-600 hover:text-blue-800">Clear</a>
                                 </div>
                             @endif
                         </div>
@@ -73,8 +73,8 @@
                                             <div class="ml-2 flex-shrink-0">
                                                 <div class="flex items-center">
                                                     <!-- Status indicator -->
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                        Draft
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        Standard
                                                     </span>
                                                 </div>
                                             </div>
@@ -167,7 +167,7 @@
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">No draft invoices</h3>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">No Standard draft invoices</h3>
                             <p class="mt-1 text-sm text-gray-500">
                                 @if($search)
                                     No drafts found matching "{{ $search }}".
