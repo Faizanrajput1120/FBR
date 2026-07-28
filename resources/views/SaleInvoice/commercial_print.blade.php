@@ -183,10 +183,11 @@
           $hsCode = $firstItem['hsCode'] ?? '';
       }
       $grandTotal = 0;
-      $grandQty = 0;
-      $grandValueExcl = 0;
-      $grandSalesTax = 0;
-      $grandFurtherTax = 0;
+       $grandQty = 0;
+       $grandValueExcl = 0;
+       $grandSalesTax = 0;
+       $grandSTInclusive = 0;
+       $grandFurtherTax = 0;
     @endphp
 
     <div class="buyer-meta-row">
@@ -212,6 +213,7 @@
           <th>Unit Price</th>
           <th>Value Excl<br>S.Tax</th>
           <th>Amount of<br>S.Tax {{ ($invoice->cid == 8 || $invoice->cid == 9 || $invoice->cid == 10) ? '18%' : '' }}</th>
+          <th>Value Included<br>S.Tax</th>
           <th>FURTHER<br>TAX</th>
         </tr>
       </thead>
@@ -224,10 +226,12 @@
             $salesTax = floatval($itemArray['salesTaxApplicable'] ?? 0);
             $furtherTax = floatval($itemArray['furtherTax'] ?? 0);
             $unitPrice = $qty > 0 ? $valueExcl / $qty : 0;
+            $stInclusive = $valueExcl + $salesTax;
             $rowTotal = $valueExcl + $salesTax + $furtherTax;
             $grandQty += $qty;
             $grandValueExcl += $valueExcl;
             $grandSalesTax += $salesTax;
+            $grandSTInclusive += $stInclusive;
             $grandFurtherTax += $furtherTax;
             $grandTotal += $rowTotal;
           @endphp
@@ -237,6 +241,7 @@
             <td>{{ number_format($unitPrice, 3) }}</td>
             <td>{{ number_format($valueExcl, 2) }}</td>
             <td>{{ number_format($salesTax, 2) }}</td>
+            <td>{{ number_format($stInclusive, 2) }}</td>
             <td>{{ number_format($furtherTax, 2) }}</td>
           </tr>
         @endforeach
@@ -248,6 +253,7 @@
           <td></td>
           <td>{{ number_format($grandValueExcl, 2) }}</td>
           <td>{{ number_format($grandSalesTax, 2) }}</td>
+          <td>{{ number_format($grandSTInclusive, 2) }}</td>
           <td>{{ number_format($grandFurtherTax, 2) }}</td>
         </tr>
       </tfoot>

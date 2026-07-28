@@ -59,10 +59,10 @@
       $itemsCollection = collect($items);
       $hsCode = $itemsCollection->count() > 0 ? (is_array($itemsCollection->first()) ? ($itemsCollection->first()['hsCode'] ?? '') : '') : '';
       $grandTotal = 0;
-      $grandQty = 0;
-      $grandValueExcl = 0;
-      $grandSalesTax = 0;
-      $grandFurtherTax = 0;
+       $grandQty = 0;
+       $grandValueExcl = 0;
+       $grandSalesTax = 0;
+       $grandFurtherTax = 0;
     ?>
     <div class="buyer-meta-row">
       <div class="buyer-info">
