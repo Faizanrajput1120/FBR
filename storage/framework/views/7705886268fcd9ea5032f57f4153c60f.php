@@ -2,16 +2,18 @@
   <?php $__env->slot('header', null, []); ?> 
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                <?php echo e(__('3rd Schedule Draft Invoices')); ?>
+                <?php echo e(__('Commercial Draft Invoices')); ?>
 
             </h2>
-            <a href="<?php echo e(route('invoicing.index')); ?>"
-               class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
-                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                </svg>
-                Create New Invoice
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="<?php echo e(route('invoicing.index')); ?>"
+                   class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Create New Invoice
+                </a>
+            </div>
         </div>
      <?php $__env->endSlot(); ?>
 
@@ -24,7 +26,7 @@
                     <div class="mb-6">
                         <div class="flex flex-col sm:flex-row gap-4 items-center justify-between">
                             <div class="flex-1 max-w-lg">
-                                <form method="GET" action="<?php echo e(route('third.schedule.drafts.index')); ?>" class="flex">
+                                <form method="GET" action="<?php echo e(route('commercial.drafts.index')); ?>" class="flex">
                                     <div class="relative flex-1">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -34,7 +36,7 @@
                                         <input type="text"
                                                name="search"
                                                value="<?php echo e($search); ?>"
-                                               placeholder="Search 3rd Schedule drafts..."
+                                               placeholder="Search Commercial drafts..."
                                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-l-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
                                     </div>
                                     <button type="submit"
@@ -48,7 +50,7 @@
                             <?php if($search): ?>
                                 <div class="text-sm text-gray-600">
                                     <?php echo e($drafts->total()); ?> result(s) for "<?php echo e($search); ?>"
-                                    <a href="<?php echo e(route('third.schedule.drafts.index')); ?>" class="ml-2 text-blue-600 hover:text-blue-800">Clear</a>
+                                    <a href="<?php echo e(route('commercial.drafts.index')); ?>" class="ml-2 text-blue-600 hover:text-blue-800">Clear</a>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -73,7 +75,7 @@
                                             <div class="ml-2 flex-shrink-0">
                                                 <div class="flex items-center">
                                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                                        3rd Schedule
+                                                        Commercial
                                                     </span>
                                                 </div>
                                             </div>
@@ -119,25 +121,35 @@
                                     </div>
 
                                     <div class="px-4 py-3 bg-gray-50 border-t border-gray-100 rounded-b-lg">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex space-x-2">
-                                                <a href="<?php echo e(route('third.schedule.drafts.edit', $draft)); ?>"
+                                            <div class="flex flex-wrap gap-2">
+                                                <a href="<?php echo e(route('commercial.drafts.edit', $draft)); ?>"
                                                    class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                                     </svg>
                                                     Edit
                                                 </a>
-                                            </div>
-                                            <div class="flex space-x-2">
-                                                <button type="button"
-                                                        onclick="submitDraft(<?php echo e($draft->id); ?>)"
-                                                        class="inline-flex items-center px-3 py-1 border border-green-300 rounded-md text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                                <a href="<?php echo e(route('getinkDetails', $draft)); ?>?format=standard"
+                                                   class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                                     </svg>
-                                                    Submit to FBR
-                                                </button>
+                                                    Standard
+                                                </a>
+                                                <a href="<?php echo e(route('getinkDetails', $draft)); ?>?format=third_schedule"
+                                                   class="inline-flex items-center px-3 py-1 border border-yellow-300 rounded-md text-sm font-medium text-yellow-700 bg-white hover:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                    </svg>
+                                                    3rd Schedule
+                                                </a>
+                                                <a href="<?php echo e(route('getinkDetails', $draft)); ?>?format=commercial"
+                                                   class="inline-flex items-center px-3 py-1 border border-purple-300 rounded-md text-sm font-medium text-purple-700 bg-white hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                    </svg>
+                                                    Commercial
+                                                </a>
                                                 <button type="button"
                                                         onclick="deleteDraft(<?php echo e($draft->id); ?>, '<?php echo e(addslashes($draft->generateTitle())); ?>')"
                                                         class="inline-flex items-center px-3 py-1 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
@@ -164,12 +176,12 @@
                             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">No 3rd Schedule draft invoices</h3>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">No Commercial draft invoices</h3>
                             <p class="mt-1 text-sm text-gray-500">
                                 <?php if($search): ?>
                                     No drafts found matching "<?php echo e($search); ?>".
                                 <?php else: ?>
-                                    Get started by creating a new invoice with 3rd Schedule items.
+                                    Get started by creating a new invoice.
                                 <?php endif; ?>
                             </p>
                             <div class="mt-6">
@@ -188,8 +200,10 @@
         </div>
     </div>
 
+    <!-- Status Messages -->
     <div id="statusMessages" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
+    <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
@@ -198,7 +212,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mt-2">Delete 3rd Schedule Draft</h3>
+                <h3 class="text-lg font-medium text-gray-900 mt-2">Delete Commercial Draft</h3>
                 <div class="mt-2 px-7 py-3">
                     <p class="text-sm text-gray-500">
                         Are you sure you want to delete "<span id="deleteDraftTitle"></span>"? This action cannot be undone.
@@ -237,7 +251,7 @@
 
         document.getElementById('confirmDelete').addEventListener('click', function() {
             if (draftToDelete) {
-                fetch(`${API_BASE}/premiertax/third-schedule-drafts/${draftToDelete}`, {
+                fetch(`${API_BASE}/premiertax/commercial-drafts/${draftToDelete}`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -248,7 +262,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showMessage('3rd Schedule draft deleted successfully', 'success');
+                        showMessage('Commercial draft deleted successfully', 'success');
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
@@ -296,32 +310,6 @@
                 draftToDelete = null;
             }
         });
-
-        async function submitDraft(draftId) {
-            if (!confirm('Are you sure you want to submit this draft to FBR?')) return;
-            try {
-                showMessage('Submitting to FBR...', 'info');
-                const response = await fetch(`${API_BASE}/premiertax/third-schedule-drafts/${draftId}/submit`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': CSRF_TOKEN,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                const result = await response.json();
-                if (result.success) {
-                    showMessage('Invoice submitted successfully to FBR!', 'success');
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    showMessage(result.message || 'Submission failed', 'error');
-                }
-            } catch (error) {
-                console.error('Submit error:', error);
-                showMessage('An error occurred during submission', 'error');
-            }
-        }
     </script>
 <?php $__env->stopSection(); ?>
-
-<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Shahan Developer\FBR\resources\views/third_schedule_draft/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Shahan Developer\FBR\resources\views/commercial_draft/index.blade.php ENDPATH**/ ?>

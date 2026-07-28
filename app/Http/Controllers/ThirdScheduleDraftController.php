@@ -465,7 +465,7 @@ class ThirdScheduleDraftController extends Controller
         try {
             $invoiceData = [
                 'invoiceType' => $draftInvoice->invoice_type,
-                'invoiceDate' => $draftInvoice->invoice_date,
+                'invoiceDate' => \Carbon\Carbon::parse($draftInvoice->invoice_date)->format('Y-m-d'),
                 'sellerNTNCNIC' => $draftInvoice->seller_ntn_cnic,
                 'sellerBusinessName' => $draftInvoice->seller_business_name,
                 'sellerProvince' => $draftInvoice->seller_province,
@@ -483,7 +483,7 @@ class ThirdScheduleDraftController extends Controller
             foreach ($invoiceData['items'] as &$item) {
                 foreach (['quantity', 'totalValues', 'valueSalesExcludingST', 'salesTaxApplicable',
                          'fixedNotifiedValueOrRetailPrice', 'salesTaxWithheldAtSource',
-                         'furtherTax', 'fedPayable', 'discount', 'extraTax'] as $numField) {
+                         'furtherTax', 'fedPayable', 'discount'] as $numField) {
                     if (isset($item[$numField])) {
                         $item[$numField] = (float) $item[$numField];
                     }
@@ -504,6 +504,31 @@ class ThirdScheduleDraftController extends Controller
             $result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $invoiceData);
 
             if ($result['success'] ?? false) {
+                if (is_null($result['data'])) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'FBR returned empty response. Please try again.',
+                    ], 502);
+                }
+
+                $validationResponse = $result['data']['validationResponse'] ?? null;
+                if ($validationResponse && ($validationResponse['status'] ?? '') !== 'Valid') {
+                    $errorDetails = '';
+                    $statuses = $validationResponse['invoiceStatuses'] ?? [];
+                    foreach ($statuses as $i => $st) {
+                        if (($st['status'] ?? '') !== 'Valid') {
+                            $itemNum = $i + 1;
+                            $errMsg = $st['error'] ?? 'Unknown error';
+                            $errorDetails .= "Item {$itemNum}: {$errMsg}. ";
+                        }
+                    }
+                    $message = $errorDetails ?: ($validationResponse['error'] ?? 'FBR validation failed');
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                    ], 400);
+                }
+
                 $draftInvoice->delete();
 
                 return response()->json([
@@ -556,7 +581,7 @@ class ThirdScheduleDraftController extends Controller
         try {
             $invoiceData = [
                 'invoiceType' => $draftInvoice->invoice_type,
-                'invoiceDate' => $draftInvoice->invoice_date,
+                'invoiceDate' => \Carbon\Carbon::parse($draftInvoice->invoice_date)->format('Y-m-d'),
                 'sellerNTNCNIC' => $draftInvoice->seller_ntn_cnic,
                 'sellerBusinessName' => $draftInvoice->seller_business_name,
                 'sellerProvince' => $draftInvoice->seller_province,
@@ -574,7 +599,7 @@ class ThirdScheduleDraftController extends Controller
             foreach ($invoiceData['items'] as &$item) {
                 foreach (['quantity', 'totalValues', 'valueSalesExcludingST', 'salesTaxApplicable',
                          'fixedNotifiedValueOrRetailPrice', 'salesTaxWithheldAtSource',
-                         'furtherTax', 'fedPayable', 'discount', 'extraTax'] as $numField) {
+                         'furtherTax', 'fedPayable', 'discount'] as $numField) {
                     if (isset($item[$numField])) {
                         $item[$numField] = (float) $item[$numField];
                     }
@@ -595,6 +620,31 @@ class ThirdScheduleDraftController extends Controller
             $result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $invoiceData);
 
             if ($result['success'] ?? false) {
+                if (is_null($result['data'])) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'FBR returned empty response. Please try again.',
+                    ], 502);
+                }
+
+                $validationResponse = $result['data']['validationResponse'] ?? null;
+                if ($validationResponse && ($validationResponse['status'] ?? '') !== 'Valid') {
+                    $errorDetails = '';
+                    $statuses = $validationResponse['invoiceStatuses'] ?? [];
+                    foreach ($statuses as $i => $st) {
+                        if (($st['status'] ?? '') !== 'Valid') {
+                            $itemNum = $i + 1;
+                            $errMsg = $st['error'] ?? 'Unknown error';
+                            $errorDetails .= "Item {$itemNum}: {$errMsg}. ";
+                        }
+                    }
+                    $message = $errorDetails ?: ($validationResponse['error'] ?? 'FBR validation failed');
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                    ], 400);
+                }
+
                 $draftInvoice->delete();
 
                 return response()->json([

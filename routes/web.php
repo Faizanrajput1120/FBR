@@ -884,19 +884,25 @@ Route::middleware('auth')->group(function () {
     Route::get('premiertax/api/fbr/doctypecode', [App\Http\Controllers\InvoicingController::class, 'getDocumentTypeCodes'])->name('api.fbr.doctypecode');
     Route::get('premiertax/drafts/{id}/edit', [DraftController::class, 'edit'])->name('drafts.edit');
     Route::get('premiertax/drafts', [DraftController::class, 'index'])->name('drafts.index');
-    Route::get('premiertax/standard-drafts', [DraftController::class, 'indexStandard'])->name('standard.drafts.index');
+    Route::get('premiertax/standard-drafts', function () {
+        return redirect()->route('drafts.index');
+    })->name('standard.drafts.index');
     Route::put('premiertax/drafts/{id}', [DraftController::class, 'update'])->name('drafts.update');
     Route::post('premiertax/drafts/{id}/submit', [DraftController::class, 'submit'])->name('drafts.submit');
     Route::post('/premiertax/invoicing/save-draft', [DraftController::class, 'saveDraft'])->name('invoicing.saveDraft');
     Route::delete('/premiertax/draftinvoices/{id}', [DraftController::class, 'destroy'])
     ->name('drafts.destroy');
 
-    Route::get('premiertax/third-schedule-drafts', [ThirdScheduleDraftController::class, 'index'])->name('third.schedule.drafts.index');
+    Route::get('premiertax/third-schedule-drafts', function () {
+        return redirect()->route('drafts.index');
+    })->name('third.schedule.drafts.index');
     Route::get('premiertax/third-schedule-drafts/{id}/edit', [ThirdScheduleDraftController::class, 'edit'])->name('third.schedule.drafts.edit');
     Route::put('premiertax/third-schedule-drafts/{id}', [ThirdScheduleDraftController::class, 'update'])->name('third.schedule.drafts.update');
     Route::post('premiertax/third-schedule-drafts/{id}/submit', [ThirdScheduleDraftController::class, 'submit'])->name('third.schedule.drafts.submit');
     Route::post('premiertax/invoicing/save-third-schedule-draft', [ThirdScheduleDraftController::class, 'saveDraft'])->name('invoicing.saveThirdScheduleDraft');
-    Route::get('premiertax/commercial-drafts', [ThirdScheduleDraftController::class, 'indexCommercial'])->name('commercial.drafts.index');
+    Route::get('premiertax/commercial-drafts', function () {
+        return redirect()->route('drafts.index');
+    })->name('commercial.drafts.index');
     Route::get('premiertax/commercial-drafts/{id}/edit', [ThirdScheduleDraftController::class, 'editCommercial'])->name('commercial.drafts.edit');
     Route::put('premiertax/commercial-drafts/{id}', [ThirdScheduleDraftController::class, 'updateCommercial'])->name('commercial.drafts.update');
     Route::post('premiertax/commercial-drafts/{id}/submit', [ThirdScheduleDraftController::class, 'submitCommercial'])->name('commercial.drafts.submit');
@@ -904,6 +910,10 @@ Route::middleware('auth')->group(function () {
     Route::post('premiertax/invoicing/save-commercial-draft', [ThirdScheduleDraftController::class, 'saveCommercialDraft'])->name('invoicing.saveCommercialDraft');
     Route::delete('/premiertax/third-schedule-drafts/{id}', [ThirdScheduleDraftController::class, 'destroy'])->name('third.schedule.drafts.destroy');
     Route::delete('/premiertax/commercial-drafts/{id}', [ThirdScheduleDraftController::class, 'destroyCommercial'])->name('commercial.drafts.destroy');
+
+    // Bulk Submit Drafts
+    Route::post('premiertax/draftinvoices/bulk-submit', [DraftController::class, 'bulkSubmit'])->name('draftinvoices.bulk-submit');
+    Route::post('premiertax/draftinvoices/bulk-submit-all', [DraftController::class, 'bulkSubmitAll'])->name('draftinvoices.bulk-submit-all');
 
 });
 

@@ -5,13 +5,15 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('3rd Schedule Draft Invoices') }}
             </h2>
-            <a href="{{ route('invoicing.index') }}"
-               class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
-                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                </svg>
-                Create New Invoice
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('invoicing.index') }}"
+                   class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Create New Invoice
+                </a>
+            </div>
         </div>
     </x-slot>
 
@@ -64,9 +66,10 @@
                                                 <h3 class="text-lg font-medium text-gray-900 truncate" title="{{ $draft->generateTitle() }}">
                                                     {{ $draft->generateTitle() }}
                                                 </h3>
-                                                <p class="text-sm text-gray-500 mt-1">
-                                                    {{ $draft->summary }}
-                                                </p>
+                                                    <p class="text-sm text-gray-500 mt-1">
+                                                        {{ $draft->summary }}
+                                                    </p>
+                                                </div>
                                             </div>
                                             <div class="ml-2 flex-shrink-0">
                                                 <div class="flex items-center">
@@ -117,8 +120,7 @@
                                     </div>
 
                                     <div class="px-4 py-3 bg-gray-50 border-t border-gray-100 rounded-b-lg">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex space-x-2">
+                                            <div class="flex flex-wrap gap-2">
                                                 <a href="{{ route('third.schedule.drafts.edit', $draft) }}"
                                                    class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -126,16 +128,27 @@
                                                     </svg>
                                                     Edit
                                                 </a>
-                                            </div>
-                                            <div class="flex space-x-2">
-                                                <button type="button"
-                                                        onclick="submitDraft({{ $draft->id }})"
-                                                        class="inline-flex items-center px-3 py-1 border border-green-300 rounded-md text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                                <a href="{{ route('getinkDetails', $draft) }}?format=standard"
+                                                   class="inline-flex items-center px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                                     <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                                     </svg>
-                                                    Submit to FBR
-                                                </button>
+                                                    Standard
+                                                </a>
+                                                <a href="{{ route('getinkDetails', $draft) }}?format=third_schedule"
+                                                   class="inline-flex items-center px-3 py-1 border border-yellow-300 rounded-md text-sm font-medium text-yellow-700 bg-white hover:bg-yellow-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                    </svg>
+                                                    3rd Schedule
+                                                </a>
+                                                <a href="{{ route('getinkDetails', $draft) }}?format=commercial"
+                                                   class="inline-flex items-center px-3 py-1 border border-purple-300 rounded-md text-sm font-medium text-purple-700 bg-white hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                    </svg>
+                                                    Commercial
+                                                </a>
                                                 <button type="button"
                                                         onclick="deleteDraft({{ $draft->id }}, '{{ addslashes($draft->generateTitle()) }}')"
                                                         class="inline-flex items-center px-3 py-1 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
@@ -294,29 +307,5 @@
             }
         });
 
-        async function submitDraft(draftId) {
-            if (!confirm('Are you sure you want to submit this draft to FBR?')) return;
-            try {
-                showMessage('Submitting to FBR...', 'info');
-                const response = await fetch(`${API_BASE}/premiertax/third-schedule-drafts/${draftId}/submit`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': CSRF_TOKEN,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                const result = await response.json();
-                if (result.success) {
-                    showMessage('Invoice submitted successfully to FBR!', 'success');
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    showMessage(result.message || 'Submission failed', 'error');
-                }
-            } catch (error) {
-                console.error('Submit error:', error);
-                showMessage('An error occurred during submission', 'error');
-            }
-        }
     </script>
 @endsection

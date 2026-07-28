@@ -122,7 +122,7 @@ if ($provincesResult['success']) {
      $invoiceData = $request->all();
 
         // Remove non-FBR fields that leak from the form
-    unset($invoiceData['_token'], $invoiceData['furtherexpense']);
+    unset($invoiceData['_token'], $invoiceData['furtherexpense'], $invoiceData['title'], $invoiceData['notes'], $invoiceData['status'], $invoiceData['cid'], $invoiceData['user_id']);
 
     // Clean sellerAddress if it exists
     if (!empty($invoiceData['sellerAddress'])) {
@@ -252,9 +252,19 @@ $result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $i
 
             // Check FBR validation status
             if ($validationResponse && ($validationResponse['status'] ?? '') !== 'Valid') {
+                $errorDetails = '';
+                $statuses = $validationResponse['invoiceStatuses'] ?? [];
+                foreach ($statuses as $i => $st) {
+                    if (($st['status'] ?? '') !== 'Valid') {
+                        $itemNum = $i + 1;
+                        $errMsg = $st['error'] ?? 'Unknown error';
+                        $errorDetails .= "Item {$itemNum}: {$errMsg}. ";
+                    }
+                }
+                $message = $errorDetails ?: ($validationResponse['error'] ?? 'Validation failed');
                 return response()->json([
                     'success' => false,
-                    'message' => $validationResponse['invoiceStatuses'][0]['error'] ?? 'Validation failed',
+                    'message' => $message,
                 ], $result['status_code'] ?? 400);
             }
 

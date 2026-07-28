@@ -172,6 +172,10 @@
           $hsCode = $firstItem['hsCode'] ?? '';
       }
       $grandTotal = 0;
+      $grandQty = 0;
+      $grandValueExcl = 0;
+      $grandSalesTax = 0;
+      $grandFurtherTax = 0;
     @endphp
 
     <div class="buyer-meta-row">
@@ -181,10 +185,9 @@
         <div>{{ $invoice->buyer_province ?? '' }}</div>
         <div>PAKISTAN</div>
         <div><b>NTN</b> {{ $invoice->buyer_ntn_cnic ?? '' }}</div>
-        <div><b>CNIC</b> {{ $invoice->buyer_ntn_cnic ?? '' }}</div>
       </div>
       <div class="invoice-meta">
-        <div><b>Invoice No.</b> {{ $invoice->fbr_invoice_no ?? 'N/A' }}</div>
+        <div><b>Invoice No.</b> {{ $invoice->invoice_ref_no ?? 'N/A' }}</div>
         <div><b>Date</b> {{ \Carbon\Carbon::parse($invoice->invoice_date ?? now())->format('d/m/Y') }}</div>
         <div><b>HS Code</b> {{ $hsCode ?: '-' }}</div>
       </div>
@@ -194,12 +197,11 @@
       <thead>
         <tr>
           <th class="left">Particulars</th>
-          <th>Quantity<br>{{ $itemsCollection->first()['uoM'] ?? 'Kgs' }}</th>
-          <th>Unit Price<br>{{ $itemsCollection->first()['uoM'] ?? 'Kgs' }}</th>
-          <th>Value Excluded<br>S.Tax</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Value Excl<br>S.Tax</th>
           <th>Amount of<br>S.Tax {{ ($invoice->cid == 8 || $invoice->cid == 9 || $invoice->cid == 10) ? '18%' : '' }}</th>
           <th>FURTHER<br>TAX</th>
-          <th>Value Included<br>S.Tax</th>
         </tr>
       </thead>
       <tbody>
@@ -211,8 +213,12 @@
             $salesTax = floatval($itemArray['salesTaxApplicable'] ?? 0);
             $furtherTax = floatval($itemArray['furtherTax'] ?? 0);
             $unitPrice = $qty > 0 ? $valueExcl / $qty : 0;
-            $valueIncl = $valueExcl + $salesTax + $furtherTax;
-            $grandTotal += $valueIncl;
+            $rowTotal = $valueExcl + $salesTax + $furtherTax;
+            $grandQty += $qty;
+            $grandValueExcl += $valueExcl;
+            $grandSalesTax += $salesTax;
+            $grandFurtherTax += $furtherTax;
+            $grandTotal += $rowTotal;
           @endphp
           <tr>
             <td class="left">{{ $itemArray['product_description'] ?? $itemArray['productDescription'] ?? '-' }}</td>
@@ -221,10 +227,19 @@
             <td>{{ number_format($valueExcl, 2) }}</td>
             <td>{{ number_format($salesTax, 2) }}</td>
             <td>{{ number_format($furtherTax, 2) }}</td>
-            <td>{{ number_format($valueIncl, 2) }}</td>
           </tr>
         @endforeach
       </tbody>
+      <tfoot>
+        <tr style="font-weight:bold;background:#f9f9f9;">
+          <td class="left">Total</td>
+          <td>{{ number_format($grandQty, 0) }}</td>
+          <td></td>
+          <td>{{ number_format($grandValueExcl, 2) }}</td>
+          <td>{{ number_format($grandSalesTax, 2) }}</td>
+          <td>{{ number_format($grandFurtherTax, 2) }}</td>
+        </tr>
+      </tfoot>
     </table>
 
     @php
@@ -232,10 +247,6 @@
       if ($expenseCol > 0) $grandTotal += $expenseCol;
     @endphp
 
-    <div class="total-row">
-      <span class="label">Total:</span>
-      <span class="amount">Rs. {{ number_format($grandTotal, 2) }}</span>
-    </div>
 
     <p class="footer-note">This is a system generated invoice and does not require any signatures.</p>
 

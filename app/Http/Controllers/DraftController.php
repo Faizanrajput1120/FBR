@@ -49,7 +49,7 @@ class DraftController extends Controller
     {
         $user = Auth::user();
         $search = $request->input('search');
-        $query = DraftInvoice::where('user_id', $user->id)->where('cid', $user->c_id)->where('is_third_schedule', false);
+        $query = DraftInvoice::where('user_id', $user->id)->where('cid', $user->c_id)->where('is_third_schedule', false)->where('is_commercial', false);
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%$search%")
@@ -281,7 +281,7 @@ public function saveDraft(Request $request)
             foreach ($invoiceData['items'] as &$item) {
                 foreach (['quantity', 'totalValues', 'valueSalesExcludingST', 'salesTaxApplicable',
                          'fixedNotifiedValueOrRetailPrice', 'salesTaxWithheldAtSource',
-                         'furtherTax', 'fedPayable', 'discount', 'extraTax'] as $numField) {
+                         'furtherTax', 'fedPayable', 'discount'] as $numField) {
                     if (isset($item[$numField])) {
                         $item[$numField] = (float) $item[$numField];
                     }
@@ -357,5 +357,159 @@ public function saveDraft(Request $request)
         ->route('drafts.index')
         ->with('success', 'Draft invoice deleted successfully.');
 }
+
+    // Bulk submit selected drafts to FBR
+    public function bulkSubmit(Request $request)
+    {
+        $user = Auth::user();
+        $ids = $request->input('ids', []);
+        $type = $request->input('type', 'standard');
+
+        if (empty($ids)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No draft IDs provided'
+            ], 400);
+        }
+
+        if (!$user->fbr_access_token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'FBR Access Token is required.'
+            ], 400);
+        }
+
+        $query = DraftInvoice::where('user_id', $user->id)->whereIn('id', $ids);
+
+        // Filter by type
+        if ($type === 'third_schedule') {
+            $query->where('is_third_schedule', true);
+        } elseif ($type === 'commercial') {
+            $query->where('is_commercial', true);
+        } else {
+            $query->where('is_third_schedule', false)->where('is_commercial', false);
+        }
+
+        $drafts = $query->get();
+
+        if ($drafts->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No valid drafts found for the selected type'
+            ], 400);
+        }
+
+        $submitted = 0;
+        $failed = 0;
+        $failedDetails = [];
+
+        foreach ($drafts as $draft) {
+            try {
+                // Build FBR payload from draft data
+                $invoiceData = [
+                    'invoiceType' => $draft->invoice_type,
+                    'invoiceDate' => \Carbon\Carbon::parse($draft->invoice_date)->format('Y-m-d'),
+                    'sellerNTNCNIC' => $draft->seller_ntn_cnic,
+                    'sellerBusinessName' => $draft->seller_business_name,
+                    'sellerProvince' => $draft->seller_province,
+                    'sellerAddress' => $draft->seller_address ?? '',
+                    'buyerNTNCNIC' => $draft->buyer_ntn_cnic ?? '',
+                    'buyerBusinessName' => $draft->buyer_business_name ?? '',
+                    'buyerProvince' => $draft->buyer_province ?? '',
+                    'buyerAddress' => $draft->buyer_address ?? '',
+                    'buyerRegistrationType' => $draft->buyer_registration_type ?? '',
+                    'invoiceRefNo' => $draft->invoice_ref_no ?? '',
+                    'scenarioId' => $draft->scenario_id ?? '',
+                    'items' => $draft->items ?? [],
+                ];
+
+                // Normalize items
+                foreach ($invoiceData['items'] as &$item) {
+                    foreach (['quantity', 'totalValues', 'valueSalesExcludingST', 'salesTaxApplicable',
+                             'fixedNotifiedValueOrRetailPrice', 'salesTaxWithheldAtSource',
+                             'furtherTax', 'fedPayable', 'discount'] as $numField) {
+                        if (isset($item[$numField])) {
+                            $item[$numField] = (float) $item[$numField];
+                        }
+                    }
+                    unset($item['rateValues']);
+                }
+
+                // Remove scenarioId in production
+                if (!$user->use_sandbox) {
+                    unset($invoiceData['scenarioId']);
+                }
+
+                // Submit to FBR
+                $result = $this->getFbrApiService()->postInvoiceData($user->fbr_access_token, $invoiceData);
+
+                if ($result['success'] ?? false) {
+                    $draft->delete();
+                    $submitted++;
+                } else {
+                    $failed++;
+                    $failedDetails[] = "Draft #{$draft->id}: " . ($result['message'] ?? 'Unknown error');
+                }
+
+                // Small delay to avoid rate limiting
+                usleep(200000); // 0.2 seconds
+
+            } catch (\Exception $e) {
+                $failed++;
+                $failedDetails[] = "Draft #{$draft->id}: " . $e->getMessage();
+                Log::error('Bulk submit exception', [
+                    'user_id' => $user->id,
+                    'draft_id' => $draft->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => $submitted > 0,
+            'message' => $submitted > 0 ? "Successfully submitted {$submitted} draft(s) to FBR" : 'No drafts submitted',
+            'submitted_count' => $submitted,
+            'failed_count' => $failed,
+            'failed' => $failedDetails
+        ]);
+    }
+
+    // Bulk submit ALL drafts of a type to FBR
+    public function bulkSubmitAll(Request $request)
+    {
+        $user = Auth::user();
+        $type = $request->input('type', 'standard');
+
+        if (!$user->fbr_access_token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'FBR Access Token is required.'
+            ], 400);
+        }
+
+        $query = DraftInvoice::where('user_id', $user->id);
+
+        // Filter by type
+        if ($type === 'third_schedule') {
+            $query->where('is_third_schedule', true);
+        } elseif ($type === 'commercial') {
+            $query->where('is_commercial', true);
+        } else {
+            $query->where('is_third_schedule', false)->where('is_commercial', false);
+        }
+
+        $drafts = $query->get();
+
+        if ($drafts->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No drafts found to submit'
+            ], 400);
+        }
+
+        $ids = $drafts->pluck('id')->toArray();
+        $request->merge(['ids' => $ids]);
+        return $this->bulkSubmit($request);
+    }
 
 }

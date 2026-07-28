@@ -82,7 +82,14 @@ $boxboardData = DB::table('boxboard_view')
     
 public function getinkDetails($item_id) {
     $invoice = DraftInvoice::with('user')->find($item_id);
-    return view('SaleInvoice.draftinvoicing', compact('invoice'));
+    $format = request()->query('format', 'standard');
+    $viewMap = [
+        'standard'       => 'SaleInvoice.draft_standard',
+        'third_schedule' => 'SaleInvoice.draft_third_schedule',
+        'commercial'     => 'SaleInvoice.draft_commercial',
+    ];
+    $view = $viewMap[$format] ?? 'SaleInvoice.draft_standard';
+    return view($view, compact('invoice'));
 }
 
 

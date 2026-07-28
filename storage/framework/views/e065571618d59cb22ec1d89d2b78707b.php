@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Commercial Invoice - {{ $invoice->seller_business_name ?? '' }}</title>
+<title>Commercial Invoice - <?php echo e($invoice->seller_business_name ?? ''); ?></title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -150,31 +150,32 @@
 
   <div class="page">
 
-    <p class="company-name">{{ $invoice->seller_business_name ?? '' }}</p>
+    <p class="company-name"><?php echo e($invoice->seller_business_name ?? ''); ?></p>
     <p class="company-address">
-      {{ $invoice->seller_address ?? '' }}<br>
-      {{ $invoice->seller_province ?? '' }}
+      <?php echo e($invoice->seller_address ?? ''); ?><br>
+      <?php echo e($invoice->seller_province ?? ''); ?>
+
     </p>
 
     <div class="stn-ntn-row">
-      <div><b>STN :</b> {{ $invoice->user->strn ?? $invoice->seller_ntn_cnic ?? '' }}</div>
-      <div><b>NTN :</b> {{ $invoice->seller_ntn_cnic ?? '' }}</div>
+      <div><b>STN :</b> <?php echo e($invoice->user->strn ?? $invoice->seller_ntn_cnic ?? ''); ?></div>
+      <div><b>NTN :</b> <?php echo e($invoice->seller_ntn_cnic ?? ''); ?></div>
     </div>
 
     <div class="logo-qr-row">
-      @if(file_exists(public_path('fbr.jpg')))
-        <img src="{{ asset('fbr.jpg') }}" alt="FBR Logo" class="fbr-img">
-      @else
+      <?php if(file_exists(public_path('fbr.jpg'))): ?>
+        <img src="<?php echo e(asset('fbr.jpg')); ?>" alt="FBR Logo" class="fbr-img">
+      <?php else: ?>
         <div style="border:1px solid #999;width:70px;height:70px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#888;text-align:center;">FBR<br>LOGO</div>
-      @endif
+      <?php endif; ?>
       <div id="qrcode"></div>
     </div>
 
-    <p class="digital-invoice-line">Digital Invoice #: {{ $invoice->fbr_invoice_no ?? 'N/A' }}</p>
+    <p class="digital-invoice-line">Digital Invoice #: <?php echo e($invoice->fbr_invoice_no ?? 'N/A'); ?></p>
 
     <p class="invoice-title">Commercial Invoice</p>
 
-    @php
+    <?php
       $items = is_string($invoice->items) ? json_decode($invoice->items, true) : ($invoice->items ?? []);
       $itemsCollection = collect($items);
       $hsCode = '';
@@ -187,20 +188,20 @@
       $grandValueExcl = 0;
       $grandSalesTax = 0;
       $grandFurtherTax = 0;
-    @endphp
+    ?>
 
     <div class="buyer-meta-row">
       <div class="buyer-info">
-        <div class="name">{{ $invoice->buyer_business_name ?? '' }}</div>
-        <div>{{ $invoice->buyer_address ?? '' }}</div>
-        <div>{{ $invoice->buyer_province ?? '' }}</div>
+        <div class="name"><?php echo e($invoice->buyer_business_name ?? ''); ?></div>
+        <div><?php echo e($invoice->buyer_address ?? ''); ?></div>
+        <div><?php echo e($invoice->buyer_province ?? ''); ?></div>
         <div>PAKISTAN</div>
-        <div><b>NTN</b> {{ $invoice->buyer_ntn_cnic ?? '' }}</div>
+        <div><b>NTN</b> <?php echo e($invoice->buyer_ntn_cnic ?? ''); ?></div>
       </div>
       <div class="invoice-meta">
-        <div><b>Invoice No.</b> {{ $invoice->invoice_ref_no ?? 'N/A' }}</div>
-        <div><b>Date</b> {{ \Carbon\Carbon::parse($invoice->invoice_date ?? now())->format('d/m/Y') }}</div>
-        <div><b>HS Code</b> {{ $hsCode ?: '-' }}</div>
+        <div><b>Invoice No.</b> <?php echo e($invoice->invoice_ref_no ?? 'N/A'); ?></div>
+        <div><b>Date</b> <?php echo e(\Carbon\Carbon::parse($invoice->invoice_date ?? now())->format('d/m/Y')); ?></div>
+        <div><b>HS Code</b> <?php echo e($hsCode ?: '-'); ?></div>
       </div>
     </div>
 
@@ -211,13 +212,13 @@
           <th>Qty</th>
           <th>Unit Price</th>
           <th>Value Excl<br>S.Tax</th>
-          <th>Amount of<br>S.Tax {{ ($invoice->cid == 8 || $invoice->cid == 9 || $invoice->cid == 10) ? '18%' : '' }}</th>
+          <th>Amount of<br>S.Tax <?php echo e(($invoice->cid == 8 || $invoice->cid == 9 || $invoice->cid == 10) ? '18%' : ''); ?></th>
           <th>FURTHER<br>TAX</th>
         </tr>
       </thead>
       <tbody>
-        @foreach($itemsCollection as $item)
-          @php
+        <?php $__currentLoopData = $itemsCollection; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+          <?php
             $itemArray = is_array($item) ? $item : (array) $item;
             $qty = floatval($itemArray['quantity'] ?? 0);
             $valueExcl = floatval($itemArray['valueSalesExcludingST'] ?? 0);
@@ -230,33 +231,33 @@
             $grandSalesTax += $salesTax;
             $grandFurtherTax += $furtherTax;
             $grandTotal += $rowTotal;
-          @endphp
+          ?>
           <tr>
-            <td class="left">{{ $itemArray['product_description'] ?? $itemArray['productDescription'] ?? '-' }}</td>
-            <td>{{ number_format($qty, 0) }}</td>
-            <td>{{ number_format($unitPrice, 3) }}</td>
-            <td>{{ number_format($valueExcl, 2) }}</td>
-            <td>{{ number_format($salesTax, 2) }}</td>
-            <td>{{ number_format($furtherTax, 2) }}</td>
+            <td class="left"><?php echo e($itemArray['product_description'] ?? $itemArray['productDescription'] ?? '-'); ?></td>
+            <td><?php echo e(number_format($qty, 0)); ?></td>
+            <td><?php echo e(number_format($unitPrice, 3)); ?></td>
+            <td><?php echo e(number_format($valueExcl, 2)); ?></td>
+            <td><?php echo e(number_format($salesTax, 2)); ?></td>
+            <td><?php echo e(number_format($furtherTax, 2)); ?></td>
           </tr>
-        @endforeach
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
       </tbody>
       <tfoot>
         <tr style="font-weight:bold;background:#f9f9f9;">
           <td class="left">Total</td>
-          <td>{{ number_format($grandQty, 0) }}</td>
+          <td><?php echo e(number_format($grandQty, 0)); ?></td>
           <td></td>
-          <td>{{ number_format($grandValueExcl, 2) }}</td>
-          <td>{{ number_format($grandSalesTax, 2) }}</td>
-          <td>{{ number_format($grandFurtherTax, 2) }}</td>
+          <td><?php echo e(number_format($grandValueExcl, 2)); ?></td>
+          <td><?php echo e(number_format($grandSalesTax, 2)); ?></td>
+          <td><?php echo e(number_format($grandFurtherTax, 2)); ?></td>
         </tr>
       </tfoot>
     </table>
 
-    @php
+    <?php
       $expenseCol = floatval($invoice->expense_col ?? 0);
       if ($expenseCol > 0) $grandTotal += $expenseCol;
-    @endphp
+    ?>
 
    
 
@@ -272,7 +273,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var qrData = "{{ $invoice->fbr_invoice_no ?? '' }}";
+    var qrData = "<?php echo e($invoice->fbr_invoice_no ?? ''); ?>";
     var qrContainer = document.getElementById("qrcode");
     if (qrData && qrData.trim() !== '') {
         try {
@@ -286,4 +287,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 </body>
-</html>
+</html><?php /**PATH C:\Users\Shahan Developer\FBR\resources\views/SaleInvoice/commercial_print.blade.php ENDPATH**/ ?>
