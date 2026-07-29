@@ -58,7 +58,7 @@ class DraftInvoice extends Model
     // Helper to generate a default title
     public function generateTitle()
     {
-        return 'Draft Invoice #' . ($this->id ?? 'New');
+        return 'Draft Invoice #' . ($this->invoice_ref_no ?? $this->id ?? 'New');
     }
 
     public function getSummaryAttribute()
