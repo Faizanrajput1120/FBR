@@ -203,8 +203,8 @@
           <th>Unit Price</th>
           <th>Value Excl<br>S.Tax</th>
           <th>Amount of<br>S.Tax <?php echo e(($invoice->cid == 8 || $invoice->cid == 9 || $invoice->cid == 10) ? '18%' : ''); ?></th>
-          <th>Value Included<br>S.Tax</th>
           <th>FURTHER<br>TAX</th>
+          <th>Value Included<br>S.Tax</th>
         </tr>
       </thead>
       <tbody>
@@ -216,7 +216,7 @@
             $salesTax = floatval($itemArray['salesTaxApplicable'] ?? 0);
             $furtherTax = floatval($itemArray['furtherTax'] ?? 0);
             $unitPrice = $qty > 0 ? $valueExcl / $qty : 0;
-            $stInclusive = $valueExcl + $salesTax;
+            $stInclusive = $valueExcl + $salesTax + $furtherTax;
             $rowTotal = $valueExcl + $salesTax + $furtherTax;
             $grandQty += $qty;
             $grandValueExcl += $valueExcl;
@@ -231,8 +231,8 @@
             <td><?php echo e(number_format($unitPrice, 3)); ?></td>
             <td><?php echo e(number_format($valueExcl, 2)); ?></td>
             <td><?php echo e(number_format($salesTax, 2)); ?></td>
-            <td><?php echo e(number_format($stInclusive, 2)); ?></td>
             <td><?php echo e(number_format($furtherTax, 2)); ?></td>
+            <td><?php echo e(number_format($stInclusive, 2)); ?></td>
           </tr>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
       </tbody>
@@ -243,8 +243,8 @@
           <td></td>
           <td><?php echo e(number_format($grandValueExcl, 2)); ?></td>
           <td><?php echo e(number_format($grandSalesTax, 2)); ?></td>
-          <td><?php echo e(number_format($grandSTInclusive, 2)); ?></td>
           <td><?php echo e(number_format($grandFurtherTax, 2)); ?></td>
+          <td><?php echo e(number_format($grandSTInclusive, 2)); ?></td>
         </tr>
       </tfoot>
     </table>
