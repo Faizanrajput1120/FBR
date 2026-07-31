@@ -66,6 +66,7 @@
                                 <tr>
                                     <th>Party Name</th>
                                     <th>Bill No</th>
+                                    <th>Invoice Ref No</th>
                                     <th>Voucher No</th>
                                     <th>Date</th>
                                     <th>Subtotal</th>
@@ -79,6 +80,7 @@
                                 <tr>
                                     <td>{{ $data->parties->buyer_name ?? 'N/A' }}</td>
                                     <td>{{ $data->bill_no }}</td>
+                                    <td>{{ $data->invoice_ref_no ?? $data->bill_no }}</td>
                                     <td>{{ $data->v_no }}</td>
                                     <td>{{ $data->created_at->format('d/m/Y') }}</td>
                                     <td class="text-end">{{ number_format($data->subtotal, 2) }}</td>
@@ -89,6 +91,13 @@
                                            class="btn btn-sm btn-info" target="_blank">
                                             View Invoice
                                         </a>
+                                        <form action="{{ route('reports.sales.delete', $data->bill_no) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this invoice?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                Delete
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -96,7 +105,7 @@
                             @if(count($reportData) > 0)
                             <tfoot>
                                 <tr class="fw-bold">
-                                    <td colspan="4" class="text-end">Total:</td>
+                                    <td colspan="5" class="text-end">Total:</td>
                                     <td class="text-end">{{ number_format($reportData->sum('subtotal'), 2) }}</td>
                                     <td class="text-end">{{ number_format($reportData->sum('tax_amount'), 2) }}</td>
                                     <td class="text-end">{{ number_format($reportData->sum('grand_total'), 2) }}</td>
@@ -156,6 +165,7 @@
             <tr>
                 <th>Party Name</th>
                 <th>Bill No</th>
+                <th>Invoice Ref No</th>
                 <th>Voucher No</th>
                 <th>Date</th>
                 <th class="text-end">Subtotal</th>
@@ -168,6 +178,7 @@
             <tr>
                 <td>{{ $data->parties->buyer_name ?? 'N/A' }}</td>
                 <td>{{ $data->bill_no }}</td>
+                <td>{{ $data->invoice_ref_no ?? $data->bill_no }}</td>
                 <td>{{ $data->v_no }}</td>
                 <td>{{ $data->created_at->format('d/m/Y') }}</td>
                 <td class="text-end">{{ number_format($data->subtotal, 2) }}</td>
@@ -179,7 +190,7 @@
         @if(count($reportData) > 0)
         <tfoot>
             <tr class="fw-bold">
-                <td colspan="4" class="text-end">Total:</td>
+                <td colspan="5" class="text-end">Total:</td>
                 <td class="text-end">{{ number_format($reportData->sum('subtotal'), 2) }}</td>
                 <td class="text-end">{{ number_format($reportData->sum('tax_amount'), 2) }}</td>
                 <td class="text-end">{{ number_format($reportData->sum('grand_total'), 2) }}</td>

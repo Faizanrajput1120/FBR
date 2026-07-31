@@ -65,6 +65,7 @@
                     <thead>
                         <tr>
                             <th>Bill No</th>
+                            <th>Invoice Ref No</th>
                             <th>Client</th>
                             <th>Date</th>
                             <th>Actions</th>
@@ -74,6 +75,7 @@
                         <?php $__empty_1 = true; $__currentLoopData = $salesInvoices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $invoice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
                                 <td><?php echo e($invoice->fbr_invoice_no); ?></td>
+                                <td><?php echo e($invoice->invoice_ref_no ?? 'N/A'); ?></td>
                                 <td><?php echo e($invoice->buyer_business_name ?? 'N/A'); ?></td>
                                 <td><?php echo e(\Carbon\Carbon::parse($invoice->invoice_date)->format('Y-m-d')); ?></td>
                                 <td>
@@ -93,16 +95,21 @@
                                        class="btn btn-success btn-sm" target="_blank">
                                         <i class="mdi mdi-printer"></i> Commercial Print
                                     </a>
-
+                                    <form action="<?php echo e(route('reports.sales.delete', $invoice->id)); ?>" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this invoice?');">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="mdi mdi-delete"></i> Delete
+                                        </button>
+                                    </form>
                         
-
 
                         
                                 </td>
                             </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr>
-                                <td colspan="4" class="text-center">No sales invoices found</td>
+                                <td colspan="5" class="text-center">No sales invoices found</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

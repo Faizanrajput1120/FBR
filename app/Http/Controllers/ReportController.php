@@ -70,4 +70,22 @@ $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)
 
     return view('SaleInvoice.index', compact('salesInvoices', 'availableBillNumbers'));
 }
+    public function deleteSaleInvoice($id)
+    {
+        $user = Auth::user();
+        $invoice = SaleInvoiceFbr::where('cid', $user->c_id)
+            ->where(function ($q) use ($id) {
+                $q->where('id', $id)
+                    ->orWhere('fbr_invoice_no', $id)
+                    ->orWhere('invoice_ref_no', $id);
+            })
+            ->first();
+
+        if (!$invoice) {
+            return redirect()->back()->with('error', 'Invoice not found.');
+        }
+
+        $invoice->delete();
+        return redirect()->back()->with('success', 'Invoice deleted successfully.');
+    }
 }

@@ -223,6 +223,7 @@ Route::get('/premiertax', function () {
 // routes/web.php
 Route::get('premiertax/reports/party', [ReportController::class, 'partyReport'])->name('reports.party')->middleware('auth');
 Route::get('premiertax/reports/Sales', [ReportController::class, 'SaleReport'])->name('reports.sales')->middleware('auth');
+Route::delete('premiertax/reports/sales/delete/{id}', [ReportController::class, 'deleteSaleInvoice'])->name('reports.sales.delete')->middleware('auth');
 Route::get('premiertax/purchase/invoice/{id}', [PurchaseDetail::class, 'invoice'])
      ->name('premiertax.purchase.invoice');
 Route::get('premiertax/sale/invoice/{id}', [SaleDetails::class, 'invoice'])

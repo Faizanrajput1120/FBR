@@ -65,6 +65,7 @@
                     <thead>
                         <tr>
                             <th>Bill No</th>
+                            <th>Invoice Ref No</th>
                             <th>Client</th>
                             <th>Date</th>
                             <th>Actions</th>
@@ -74,6 +75,7 @@
                         @forelse($salesInvoices as $invoice)
                             <tr>
                                 <td>{{ $invoice->fbr_invoice_no }}</td>
+                                <td>{{ $invoice->invoice_ref_no ?? 'N/A' }}</td>
                                 <td>{{ $invoice->buyer_business_name ?? 'N/A' }}</td>
                                 <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('Y-m-d') }}</td>
                                 <td>
@@ -93,16 +95,21 @@
                                        class="btn btn-success btn-sm" target="_blank">
                                         <i class="mdi mdi-printer"></i> Commercial Print
                                     </a>
-
+                                    <form action="{{ route('reports.sales.delete', $invoice->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this invoice?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="mdi mdi-delete"></i> Delete
+                                        </button>
+                                    </form>
                         
-
 
                         
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center">No sales invoices found</td>
+                                <td colspan="5" class="text-center">No sales invoices found</td>
                             </tr>
                         @endforelse
                     </tbody>
