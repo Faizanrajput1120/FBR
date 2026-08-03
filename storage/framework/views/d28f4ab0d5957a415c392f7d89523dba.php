@@ -58,6 +58,21 @@
      
     </div>
 
+    <div class="row mb-2">
+        <div class="col-md-12 d-flex flex-wrap gap-2 align-items-center">
+            <button onclick="printSectionReport('supplierRegisterSection')" class="btn btn-info">
+                <i class="mdi mdi-printer"></i> Supplier Register
+            </button>
+            <button onclick="printSectionReport('thirdScheduleSection')" class="btn btn-warning">
+                <i class="mdi mdi-printer"></i> Third Schedule
+            </button>
+            <h5 class="mb-0 badge bg-primary fs-6" id="ghTotalVar">
+                GH 236 Total: <?php echo e(number_format($ghTotal ?? 0, 2)); ?>
+
+            </h5>
+        </div>
+    </div>
+
     <div class="row">
         <div class="card">
             <div class="card-body">
@@ -119,9 +134,371 @@
     </div>
 </div>
 
-<?php $__env->startPush('scripts'); ?>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- Supplier Register Print Section -->
+<div id="supplierRegisterSection" style="display: none;" data-title="Supply Register">
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 8mm;
+        }
+        .register-report {
+            width: 100%;
+            margin: 0 auto;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 10px;
+            color: #000;
+            background: #fff;
+            box-sizing: border-box;
+        }
+        .register-report .header {
+            position: relative;
+        }
+        .register-report .page-label {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 10px;
+        }
+        .register-report .company {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .register-report .company h2 {
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0;
+        }
+        .register-report .company .address,
+        .register-report .company .taxno {
+            font-size: 10px;
+            margin-top: 3px;
+        }
+        .register-report .title {
+            text-align: center;
+            color: blue;
+            font-style: italic;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 6px 0;
+        }
+        .register-report .date-box {
+            width: 220px;
+            border: 1px solid #000;
+            padding: 5px;
+            margin: 6px 0;
+        }
+        .register-report .date-box .date-label {
+            font-weight: bold;
+            border-bottom: 1px solid #000;
+            padding-bottom: 3px;
+            margin-bottom: 3px;
+        }
+        .register-report .date-box table {
+            width: 100%;
+            border: none;
+        }
+        .register-report .date-box td {
+            border: none;
+            padding: 1px 0;
+        }
+        .register-report .date-box td:last-child {
+            text-align: right;
+            font-weight: bold;
+        }
+        .register-report hr {
+            border: 1px solid #000;
+            margin: 5px 0;
+        }
+        .register-report table.data {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+        .register-report table.data th,
+        .register-report table.data td {
+            border: 1px solid #000;
+            padding: 2px 3px;
+            text-align: center;
+            word-wrap: break-word;
+        }
+        .register-report table.data th {
+            background: #d9f2b4;
+            font-weight: bold;
+        }
+        .register-report table.data td.no {
+            text-align: right;
+            white-space: nowrap;
+        }
+        .register-report .footer-notes {
+            margin-top: 6px;
+            text-align: right;
+            font-size: 10px;
+        }
+    </style>
+    <div class="register-report">
+        <div class="header">
+            <div class="page-label">Page 1 of 1</div>
+            <div class="company">
+                <h2><?php echo e($companyInfo['name'] ?? ''); ?></h2>
+                <div class="address"><?php echo e($companyInfo['address'] ?? ''); ?></div>
+                <div class="taxno">TAXPAYER NO: <?php echo e($companyInfo['ntn'] ?? ''); ?></div>
+            </div>
+            <div class="title">Supply Register</div>
+            <div class="date-box">
+                <div class="date-label">Date</div>
+                <table>
+                    <tr>
+                        <td>Date From :</td>
+                        <td><?php echo e($reportStart ?? '' ? date('d-m-y', strtotime($reportStart)) : 'Start'); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Date To :</td>
+                        <td><?php echo e($reportEnd ?? '' ? date('d-m-y', strtotime($reportEnd)) : 'End'); ?></td>
+                    </tr>
+                </table>
+            </div>
+            <hr>
+        </div>
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>INVOICE NO</th>
+                    <th>CUSTOMER NAME</th>
+                    <th>PRODUCT NAME</th>
+                    <th>QTY</th>
+                    <th>RATE</th>
+                    <th>VALUE EXC.SALES TAX</th>
+                    <th>SALES TAX RATE</th>
+                    <th>SALES TAX AMOUNT</th>
+                    <th>VALUE INC.SALES TAX</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $__currentLoopData = $registerRows ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <tr>
+                    <td><?php echo e($row['date']); ?></td>
+                    <td><?php echo e($row['invoice_no']); ?></td>
+                    <td><?php echo e($row['customer']); ?></td>
+                    <td><?php echo e($row['product']); ?></td>
+                    <td class="no"><?php echo e(number_format($row['qty'], 2)); ?><?php echo e($row['unit'] ? ' ' . $row['unit'] : ''); ?></td>
+                    <td class="no"><?php echo e(number_format($row['rate'], 4)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['value_excl'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['stax_rate'], 2)); ?>%</td>
+                    <td class="no"><?php echo e(number_format($row['stax_amt'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['value_inc'], 2)); ?></td>
+                </tr>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </tbody>
+            <?php if(count($registerRows ?? []) > 0): ?>
+            <tfoot>
+                <tr>
+                    <td colspan="6" style="text-align:right;font-weight:bold;">TOTAL</td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('value_excl'), 2)); ?></td>
+                    <td></td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('stax_amt'), 2)); ?></td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('value_inc'), 2)); ?></td>
+                </tr>
+            </tfoot>
+            <?php endif; ?>
+        </table>
+        <div class="footer-notes">Printed on: <?php echo e(now()->format('d/m/Y H:i')); ?></div>
+    </div>
+</div>
+
+<!-- Third Schedule Print Section -->
+<div id="thirdScheduleSection" style="display: none;" data-title="Third Schedule Register">
+    <style>
+        @page {
+            size: A4 landscape;
+            margin: 8mm;
+        }
+        .register-report {
+            width: 100%;
+            margin: 0 auto;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 10px;
+            color: #000;
+            background: #fff;
+            box-sizing: border-box;
+        }
+        .register-report .header {
+            position: relative;
+        }
+        .register-report .page-label {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 10px;
+        }
+        .register-report .company {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .register-report .company h2 {
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 0;
+        }
+        .register-report .company .address,
+        .register-report .company .taxno {
+            font-size: 10px;
+            margin-top: 3px;
+        }
+        .register-report .title {
+            text-align: center;
+            color: blue;
+            font-style: italic;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 6px 0;
+        }
+        .register-report .date-box {
+            width: 220px;
+            border: 1px solid #000;
+            padding: 5px;
+            margin: 6px 0;
+        }
+        .register-report .date-box .date-label {
+            font-weight: bold;
+            border-bottom: 1px solid #000;
+            padding-bottom: 3px;
+            margin-bottom: 3px;
+        }
+        .register-report .date-box table {
+            width: 100%;
+            border: none;
+        }
+        .register-report .date-box td {
+            border: none;
+            padding: 1px 0;
+        }
+        .register-report .date-box td:last-child {
+            text-align: right;
+            font-weight: bold;
+        }
+        .register-report hr {
+            border: 1px solid #000;
+            margin: 5px 0;
+        }
+        .register-report table.data {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+        .register-report table.data th,
+        .register-report table.data td {
+            border: 1px solid #000;
+            padding: 2px 3px;
+            text-align: center;
+            word-wrap: break-word;
+        }
+        .register-report table.data th {
+            background: #d9f2b4;
+            font-weight: bold;
+        }
+        .register-report table.data td.no {
+            text-align: right;
+            white-space: nowrap;
+        }
+        .register-report .footer-notes {
+            margin-top: 6px;
+            text-align: right;
+            font-size: 10px;
+        }
+    </style>
+    <div class="register-report">
+        <div class="header">
+            <div class="page-label">Page 1 of 1</div>
+            <div class="company">
+                <h2><?php echo e($companyInfo['name'] ?? ''); ?></h2>
+                <div class="address"><?php echo e($companyInfo['address'] ?? ''); ?></div>
+                <div class="taxno">TAXPAYER NO: <?php echo e($companyInfo['ntn'] ?? ''); ?></div>
+            </div>
+            <div class="title">Third Schedule Register</div>
+            <div class="date-box">
+                <div class="date-label">Date</div>
+                <table>
+                    <tr>
+                        <td>Date From :</td>
+                        <td><?php echo e($reportStart ?? '' ? date('d-m-y', strtotime($reportStart)) : 'Start'); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Date To :</td>
+                        <td><?php echo e($reportEnd ?? '' ? date('d-m-y', strtotime($reportEnd)) : 'End'); ?></td>
+                    </tr>
+                </table>
+            </div>
+            <hr>
+        </div>
+        <table class="data">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>INVOICE NO</th>
+                    <th>CUSTOMER NAME</th>
+                    <th>PRODUCT NAME</th>
+                    <th>QTY</th>
+                    <th>RATE</th>
+                    <th>RETAIL EXCL.</th>
+                    <th>RETAIL S.TAX</th>
+                    <th>RETAIL INCL.</th>
+                    <th>DISCOUNT</th>
+                    <th>TRADE EXCL.</th>
+                    <th>TRADE S.TAX</th>
+                    <th>VALUE WITH S.TAX</th>
+                    <th>U/S 236 G/H</th>
+                    <th>FURTHER TAX</th>
+                    <th>AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php $__currentLoopData = $registerRows ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <tr>
+                    <td><?php echo e($row['date']); ?></td>
+                    <td><?php echo e($row['invoice_no']); ?></td>
+                    <td><?php echo e($row['customer']); ?></td>
+                    <td><?php echo e($row['product']); ?></td>
+                    <td class="no"><?php echo e(number_format($row['qty'], 2)); ?><?php echo e($row['unit'] ? ' ' . $row['unit'] : ''); ?></td>
+                    <td class="no"><?php echo e(number_format($row['rate'], 4)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['retail_excl'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['retail_tax'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['retail_incl'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['discount'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['trade_excl'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['trade_tax'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['trade_with_tax'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['us236'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['further_tax'], 2)); ?></td>
+                    <td class="no"><?php echo e(number_format($row['amount'], 2)); ?></td>
+                </tr>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </tbody>
+            <?php if(count($registerRows ?? []) > 0): ?>
+            <tfoot>
+                <tr>
+                    <td colspan="9" style="text-align:right;font-weight:bold;">TOTAL</td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('discount'), 2)); ?></td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('trade_excl'), 2)); ?></td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('trade_tax'), 2)); ?></td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('trade_with_tax'), 2)); ?></td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('us236'), 2)); ?></td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('further_tax'), 2)); ?></td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('amount'), 2)); ?></td>
+                </tr>
+                <tr>
+                    <td colspan="15" style="text-align:right;font-weight:bold;">GH 236 TOTAL</td>
+                    <td class="no" style="font-weight:bold;"><?php echo e(number_format($ghTotal ?? 0, 2)); ?></td>
+                </tr>
+            </tfoot>
+            <?php endif; ?>
+        </table>
+        <div class="footer-notes">Printed on: <?php echo e(now()->format('d/m/Y H:i')); ?></div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         $('.select2').select2({
@@ -132,8 +509,27 @@
             allowClear: true
         });
     });
+
+    function printSectionReport(sectionId) {
+        var section = document.getElementById(sectionId);
+        var styleHTML = section.querySelector('style').outerHTML;
+        var reportHTML = section.querySelector('.register-report').outerHTML;
+        var title = section.getAttribute('data-title') || 'Register';
+        var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + title + '</title>'
+            + styleHTML
+            + '</head><body>' + reportHTML + '</body></html>';
+        var url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+        var newTab = window.open(url, '_blank');
+        if (!newTab) {
+            alert('Please allow popups for this site to open the report.');
+            return;
+        }
+        setTimeout(function() {
+            newTab.focus();
+            newTab.print();
+        }, 400);
+    }
 </script>
-<?php $__env->stopPush(); ?>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\Shahan Developer\FBR\resources\views/SaleInvoice/index.blade.php ENDPATH**/ ?>

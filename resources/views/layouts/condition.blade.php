@@ -67,6 +67,10 @@
                 display: none;
             }
         }
+        .content {
+            padding: 0 15px 60px;
+            padding-top: calc(var(--ct-topbar-height) + 24px);
+        }
     </style>
 
 </head>
