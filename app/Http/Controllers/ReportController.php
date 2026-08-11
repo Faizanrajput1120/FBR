@@ -62,6 +62,11 @@ class ReportController extends Controller
         $query->where('fbr_invoice_no', $request->bill_no);
     }
 
+    // Apply client search filter
+    if ($request->filled('client') && $request->client != '') {
+        $query->where('buyer_business_name', 'like', '%' . $request->client . '%');
+    }
+
     $salesInvoices = $query->orderBy('created_at', 'asc')->get();
 
 $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)

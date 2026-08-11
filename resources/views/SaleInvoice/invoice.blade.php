@@ -521,11 +521,11 @@
                            
                             </tr>
                            
-                        <tr class="total-row">
+<tr class="total-row">
                        
                               <td colspan={{$colspan}} style="text-align: right;">Grand Total:</td>
-                             <td>
-    {{ number_format($totalAmount + ($invoice->expense_col ?? 0) , 2) }}
+                              <td>
+    {{ number_format($totalAmount + $furtherTotal + ($invoice->expense_col ?? 0) , 2) }}
 </td>
 
                            
@@ -564,7 +564,7 @@
                     }
                     return trim($words);
                 }
-                $capitalized = ucwords(numberToWords(intval($totalAmount+($invoice->expense_col ?? 0)))) . " Rupees Only";
+                $capitalized = ucwords(numberToWords(intval($totalAmount + $furtherTotal + ($invoice->expense_col ?? 0)))) . " Rupees Only";
             @endphp
             <div class="summary-value">{{ $capitalized }}</div>
         </div>

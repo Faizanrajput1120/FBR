@@ -267,7 +267,8 @@
           if ($isThirdSchedule) {
               // ---- 3rd Schedule: all values are per‑unit ----
               $retailExcl = $fixedNotified;                          
-              $retailTax = $fixedNotified * 0.18;                    
+              $retailTax = $fixedNotified * 0.18;  
+                                
               $retailIncl = $retailExcl + $retailTax;               
               $discount = $discountPerUnit;                          
               $tradeExcl = $fixedNotified - $discount;               

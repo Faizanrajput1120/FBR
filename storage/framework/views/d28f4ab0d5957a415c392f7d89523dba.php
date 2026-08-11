@@ -48,10 +48,15 @@
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
+                <div class="col-md-3">
+                    <label for="client" class="form-label">Client</label>
+                    <input type="text" class="form-control" id="client" name="client" 
+                           value="<?php echo e(request('client')); ?>" placeholder="Search client...">
+                </div>
                 
                 <div class="col-md-12 mt-3">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                    <a href="<?php echo e(route('premiertax.sales.index')); ?>" class="btn btn-secondary">Reset</a>
+                     <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="<?php echo e(route('premiertax.sales.index')); ?>" class="btn btn-secondary">Clear</a>
                 </div>
             </form>
         </div>
@@ -66,7 +71,10 @@
             <button onclick="printSectionReport('thirdScheduleSection')" class="btn btn-warning">
                 <i class="mdi mdi-printer"></i> Third Schedule
             </button>
-            <h5 class="mb-0 badge bg-primary fs-6" id="ghTotalVar">
+            <button onclick="printSectionReport('supplierRegisterSection')" class="btn btn-success">
+                <i class="mdi mdi-printer"></i> Customer Print
+            </button>
+            <h5 class="mb-0 badge bg-primary fs-6" id="ghTotalCount">
                 GH 236 Total: <?php echo e(number_format($ghTotal ?? 0, 2)); ?>
 
             </h5>
@@ -268,7 +276,6 @@
                     <th>CUSTOMER NAME</th>
                     <th>PRODUCT NAME</th>
                     <th>QTY</th>
-                    <th>RATE</th>
                     <th>VALUE EXC.SALES TAX</th>
                     <th>SALES TAX RATE</th>
                     <th>SALES TAX AMOUNT</th>
@@ -283,7 +290,6 @@
                     <td><?php echo e($row['customer']); ?></td>
                     <td><?php echo e($row['product']); ?></td>
                     <td class="no"><?php echo e(number_format($row['qty'], 2)); ?><?php echo e($row['unit'] ? ' ' . $row['unit'] : ''); ?></td>
-                    <td class="no"><?php echo e(number_format($row['rate'], 4)); ?></td>
                     <td class="no"><?php echo e(number_format($row['value_excl'], 2)); ?></td>
                     <td class="no"><?php echo e(number_format($row['stax_rate'], 2)); ?>%</td>
                     <td class="no"><?php echo e(number_format($row['stax_amt'], 2)); ?></td>
@@ -294,7 +300,7 @@
             <?php if(count($registerRows ?? []) > 0): ?>
             <tfoot>
                 <tr>
-                    <td colspan="6" style="text-align:right;font-weight:bold;">TOTAL</td>
+                    <td colspan="5" style="text-align:right;font-weight:bold;">TOTAL</td>
                     <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('value_excl'), 2)); ?></td>
                     <td></td>
                     <td class="no" style="font-weight:bold;"><?php echo e(number_format(collect($registerRows)->sum('stax_amt'), 2)); ?></td>

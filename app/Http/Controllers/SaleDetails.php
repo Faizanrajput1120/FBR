@@ -67,7 +67,10 @@ public function index(Request $request)
         $query->where('fbr_invoice_no', $request->bill_no);
     }
 
-    // You might also want to filter by party_id here, depending on your DB
+    // Apply client search filter
+    if ($request->filled('client') && $request->client != '') {
+        $query->where('buyer_business_name', 'like', '%' . $request->client . '%');
+    }
 
     $salesInvoices = $query->where('cid',auth()->user()->c_id)->get();
 
