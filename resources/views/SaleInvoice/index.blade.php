@@ -48,11 +48,17 @@
                         @endforeach
                     </select>
                 </div>
+                
                 <div class="col-md-3">
                     <label for="client" class="form-label">Client</label>
                     <input type="text" class="form-control" id="client" name="client" 
                            value="{{ request('client') }}" placeholder="Search client...">
                 </div>
+   <div class="col-md-3">
+    <label for="invoiceRefFilter" class="form-label">Invoice Ref No</label>
+    <input type="text" class="form-control" id="invoiceRefFilter" 
+           placeholder="Search invoice ref no..." autocomplete="off">
+</div>
                 
                 <div class="col-md-12 mt-3">
                      <button type="submit" class="btn btn-primary">Search</button>
@@ -513,7 +519,29 @@
             },
             allowClear: true
         });
+        $(document).ready(function() {
+    var $table = $('table.dt-responsive tbody');
+    var $rows = $table.find('tr').get();
+
+    $rows.sort(function(a, b) {
+        var refA = parseInt($(a).find('td').eq(1).text().trim(), 10) || 0;
+        var refB = parseInt($(b).find('td').eq(1).text().trim(), 10) || 0;
+        return refA - refB;
     });
+
+    $.each($rows, function(index, row) {
+        $table.append(row);
+    });
+});
+    });
+    $('#invoiceRefFilter').on('keyup', function() {
+    var value = $(this).val().toLowerCase().trim();
+    $('table.dt-responsive tbody tr').each(function() {
+        var refCell = $(this).find('td').eq(1); // 2nd column = Invoice Ref No
+        var text = refCell.text().toLowerCase();
+        $(this).toggle(text.indexOf(value) > -1);
+    });
+});
 
     function printSectionReport(sectionId) {
         var section = document.getElementById(sectionId);

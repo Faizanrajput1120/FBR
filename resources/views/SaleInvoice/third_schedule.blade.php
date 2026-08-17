@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sales Tax Invoice - M/S {{ $invoice->seller_business_name ?? '' }}</title>
+<title>Sales Tax Invoice -  {{ $invoice->seller_business_name ?? '' }}</title>
 <style>
   @page { size: A4; margin: 10mm 8mm; }
   * { box-sizing: border-box; }
@@ -184,7 +184,7 @@
   </div>
   
   <div class="company-header">
-    <p class="company-name">M/S {{ $invoice->seller_business_name ?? '' }}</p>
+    <p class="company-name"> {{ $invoice->seller_business_name ?? '' }}</p>
     <p class="company-address">{{ $invoice->seller_address ?? '' }}</p>
     <p class="digital-invoice-num">Digital Invoice Nmbr: {{ $invoice->fbr_invoice_no ?? 'N/A' }}</p>
   </div>
@@ -393,7 +393,7 @@
   </table>
 
   <div class="sign-block">
-    <div class="box">For M/S {{ $invoice->seller_business_name ?? 'CASIO NON STICK COATINGS' }}</div>
+    <div class="box">For  {{ $invoice->seller_business_name ?? 'CASIO NON STICK COATINGS' }}</div>
   </div>
 
   <div class="note">
