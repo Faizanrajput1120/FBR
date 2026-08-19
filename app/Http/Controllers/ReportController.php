@@ -49,12 +49,12 @@ class ReportController extends Controller
     $user=Auth::user();
     // Filter by user's company
     $query->where('cid', $user->c_id);
-    // Apply date filters
+    // Apply date filters (by invoice_date, not upload date)
     if ($request->filled('start_date')) {
-        $query->whereDate('created_at', '>=', $request->start_date);
+        $query->whereDate('invoice_date', '>=', $request->start_date);
     }
     if ($request->filled('end_date')) {
-        $query->whereDate('created_at', '<=', $request->end_date);
+        $query->whereDate('invoice_date', '<=', $request->end_date);
     }
 
     // Apply bill number filter
@@ -67,7 +67,7 @@ class ReportController extends Controller
         $query->where('buyer_business_name', 'like', '%' . $request->client . '%');
     }
 
-    $salesInvoices = $query->orderBy('created_at', 'asc')->get();
+    $salesInvoices = $query->orderBy('invoice_date', 'asc')->get();
 
 $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)
     ->distinct()
