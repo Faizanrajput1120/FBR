@@ -86,6 +86,14 @@ class PurchaseInvoicingController extends Controller
     {
         $user = Auth::user();
 
+        Log::info('Purchase Invoice store called', [
+            'user_id'    => $user->id,
+            'input_keys' => array_keys($request->all()),
+            'invoice_date' => $request->input('invoiceDate'),
+            'invoice_type' => $request->input('invoiceType'),
+            'items_count' => count($request->input('items', [])),
+        ]);
+
         $validator = Validator::make($request->all(), [
             'sellerNTNCNIC'           => 'required|string',
             'sellerBusinessName'      => 'required|string',
@@ -101,38 +109,56 @@ class PurchaseInvoicingController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::warning('Purchase Invoice validation failed', [
+                'user_id' => $user->id,
+                'errors'  => $validator->errors()->toArray(),
+                'input'   => $request->except(['items']),
+            ]);
+
+            // Build a readable error message listing all failed fields
+            $errorMessages = [];
+            foreach ($validator->errors()->toArray() as $field => $messages) {
+                $errorMessages[] = implode(', ', $messages);
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed.',
+                'message' => implode(' | ', $errorMessages),
                 'errors'  => $validator->errors(),
             ], 422);
         }
 
         try {
             // Build items from posted form data
-            $items = [];
-            if ($request->has('items') && is_array($request->items)) {
-                $items = $request->items;
+            $items = $request->input('items', []);
+            if (!is_array($items)) {
+                $items = [];
             }
 
             $invoice = PurchaseInvoiceFbr::create([
                 'user_id'                 => $user->id,
-                'cid'                     => $user->cid ?? null,
-                'seller_ntn_cnic'         => $request->sellerNTNCNIC,
-                'seller_business_name'    => $request->sellerBusinessName,
-                'seller_province'         => $request->sellerProvince,
-                'seller_address'          => $request->sellerAddress,
-                'invoice_type'            => $request->invoiceType,
-                'invoice_date'            => $request->invoiceDate,
-                'invoice_ref_no'          => $request->invoiceRefNo,
-                'buyer_ntn_cnic'          => $request->buyerNTNCNIC,
-                'buyer_business_name'     => $request->buyerBusinessName,
-                'buyer_province'          => $request->buyerProvince,
-                'buyer_registration_type' => $request->buyerRegistrationType,
-                'buyer_address'           => $request->buyerAddress,
+                'cid'                     => $user->c_id ?? null,
+                'seller_ntn_cnic'         => $request->input('sellerNTNCNIC'),
+                'seller_business_name'    => $request->input('sellerBusinessName'),
+                'seller_province'         => $request->input('sellerProvince'),
+                'seller_address'          => $request->input('sellerAddress'),
+                'invoice_type'            => $request->input('invoiceType'),
+                'invoice_date'            => $request->input('invoiceDate'),
+                'invoice_ref_no'          => $request->input('invoiceRefNo'),
+                'buyer_ntn_cnic'          => $request->input('buyerNTNCNIC'),
+                'buyer_business_name'     => $request->input('buyerBusinessName'),
+                'buyer_province'          => $request->input('buyerProvince'),
+                'buyer_registration_type' => $request->input('buyerRegistrationType'),
+                'buyer_address'           => $request->input('buyerAddress'),
                 'items'                   => $items,
-                'expense_col'             => $request->furtherexpense ?? 0,
+                'expense_col'             => $request->input('furtherexpense', 0) ?: 0,
                 'title'                   => 'Purchase Invoice',
+            ]);
+
+            Log::info('Purchase Invoice saved', [
+                'user_id'    => $user->id,
+                'invoice_id' => $invoice->id,
+                'items_count' => count($items),
             ]);
 
             return response()->json([
@@ -145,6 +171,7 @@ class PurchaseInvoicingController extends Controller
             Log::error('Purchase Invoice save failed', [
                 'user_id' => $user->id,
                 'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
             ]);
 
             return response()->json([

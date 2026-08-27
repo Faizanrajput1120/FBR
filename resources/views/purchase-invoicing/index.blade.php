@@ -21,23 +21,25 @@
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <div id="sellerAccordionContent" class="hidden px-6 pb-6">
+                        <div id="sellerAccordionContent" class="px-6 pb-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="sellerNTNCNIC" class="block text-sm font-medium text-gray-700 mb-1" required>CNIC/NTN</label>
-                                    <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="3410143796949" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label for="sellerBusinessName" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                                    <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Your Business Name" value="BASHIR TRADERS" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Seller Business Name" value="" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label for="sellerProvince" class="block text-sm font-medium text-gray-700 mb-1">Province</label>
-                                    <input id="sellerProvince" name="sellerProvince" value="PUNJAB" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <select id="sellerProvince" name="sellerProvince" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 province-select">
+                                        <option value="">Select Province</option>
+                                    </select>
                                 </div>
                                 <div class="md:col-span-2 mb-4">
                                     <label for="sellerAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                    <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ $user->address ?? '' }}</textarea>
+                                    <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -1242,6 +1244,10 @@
             allowClear: true,
             width: 'resolve'
         });
+        // Auto-select Purchase Invoice as default using Select2 API
+        if (!$('#invoiceType').val()) {
+            $('#invoiceType').val('Purchase Invoice').trigger('change');
+        }
     }
 
     function populateDocumentTypeSelects() {
@@ -1277,12 +1283,20 @@
 
             if (result.success && result.data) {
                 documentTypes = result.data;
+                // Ensure Purchase Invoice is present
+                if (!documentTypes.some(dt => dt.docDescription === 'Purchase Invoice')) {
+                    documentTypes.push({ docTypeId: 'Purchase Invoice', docDescription: 'Purchase Invoice' });
+                }
                 populateDocumentTypeSelects();
                 $('.invoice-type-select').select2('destroy').select2({
                     placeholder: 'Select Invoice Type',
                     allowClear: true,
                     width: 'resolve'
                 });
+                // Auto-select Purchase Invoice as default using Select2 API
+                if (!$('#invoiceType').val()) {
+                    $('#invoiceType').val('Purchase Invoice').trigger('change');
+                }
             } else {
                 loadDefaultDocumentTypes();
             }
@@ -2263,6 +2277,35 @@
         btn.disabled = true;
         btn.textContent = 'Saving...';
 
+        // Client-side pre-validation before sending to server
+        const requiredFormFields = [
+            { id: 'sellerNTNCNIC',         label: 'Seller CNIC/NTN' },
+            { id: 'sellerBusinessName',    label: 'Seller Business Name' },
+            { id: 'sellerProvince',        label: 'Seller Province' },
+            { id: 'sellerAddress',         label: 'Seller Address' },
+            { id: 'invoiceType',           label: 'Invoice Type' },
+            { id: 'invoiceDate',           label: 'Invoice Date' },
+            { id: 'buyerNTNCNIC',          label: 'Buyer NTN/CNIC' },
+            { id: 'buyerBusinessName',     label: 'Buyer Business Name' },
+            { id: 'buyerProvince',         label: 'Buyer Province' },
+            { id: 'buyerRegistrationType', label: 'Buyer Registration Type' },
+            { id: 'buyerAddress',          label: 'Buyer Address' },
+        ];
+        const missingFields = [];
+        for (const field of requiredFormFields) {
+            const el = document.getElementById(field.id);
+            if (!el || !el.value || el.value.trim() === '') {
+                missingFields.push(field.label);
+            }
+        }
+        if (missingFields.length > 0) {
+            showMessage('Please fill in: ' + missingFields.join(', '), 'error');
+            btn.disabled = false;
+            btn.innerHTML = `<svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 8.207a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9.5z" clip-rule="evenodd"/></svg> Save Invoice`;
+            return;
+        }
+
         const formData = new FormData(e.target);
         const data = formDataToObjectWithLabels(formData);
 
@@ -2275,6 +2318,10 @@
 
         try {
             showMessage('Saving purchase invoice...', 'info');
+
+            // Log the data being sent for debugging
+            console.log('Submitting purchase invoice data:', data);
+
             const response = await fetch(e.target.action, {
                 method: 'POST',
                 headers: {
@@ -2286,16 +2333,35 @@
             });
 
             const text = await response.text();
-            const cleanText = text.trim().startsWith('{') ? text : text.substring(text.indexOf('{'));
-            const result = JSON.parse(cleanText);
+            console.log('Server response (status ' + response.status + '):', text);
+
+            let result;
+            try {
+                const jsonStart = text.indexOf('{');
+                const cleanText = jsonStart >= 0 ? text.substring(jsonStart) : text;
+                result = JSON.parse(cleanText);
+            } catch (parseErr) {
+                console.error('Could not parse server response as JSON:', text);
+                showMessage('Save failed: Server returned an unexpected response (HTTP ' + response.status + '). Check browser console for details.', 'error');
+                return;
+            }
 
             if (result.success) {
                 showMessage('Purchase Invoice saved successfully!', 'success');
                 setTimeout(() => {
                     window.location.reload();
-                }, 1000);
+                }, 1500);
             } else {
-                showMessage('Save failed: ' + result.message, 'error');
+                // Show detailed errors if available
+                let errorMsg = result.message || 'Unknown error';
+                if (result.errors) {
+                    const fieldErrors = Object.entries(result.errors)
+                        .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+                        .join('\n');
+                    console.error('Validation errors:', result.errors);
+                    errorMsg = 'Validation failed:\n' + fieldErrors;
+                }
+                showMessage('Save failed: ' + errorMsg, 'error');
             }
         } catch (error) {
             console.error('Save error:', error);
