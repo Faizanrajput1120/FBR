@@ -38,7 +38,7 @@ class InvoicingController extends Controller
         $user = Auth::user();
 
         if (!$user->fbr_access_token) {
-            return redirect()->route('profile.edit')
+            return redirect()->route('profile')
                 ->with('warning', 'Please set your FBR Access Token in your profile to use the invoicing system.');
         }
         // dd("WORKING");

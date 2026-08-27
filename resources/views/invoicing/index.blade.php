@@ -32,7 +32,7 @@
                                         </div>
                                         <div class="mt-4">
                                             <div class="-mx-2 -my-1.5 flex">
-                                                <a href="{{ route('profile.edit') }}" class="bg-yellow-50 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600">
+                                                <a href="{{ route('profile') }}" class="bg-yellow-50 px-2 py-1.5 rounded-md text-sm font-medium text-yellow-800 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-yellow-50 focus:ring-yellow-600">
                                                     Set Token in Profile
                                                 </a>
                                             </div>
