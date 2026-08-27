@@ -155,6 +155,14 @@ Route::get('premiertax/migrate-sale-parties-id', function () {
 |
 */
 
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+Route::get('/login', function () {
+    return redirect()->route('login');
+});
+
 Route::get('premiertax/run-cid-migration', function () {
     try {
         // Run only pending migrations
@@ -224,6 +232,8 @@ Route::get('/premiertax', function () {
 Route::get('premiertax/reports/party', [ReportController::class, 'partyReport'])->name('reports.party')->middleware('auth');
 Route::get('premiertax/reports/Sales', [ReportController::class, 'SaleReport'])->name('reports.sales')->middleware('auth');
 Route::delete('premiertax/reports/sales/delete/{id}', [ReportController::class, 'deleteSaleInvoice'])->name('reports.sales.delete')->middleware('auth');
+Route::get('premiertax/reports/Purchase', [ReportController::class, 'PurchaseReport'])->name('reports.purchase')->middleware('auth');
+Route::delete('premiertax/reports/purchase/delete/{id}', [ReportController::class, 'deletePurchaseInvoice'])->name('reports.purchase.delete')->middleware('auth');
 Route::get('premiertax/purchase/invoice/{id}', [PurchaseDetail::class, 'invoice'])
      ->name('premiertax.purchase.invoice');
 Route::get('premiertax/sale/invoice/{id}', [SaleDetails::class, 'invoice'])
@@ -874,6 +884,13 @@ Route::middleware('auth')->group(function () {
     Route::get('premiertax/invoicing', [App\Http\Controllers\InvoicingController::class, 'index'])->name('invoicing.index');
     Route::post('premiertax/invoicing/submit', [App\Http\Controllers\InvoicingController::class, 'submitInvoice'])->name('invoicing.submit');
     Route::post('premiertax/invoicing/validate', [App\Http\Controllers\InvoicingController::class, 'validateInvoice'])->name('invoicing.validate');
+
+    // Purchase Invoicing Routes (DB only, no FBR API)
+    Route::get('premiertax/purchase-invoicing', [App\Http\Controllers\PurchaseInvoicingController::class, 'index'])->name('purchase.invoicing.index');
+    Route::post('premiertax/purchase-invoicing/store', [App\Http\Controllers\PurchaseInvoicingController::class, 'store'])->name('purchase.invoicing.store');
+    Route::get('premiertax/purchase-invoicing/list', [App\Http\Controllers\PurchaseInvoicingController::class, 'list'])->name('purchase.invoicing.list');
+    Route::get('premiertax/purchase-invoicing/{id}', [App\Http\Controllers\PurchaseInvoicingController::class, 'show'])->name('purchase.invoicing.show');
+    Route::delete('premiertax/purchase-invoicing/{id}', [App\Http\Controllers\PurchaseInvoicingController::class, 'destroy'])->name('purchase.invoicing.destroy');
 
     // FBR API endpoints for reference data
     Route::get('premiertax/api/fbr/provinces', [App\Http\Controllers\InvoicingController::class, 'getProvinceCodes'])->name('api.fbr.provinces');

@@ -6,9 +6,11 @@ use App\Models\SaleDetail;
 use App\Models\PurchaseDetail;
 use App\Models\Member as Party;
 use App\Models\SaleInvoiceFbr;
+use App\Models\PurchaseInvoiceFbr;
+use App\Models\Company;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Auth;
+
 class ReportController extends Controller
 {
     public function partyReport(Request $request)
@@ -140,6 +142,77 @@ $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)
 
     return view('SaleInvoice.index', compact('salesInvoices', 'availableBillNumbers', 'registerRows', 'ghTotal', 'companyInfo', 'reportStart', 'reportEnd'));
 }
+    public function PurchaseReport(Request $request)
+    {
+        $user = Auth::user();
+
+        $query = PurchaseInvoiceFbr::query()->where('user_id', $user->id);
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('invoice_date', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('invoice_date', '<=', $request->end_date);
+        }
+        if ($request->filled('invoice_ref_no')) {
+            $query->where('invoice_ref_no', 'like', '%' . $request->invoice_ref_no . '%');
+        }
+        if ($request->filled('seller')) {
+            $query->where('seller_business_name', 'like', '%' . $request->seller . '%');
+        }
+
+        $purchaseInvoices = $query->orderBy('invoice_date', 'desc')->get();
+
+        // Build register rows for print report
+        $registerRows = [];
+        foreach ($purchaseInvoices as $inv) {
+            $items = is_string($inv->items) ? json_decode($inv->items, true) : ($inv->items ?? []);
+            foreach ((array) $items as $it) {
+                $it = (array) $it;
+                $qty        = floatval($it['quantity'] ?? 0);
+                $rate       = floatval($it['rateValues'] ?? 0);
+                $valueExcl  = floatval($it['valueSalesExcludingST'] ?? ($rate * $qty));
+                $stax       = floatval($it['salesTaxApplicable'] ?? 0);
+
+                $registerRows[] = [
+                    'date'        => $inv->invoice_date ? \Carbon\Carbon::parse($inv->invoice_date)->format('d-m-y') : '-',
+                    'invoice_ref' => $inv->invoice_ref_no ?? '-',
+                    'seller'      => $inv->seller_business_name ?? '-',
+                    'product'     => $it['productDescription'] ?? '-',
+                    'qty'         => $qty,
+                    'unit'        => $it['uoMText'] ?? '',
+                    'rate'        => $rate,
+                    'value_excl'  => $valueExcl,
+                    'stax_rate'   => floatval($it['rateValue'] ?? 0),
+                    'stax_amt'    => $stax,
+                    'value_inc'   => $valueExcl + $stax,
+                ];
+            }
+        }
+
+        $company = \App\Models\Company::where('cid', $user->c_id)->first();
+        $companyInfo = [
+            'name'    => $company->cname ?? '',
+            'address' => $user->address ?? '',
+            'ntn'     => $user->cinc_ntn ?? '',
+            'strn'    => $user->strn ?? '',
+        ];
+
+        $invoiceDates = $purchaseInvoices->map(fn($inv) => $inv->invoice_date)->filter();
+        $reportStart  = $request->filled('start_date') ? $request->start_date : ($invoiceDates->min() ? \Carbon\Carbon::parse($invoiceDates->min())->format('Y-m-d') : '');
+        $reportEnd    = $request->filled('end_date')   ? $request->end_date   : ($invoiceDates->max() ? \Carbon\Carbon::parse($invoiceDates->max())->format('Y-m-d') : '');
+
+        return view('purchase-reports.index', compact('purchaseInvoices', 'registerRows', 'companyInfo', 'reportStart', 'reportEnd'));
+    }
+
+    public function deletePurchaseInvoice($id)
+    {
+        $user    = Auth::user();
+        $invoice = PurchaseInvoiceFbr::where('user_id', $user->id)->where('id', $id)->firstOrFail();
+        $invoice->delete();
+        return redirect()->back()->with('success', 'Purchase invoice deleted successfully.');
+    }
+
     public function deleteSaleInvoice($id)
     {
         $user = Auth::user();

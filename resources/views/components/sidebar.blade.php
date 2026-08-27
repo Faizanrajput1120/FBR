@@ -57,6 +57,9 @@
                             <li>
                                 <a href="{{ route('reports.sales') }}">Sales Reports</a>
                             </li>
+                            <li>
+                                <a href="{{ route('reports.purchase') }}">Purchase Reports</a>
+                            </li>
                         </ul>
                     </div>
                 </li>
@@ -74,6 +77,21 @@
                             </li>
                             <li>
                                 <a href="{{ route('drafts.index') }}">Draft Invoices</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="side-nav-item">
+                    <a data-bs-toggle="collapse" href="#purchaseMenu" class="side-nav-link">
+                        <i class="uil-shopping-cart-alt"></i>
+                        <span>Purchase</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <div class="collapse" id="purchaseMenu">
+                        <ul class="side-nav-second-level">
+                            <li>
+                                <a href="{{ route('purchase.invoicing.index') }}">Purchase Invoice</a>
                             </li>
                         </ul>
                     </div>
