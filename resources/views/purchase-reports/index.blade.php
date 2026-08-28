@@ -153,6 +153,7 @@
                     <th>SELLER NAME</th>
                     <th>PRODUCT NAME</th>
                     <th>QTY</th>
+                    <th>RATE</th>
                     <th>VALUE EXC. SALES TAX</th>
                     <th>SALES TAX RATE</th>
                     <th>SALES TAX AMOUNT</th>
@@ -167,6 +168,7 @@
                     <td>{{ $row['seller'] }}</td>
                     <td>{{ $row['product'] }}</td>
                     <td class="no">{{ number_format($row['qty'], 2) }}{{ $row['unit'] ? ' ' . $row['unit'] : '' }}</td>
+                    <td class="no">{{ number_format($row['rate'], 2) }}</td>
                     <td class="no">{{ number_format($row['value_excl'], 2) }}</td>
                     <td class="no">{{ number_format($row['stax_rate'], 2) }}%</td>
                     <td class="no">{{ number_format($row['stax_amt'], 2) }}</td>
@@ -177,7 +179,7 @@
             @if(count($registerRows ?? []) > 0)
             <tfoot>
                 <tr>
-                    <td colspan="5" style="text-align:right;font-weight:bold;">TOTAL</td>
+                    <td colspan="6" style="text-align:right;font-weight:bold;">TOTAL</td>
                     <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('value_excl'), 2) }}</td>
                     <td></td>
                     <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('stax_amt'), 2) }}</td>

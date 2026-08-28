@@ -38,62 +38,54 @@ class InvoicingController extends Controller
         $user = Auth::user();
 
         if (!$user->fbr_access_token) {
-            return redirect()->route('profile')
+            return redirect()->route('profile.edit')
                 ->with('warning', 'Please set your FBR Access Token in your profile to use the invoicing system.');
         }
         // dd("WORKING");
-
+        // Load data from FBR API
         $provinces = [];
         $hsCodes = [];
         $uoMs = [];
         $transactionTypes = [];
-        $documentTypes = [];
 
-        // Fetch FBR data using the helper service if token is available
-        if ($user->fbr_access_token) {
-            try {
-                $fbrService = $this->getFbrApiService();
+        try {
+            $fbrService = $this->getFbrApiService();
 
-                // Load provinces
-                $provincesResult = $fbrService->getProvinceCodes($user->fbr_access_token);
-                if ($provincesResult['success']) {
-                    $provinces = $provincesResult['data'] ?? [];
-                }
-
-                // Load HS codes
-                $hsCodesResult = $fbrService->getItemDescriptionCodes($user->fbr_access_token);
-                if ($hsCodesResult['success']) {
-                    $hsCodes = $hsCodesResult['data'] ?? [];
-                }
-
-                // Load Units of Measurement
-                $uoMsResult = $fbrService->getUnitsOfMeasurement($user->fbr_access_token);
-                if ($uoMsResult['success']) {
-                    $uoMs = $uoMsResult['data'] ?? [];
-                }
-
-                // Load Transaction Types
-                $transactionTypesResult = $fbrService->getTransactionTypeCodes($user->fbr_access_token);
-                if ($transactionTypesResult['success']) {
-                    $transactionTypes = $transactionTypesResult['data'] ?? [];
-                }
-
-                // Load Document Types (Invoice Types)
-                $documentTypesResult = $fbrService->getDocumentTypeIds($user->fbr_access_token);
-                if ($documentTypesResult['success']) {
-                    $documentTypes = $documentTypesResult['data'] ?? [];
-                }
-            } catch (\Exception $e) {
-                Log::error('Error loading FBR data for purchase invoicing', [
-                    'user_id' => $user->id,
-                    'error' => $e->getMessage()
-                ]);
+            // Load provinces
+            $provincesResult = $fbrService->getProvinceCodes($user->fbr_access_token);
+            if ($provincesResult['success']) {
+                $provinces = $provincesResult['data'] ?? [];
             }
-        }
-        
-        Log::info('=== FULL PROVINCE LIST FROM FBR ===', ['provinces' => $provinces]);
 
-        return view('purchase-invoicing.index', compact('provinces', 'hsCodes', 'uoMs', 'transactionTypes', 'documentTypes', 'user'));
+            // Load HS codes (Item Description Codes)
+            $hsCodesResult = $fbrService->getItemDescriptionCodes($user->fbr_access_token);
+            if ($hsCodesResult['success']) {
+                $hsCodes = $hsCodesResult['data'] ?? [];
+            }
+
+            // Load Units of Measurement
+            $uoMsResult = $fbrService->getUnitsOfMeasurement($user->fbr_access_token);
+            if ($uoMsResult['success']) {
+                $uoMs = $uoMsResult['data'] ?? [];
+            }
+
+            // Load Transaction Types
+            $transactionTypesResult = $fbrService->getTransactionTypeCodes($user->fbr_access_token);
+            if ($transactionTypesResult['success']) {
+                $transactionTypes = $transactionTypesResult['data'] ?? [];
+            }
+        } catch (\Exception $e) {
+            Log::error('Error loading FBR data', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+$provincesResult = $fbrService->getProvinceCodes($user->fbr_access_token);
+if ($provincesResult['success']) {
+    $provinces = $provincesResult['data'] ?? [];
+    Log::info('=== FULL PROVINCE LIST FROM FBR ===', ['provinces' => $provinces]);
+}
+        return view('invoicing.index', compact('provinces', 'hsCodes', 'uoMs', 'transactionTypes', 'user'));
     }
 
     /**

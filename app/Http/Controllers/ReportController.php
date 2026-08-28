@@ -161,7 +161,7 @@ $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)
             $query->where('seller_business_name', 'like', '%' . $request->seller . '%');
         }
 
-        $purchaseInvoices = $query->orderBy('invoice_date', 'desc')->get();
+        $purchaseInvoices = $query->orderBy('invoice_date', 'asc')->get();
 
         // Build register rows for print report
         $registerRows = [];
@@ -174,6 +174,22 @@ $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)
                 $valueExcl  = floatval($it['valueSalesExcludingST'] ?? ($rate * $qty));
                 $stax       = floatval($it['salesTaxApplicable'] ?? 0);
 
+                $staxRate = 0;
+                if (isset($it['rate'])) {
+                    if (is_array($it['rate'])) {
+                        $staxRate = floatval($it['rate']['rate_value'] ?? 0);
+                    } else {
+                        $rateParsed = json_decode($it['rate'], true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($rateParsed) && isset($rateParsed['rate_value'])) {
+                            $staxRate = floatval($rateParsed['rate_value']);
+                        } else {
+                            $staxRate = floatval($it['rate']);
+                        }
+                    }
+                } elseif (isset($it['rateValue'])) {
+                    $staxRate = floatval($it['rateValue']);
+                }
+
                 $registerRows[] = [
                     'date'        => $inv->invoice_date ? \Carbon\Carbon::parse($inv->invoice_date)->format('d-m-y') : '-',
                     'invoice_ref' => $inv->invoice_ref_no ?? '-',
@@ -183,7 +199,7 @@ $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)
                     'unit'        => $it['uoMText'] ?? '',
                     'rate'        => $rate,
                     'value_excl'  => $valueExcl,
-                    'stax_rate'   => floatval($it['rateValue'] ?? 0),
+                    'stax_rate'   => $staxRate,
                     'stax_amt'    => $stax,
                     'value_inc'   => $valueExcl + $stax,
                 ];

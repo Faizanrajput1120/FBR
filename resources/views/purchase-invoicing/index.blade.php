@@ -236,9 +236,9 @@
                                 <option value="">Select Sale Type</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">HS Code <span class="text-red-500">*</span></label>
-                            <select id="modalHsCode" name="hsCode" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm hs-code-select">
+                        <div class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">HS Code</label>
+                            <select id="modalHsCode" name="hsCode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm hs-code-select">
                                 <option value="">Select HS Code</option>
                             </select>
                         </div>
@@ -258,7 +258,6 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 Unit of Measure <span class="text-red-500">*</span>
-                                <span class="text-xs text-gray-500">(Select HS Code first)</span>
                             </label>
                             <select id="modalUoM" name="uoM" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm uom-select">
                                 <option value="">Select Unit of Measure</option>
@@ -305,7 +304,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Discount Amount</label>
                             <input type="number" id="modalDiscountAmount" name="discountAmount" placeholder="Auto-calculated" min="0" step="any" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                         </div>
-                        <div>
+                        <div class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Sales Tax Withheld at Source</label>
                             <input type="number" id="modalSalesTaxWithheldAtSource" name="salesTaxWithheldAtSource" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                         </div>
@@ -317,7 +316,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Further Tax</label>
                             <input type="number" id="modalFurtherTax" name="furtherTax" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                         </div>
-                        <div>
+                        <div class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 SRO Schedule No.
                                 <span class="text-red-500 hidden sro-schedule-required">*</span>
@@ -326,7 +325,7 @@
                                 <option value="">Select SRO Schedule</option>
                             </select>
                         </div>
-                        <div>
+                        <div class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-1">FED Payable</label>
                             <input type="number" id="modalFedPayable" name="fedPayable" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                         </div>
@@ -340,7 +339,7 @@
                             </label>
                             <input type="number" id="modalDiscount" name="discount" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
                         </div>
-                        <div>
+                        <div class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-1">
                                 SRO Item Serial No.
                                 <span class="text-red-500 hidden sro-item-required">*</span>
@@ -712,17 +711,26 @@
                 let rateData;
                 try {
                     rateData = JSON.parse(rateTax.value);
+                    if (!rateData || typeof rateData !== 'object' || rateData.rate_value === undefined) {
+                        const parsed = parseFloat(rateTax.value.toString().replace('%', ''));
+                        rateData = { rate_value: isNaN(parsed) ? 0 : parsed };
+                    }
                 } catch (err) {
-                    rateData = { rate_value: 0 };
+                    const parsed = parseFloat(rateTax.value.toString().replace('%', ''));
+                    rateData = { rate_value: isNaN(parsed) ? 0 : parsed };
                 }
 
                 let rate = 0;
                 if (rateTax.value) {
                     try {
                         const rd = JSON.parse(rateTax.value);
-                        rate = parseFloat(rd.rate_value) || 0;
+                        if (rd && typeof rd === 'object' && rd.rate_value !== undefined) {
+                            rate = parseFloat(rd.rate_value) || 0;
+                        } else {
+                            rate = parseFloat(rateTax.value.toString().replace('%', '')) || 0;
+                        }
                     } catch (err) {
-                        rate = 0;
+                        rate = parseFloat(rateTax.value.toString().replace('%', '')) || 0;
                     }
                 }
 
@@ -998,8 +1006,15 @@
         let rate = 0;
         if (rateSelect.value) {
             try {
-                rate = parseFloat(JSON.parse(rateSelect.value).rate_value) || 0;
-            } catch (e) {}
+                const rateData = JSON.parse(rateSelect.value);
+                if (rateData && typeof rateData === 'object' && rateData.rate_value !== undefined) {
+                    rate = parseFloat(rateData.rate_value) || 0;
+                } else {
+                    rate = parseFloat(rateSelect.value.toString().replace('%', '')) || 0;
+                }
+            } catch (e) {
+                rate = parseFloat(rateSelect.value.toString().replace('%', '')) || 0;
+            }
         }
 
         const discountAmount = fnv * discountPercent / 100;
@@ -1470,27 +1485,33 @@
                     option.title = rateDesc || `Rate: ${rateValue}%`;
                     rateSelect.appendChild(option);
 
-                    // Auto-select first rate
-                    if (!targetOptionValue && index === 0) {
-                        option.selected = true;
-                        targetOptionValue = option.value;
-                    }
+                    // Auto-select first rate disabled to allow custom input
                 });
 
-                // Re-initialize Select2 with new options
+                // Re-initialize Select2 with new options and tags support
                 const dropdownParent = rateSelect.closest('#addItemModal') ? $('#addItemModal') : $('body');
                 $(rateSelect).select2({
                     placeholder: 'Select Rate',
                     allowClear: true,
                     width: 'resolve',
-                    dropdownParent: dropdownParent
+                    dropdownParent: dropdownParent,
+                    tags: true,
+                    createTag: function (params) {
+                        const term = $.trim(params.term);
+                        if (term === '') return null;
+                        const numericVal = parseFloat(term.replace('%', ''));
+                        if (isNaN(numericVal)) return null;
+                        const cleanTerm = numericVal.toString();
+                        return {
+                            id: cleanTerm,
+                            text: cleanTerm + '%',
+                            newTag: true
+                        };
+                    }
                 });
 
-                const finalVal = targetOptionValue || (rateSelect.options[1]?.value || '');
+                const finalVal = '';
                 $(rateSelect).val(finalVal).trigger('change');
-                if (finalVal) {
-                    $(rateSelect).trigger('select2:select');
-                }
 
                 rateSelect.classList.remove('bg-blue-50');
                 rateSelect.classList.add('bg-green-50');
@@ -1541,9 +1562,13 @@
         if (rateSelect.value) {
             try {
                 const rateData = JSON.parse(rateSelect.value);
-                rate = parseFloat(rateData.rate_value) || 0;
+                if (rateData && typeof rateData === 'object' && rateData.rate_value !== undefined) {
+                    rate = parseFloat(rateData.rate_value) || 0;
+                } else {
+                    rate = parseFloat(rateSelect.value.toString().replace('%', '')) || 0;
+                }
             } catch (e) {
-                rate = 0;
+                rate = parseFloat(rateSelect.value.toString().replace('%', '')) || 0;
             }
         }
         const valueSales = parseFloat(valueSalesField.value) || 0;
@@ -1852,10 +1877,23 @@
         });
 
         const uomSelect = document.getElementById('modalUoM');
-        uomSelect.innerHTML = '<option value="">Select HS Code first</option>';
-        uomSelect.disabled = true;
-        uomSelect.classList.remove('bg-green-50', 'bg-blue-50', 'bg-yellow-50', 'bg-red-50');
-        uomSelect.classList.add('bg-gray-50');
+        if (window.appData && window.appData.uoMs && window.appData.uoMs.length > 0) {
+            uomSelect.innerHTML = '<option value="">Select Unit of Measure</option>';
+            window.appData.uoMs.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item.uoM_ID || item.id;
+                opt.textContent = item.uoM_DESC || item.description;
+                uomSelect.appendChild(opt);
+            });
+            uomSelect.disabled = false;
+            uomSelect.classList.remove('bg-blue-50', 'bg-gray-50');
+            uomSelect.classList.add('bg-green-50');
+        } else {
+            uomSelect.innerHTML = '<option value="">Select HS Code first</option>';
+            uomSelect.disabled = true;
+            uomSelect.classList.remove('bg-green-50', 'bg-blue-50', 'bg-yellow-50', 'bg-red-50');
+            uomSelect.classList.add('bg-gray-50');
+        }
 
         const salesTaxField = document.getElementById('modalSalesTaxApplicable');
         if (salesTaxField) {
@@ -1898,7 +1936,20 @@
             placeholder: 'Select Rate',
             allowClear: true,
             width: '100%',
-            dropdownParent: $('#addItemModal')
+            dropdownParent: $('#addItemModal'),
+            tags: true,
+            createTag: function (params) {
+                const term = $.trim(params.term);
+                if (term === '') return null;
+                const numericVal = parseFloat(term.replace('%', ''));
+                if (isNaN(numericVal)) return null;
+                const cleanTerm = numericVal.toString();
+                return {
+                    id: cleanTerm,
+                    text: cleanTerm + '%',
+                    newTag: true
+                };
+            }
         });
 
         $('#modalSroScheduleNo').select2({
@@ -1940,7 +1991,6 @@
             // Custom validation check for better feedback and to avoid hidden Select2 element validation silent failures
             const requiredFields = [
                 { id: 'modalSaleType', label: 'Sale Type' },
-                { id: 'modalHsCode', label: 'HS Code' },
                 { id: 'modalProductDescription', label: 'Product Description' },
                 { id: 'modalRate', label: 'Rate (%)' },
                 { id: 'modalUoM', label: 'Unit of Measure' },
@@ -1951,8 +2001,6 @@
             const is3rd = is3rdScheduleSelected();
             if (is3rd) {
                 requiredFields.push({ id: 'modalFixedNotifiedValueOrRetailPrice', label: 'Fixed Notified Value/Retail Price' });
-                requiredFields.push({ id: 'modalSroScheduleNo', label: 'SRO Schedule No.' });
-                requiredFields.push({ id: 'modalSroItemSerialNo', label: 'SRO Item Serial No.' });
             } else {
                 requiredFields.push({ id: 'modalTotalValues', label: 'Total Values' });
                 requiredFields.push({ id: 'modalValueSalesExcludingST', label: 'Value Sales Excluding ST' });
@@ -1995,9 +2043,13 @@
             if (itemData.rate) {
                 try {
                     const rateData = JSON.parse(itemData.rate);
-                    itemData.rateValue = parseFloat(rateData.rate_value) || 0;
+                    if (rateData && typeof rateData === 'object' && rateData.rate_value !== undefined) {
+                        itemData.rateValue = parseFloat(rateData.rate_value) || 0;
+                    } else {
+                        itemData.rateValue = parseFloat(itemData.rate.toString().replace('%', '')) || 0;
+                    }
                 } catch (e) {
-                    itemData.rateValue = 0;
+                    itemData.rateValue = parseFloat(itemData.rate.toString().replace('%', '')) || 0;
                 }
             } else {
                 itemData.rateValue = 0;
@@ -2195,9 +2247,8 @@
                         console.error('Error loading UoM for edit mode:', error);
                     }
                 }, 300);
-            } else if (uomElement) {
-                uomElement.innerHTML = '<option value="">Select HS Code first</option>';
-                uomElement.disabled = true;
+            } else if (uomElement && item.uoM) {
+                $(uomElement).val(item.uoM).trigger('change');
             }
 
             document.querySelector('#addItemModal h3').textContent = 'Edit Invoice Item';
