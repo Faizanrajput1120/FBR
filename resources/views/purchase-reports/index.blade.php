@@ -115,6 +115,7 @@
         .register-report .company h2 { font-size: 20px; font-weight: bold; text-transform: uppercase; margin: 0; }
         .register-report .company .address, .register-report .company .taxno { font-size: 10px; margin-top: 3px; }
         .register-report .title { text-align: center; color: blue; font-style: italic; font-size: 28px; font-weight: bold; margin: 6px 0; }
+        .register-report .subtitle { text-align: center; font-size: 10px; font-weight: bold; margin: -2px 0 6px 0; text-transform: uppercase; }
         .register-report .date-box { width: 220px; border: 1px solid #000; padding: 5px; margin: 6px 0; }
         .register-report .date-box .date-label { font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 3px; margin-bottom: 3px; }
         .register-report .date-box table { width: 100%; border: none; }
@@ -133,9 +134,10 @@
             <div class="company">
                 <h2>{{ $companyInfo['name'] ?? '' }}</h2>
                 <div class="address">{{ $companyInfo['address'] ?? '' }}</div>
-                <div class="taxno">TAXPAYER NO: {{ $companyInfo['ntn'] ?? '' }}</div>
+                <div class="taxno">STRN NO: {{ $companyInfo['strn'] ?? '' }}</div>
             </div>
             <div class="title">Purchase Register</div>
+            <div class="subtitle">UNDER SECTION 22(1)(b) OF THE SALES TAX ACT 1990</div>
             <div class="date-box">
                 <div class="date-label">Date</div>
                 <table>
