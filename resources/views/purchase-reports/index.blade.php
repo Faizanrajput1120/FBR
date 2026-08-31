@@ -81,6 +81,9 @@
                                 <td>{{ $invoice->invoice_type ?? 'N/A' }}</td>
                                 <td>{{ $invoice->invoice_date ? \Carbon\Carbon::parse($invoice->invoice_date)->format('Y-m-d') : '-' }}</td>
                                 <td>
+                                    <a href="{{ route('purchase.invoicing.edit', $invoice->id) }}" class="btn btn-warning btn-sm me-1">
+                                        <i class="mdi mdi-pencil"></i> Edit
+                                    </a>
                                     <a href="{{ route('premiertax.purchase.invoice', $invoice->id) }}" class="btn btn-primary btn-sm me-1" target="_blank">
                                         <i class="mdi mdi-printer"></i> Print
                                     </a>
@@ -107,7 +110,7 @@
 
 <div id="purchaseRegisterSection" style="display: none;" data-title="Purchase Register">
     <style>
-        @page { size: A4 portrait; margin: 8mm; }
+        @page { size: A4 landscape; margin: 8mm; }
         .register-report { width: 100%; margin: 0 auto; font-family: 'Times New Roman', Times, serif; font-size: 10px; color: #000; background: #fff; box-sizing: border-box; }
         .register-report .header { position: relative; }
         .register-report .page-label { position: absolute; top: 0; right: 0; font-size: 10px; }
@@ -169,12 +172,12 @@
                     <td>{{ $row['invoice_ref'] }}</td>
                     <td>{{ $row['seller'] }}</td>
                     <td>{{ $row['product'] }}</td>
-                    <td class="no">{{ number_format($row['qty'], 2) }}{{ $row['unit'] ? ' ' . $row['unit'] : '' }}</td>
-                    <td class="no">{{ number_format($row['rate'], 2) }}</td>
-                    <td class="no">{{ number_format($row['value_excl'], 2) }}</td>
-                    <td class="no">{{ number_format($row['stax_rate'], 2) }}%</td>
-                    <td class="no">{{ number_format($row['stax_amt'], 2) }}</td>
-                    <td class="no">{{ number_format($row['value_inc'], 2) }}</td>
+                    <td class="no">{{ number_format($row['qty'], 4) }}{{ $row['unit'] ? ' ' . $row['unit'] : '' }}</td>
+                    <td class="no">{{ number_format($row['rate'], 4) }}</td>
+                    <td class="no">{{ number_format(round($row['value_excl']), 0) }}</td>
+                    <td class="no">{{ number_format(round($row['stax_rate']), 0) }}%</td>
+                    <td class="no">{{ number_format(round($row['stax_amt']), 0) }}</td>
+                    <td class="no">{{ number_format(round($row['value_inc']), 0) }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -182,10 +185,10 @@
             <tfoot>
                 <tr>
                     <td colspan="6" style="text-align:right;font-weight:bold;">TOTAL</td>
-                    <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('value_excl'), 2) }}</td>
+                    <td class="no" style="font-weight:bold;">{{ number_format(round(collect($registerRows)->sum(fn($r) => round($r['value_excl']))), 0) }}</td>
                     <td></td>
-                    <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('stax_amt'), 2) }}</td>
-                    <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('value_inc'), 2) }}</td>
+                    <td class="no" style="font-weight:bold;">{{ number_format(round(collect($registerRows)->sum(fn($r) => round($r['stax_amt']))), 0) }}</td>
+                    <td class="no" style="font-weight:bold;">{{ number_format(round(collect($registerRows)->sum(fn($r) => round($r['value_inc']))), 0) }}</td>
                 </tr>
             </tfoot>
             @endif

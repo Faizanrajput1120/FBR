@@ -887,7 +887,9 @@ Route::middleware('auth')->group(function () {
 
     // Purchase Invoicing Routes (DB only, no FBR API)
     Route::get('premiertax/purchase-invoicing', [App\Http\Controllers\PurchaseInvoicingController::class, 'index'])->name('purchase.invoicing.index');
+    Route::get('premiertax/purchase-invoicing/edit/{id}', [App\Http\Controllers\PurchaseInvoicingController::class, 'edit'])->name('purchase.invoicing.edit');
     Route::post('premiertax/purchase-invoicing/store', [App\Http\Controllers\PurchaseInvoicingController::class, 'store'])->name('purchase.invoicing.store');
+    Route::post('premiertax/purchase-invoicing/update/{id}', [App\Http\Controllers\PurchaseInvoicingController::class, 'update'])->name('purchase.invoicing.update');
     Route::get('premiertax/purchase-invoicing/list', [App\Http\Controllers\PurchaseInvoicingController::class, 'list'])->name('purchase.invoicing.list');
     Route::get('premiertax/purchase-invoicing/{id}', [App\Http\Controllers\PurchaseInvoicingController::class, 'show'])->name('purchase.invoicing.show');
     Route::delete('premiertax/purchase-invoicing/{id}', [App\Http\Controllers\PurchaseInvoicingController::class, 'destroy'])->name('purchase.invoicing.destroy');

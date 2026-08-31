@@ -5,7 +5,7 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900">
                 <!-- Purchase Invoice Form -->
-                <form id="invoiceForm" method="POST" action="{{ route('purchase.invoicing.store') }}" class="space-y-8">
+                <form id="invoiceForm" method="POST" action="{{ isset($editInvoice) ? route('purchase.invoicing.update', $editInvoice->id) : route('purchase.invoicing.store') }}" class="space-y-8">
                     @csrf
 
                     <!-- Seller Information -->
@@ -25,21 +25,21 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="sellerNTNCNIC" class="block text-sm font-medium text-gray-700 mb-1" required>CNIC/NTN</label>
-                                    <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="text" id="sellerNTNCNIC" name="sellerNTNCNIC" placeholder="0000000000000" value="{{ $editInvoice->seller_ntn_cnic ?? '' }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label for="sellerBusinessName" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                                    <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Seller Business Name" value="" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="text" id="sellerBusinessName" name="sellerBusinessName" placeholder="Seller Business Name" value="{{ $editInvoice->seller_business_name ?? '' }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 </div>
-                                <div>
+                                <div class="hidden">
                                     <label for="sellerProvince" class="block text-sm font-medium text-gray-700 mb-1">Province</label>
-                                    <select id="sellerProvince" name="sellerProvince" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 province-select">
-                                        <option value="">Select Province</option>
+                                    <select id="sellerProvince" name="sellerProvince" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 province-select">
+                                        <option value="{{ $editInvoice->seller_province ?? $user->province ?? '7' }}" selected>Select Province</option>
                                     </select>
                                 </div>
                                 <div class="md:col-span-2 mb-4">
                                     <label for="sellerAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                    <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                                    <textarea id="sellerAddress" name="sellerAddress" placeholder="Seller Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">{{ $editInvoice->seller_address ?? '' }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -62,11 +62,11 @@
                             </div>
                             <div>
                                 <label for="invoiceDate" class="block text-sm font-medium text-gray-700 mb-1">Invoice Date</label>
-                                <input type="date" id="invoiceDate" name="invoiceDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <input type="date" id="invoiceDate" name="invoiceDate" value="{{ isset($editInvoice) && $editInvoice->invoice_date ? \Carbon\Carbon::parse($editInvoice->invoice_date)->format('Y-m-d') : '' }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             </div>
                             <div>
                                 <label for="invoiceRefNo" class="block text-sm font-medium text-gray-700 mb-1">Invoice Reference No.</label>
-                                <input type="text" id="invoiceRefNo" name="invoiceRefNo" placeholder="Enter reference number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <input type="text" id="invoiceRefNo" name="invoiceRefNo" placeholder="Enter reference number" value="{{ $editInvoice->invoice_ref_no ?? '' }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             </div>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div class="relative">
                                 <label for="buyerNTNCNIC" class="block text-sm font-medium text-gray-700 mb-1">NTN/CNIC</label>
-                                <input type="text" id="buyerNTNCNIC" name="buyerNTNCNIC" placeholder="0000000000000" value="{{ $user->cinc_ntn ?? '' }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" autocomplete="off">
+                                <input type="text" id="buyerNTNCNIC" name="buyerNTNCNIC" placeholder="0000000000000" value="{{ $editInvoice->buyer_ntn_cnic ?? $user->cinc_ntn ?? '' }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" autocomplete="off">
                                 
                                 <!-- Autocomplete suggestions dropdown -->
                                 <div id="buyerNTNAutocomplete" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden">
@@ -93,25 +93,21 @@
                             </div>
                             <div>
                                 <label for="buyerBusinessName" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                                <input type="text" id="buyerBusinessName" name="buyerBusinessName" placeholder="Buyer Business Name" value="{{ $user->business_name ?? $user->name }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <input type="text" id="buyerBusinessName" name="buyerBusinessName" placeholder="Buyer Business Name" value="{{ $editInvoice->buyer_business_name ?? $user->business_name ?? $user->name }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             </div>
-                            <div>
+                            <div class="hidden">
                                 <label for="buyerProvince" class="block text-sm font-medium text-gray-700 mb-1">Province</label>
-                                <select id="buyerProvince" name="buyerProvince" required class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 province-select">
-                                    <option value="">Select Province</option>
+                                <select id="buyerProvince" name="buyerProvince" class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 province-select">
+                                    <option value="{{ $editInvoice->buyer_province ?? $user->province ?? '7' }}" selected>Select Province</option>
                                 </select>
                             </div>
                             <div>
                                 <label for="buyerRegistrationType" class="block text-sm font-medium text-gray-700 mb-1">Registration Type</label>
-                                <select id="buyerRegistrationType" name="buyerRegistrationType" required class="mt-1 block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option value="">Select Registration Type</option>
-                                    <option value="Unregistered">Unregistered</option>
-                                    <option value="Registered">Registered</option>
-                                </select>
+                                <input type="text" id="buyerRegistrationType" name="buyerRegistrationType" value="{{ $editInvoice->buyer_registration_type ?? 'Registered' }}" readonly class="mt-1 block w-40 rounded-md border-gray-300 bg-gray-100 text-gray-700 shadow-sm font-semibold cursor-not-allowed">
                             </div>
                             <div class="md:col-span-4">
                                 <label for="buyerAddress" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                                <textarea id="buyerAddress" name="buyerAddress" placeholder="Buyer Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 !h-[50px]">{{ $user->address ?? '' }}</textarea>
+                                <textarea id="buyerAddress" name="buyerAddress" placeholder="Buyer Address" required rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 !h-[50px]">{{ $editInvoice->buyer_address ?? $user->address ?? '' }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -189,7 +185,7 @@
                         <table>
                             <tr>
                                 <td>Transportation Charges</td>
-                                <td><input name="furtherexpense" value="0" id="furthertaxexpense" type="number" min="0" step="any" class="mt-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></td>
+                                <td><input name="furtherexpense" value="{{ $editInvoice->expense_col ?? 0 }}" id="furthertaxexpense" type="number" min="0" step="any" class="mt-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></td>
                             </tr>
                         </table>
                     </div>
@@ -200,7 +196,7 @@
                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5 9.293 8.207a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L11.414 9.5z" clip-rule="evenodd" />
                             </svg>
-                            Save Invoice
+                            {{ isset($editInvoice) ? 'Update Invoice' : 'Save Invoice' }}
                         </button>
                     </div>
                 </form>
@@ -281,7 +277,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Sales Tax Applicable</label>
-                            <input type="number" id="modalSalesTaxApplicable" name="salesTaxApplicable" placeholder="Auto-calculated" min="0" step="any" readonly class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sales-tax-field">
+                            <input type="number" id="modalSalesTaxApplicable" name="salesTaxApplicable" placeholder="0" min="0" step="any" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm sales-tax-field">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Fixed Notified Value/Retail Price <span class="text-red-500 schedule-3rd-fn-required hidden">*</span></label>
@@ -381,6 +377,7 @@
         hsCodes: @json($hsCodes ?? []),
         uoMs: @json($uoMs ?? []),
         transactionTypes: @json($transactionTypes ?? []),
+        editInvoice: @json($editInvoice ?? null),
         user: {
             cinc_ntn: @json($user->cinc_ntn ?? ''),
             business_name: @json($user->business_name ?? $user->name ?? ''),
@@ -519,9 +516,16 @@
     // Initialize the application
     document.addEventListener('DOMContentLoaded', function() {
         waitForDependencies(function() {
-            // Set today's date
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('invoiceDate').value = today;
+            // Set today's date if creating new invoice
+            if (!window.appData.editInvoice) {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('invoiceDate').value = today;
+            } else if (window.appData.editInvoice.items) {
+                let rawItems = window.appData.editInvoice.items;
+                itemsData = Array.isArray(rawItems) ? rawItems : (typeof rawItems === 'string' ? JSON.parse(rawItems) : []);
+                updateItemsTable();
+                updateHiddenFormInputs();
+            }
 
             // Populate data first, then initialize Select2
             populateProvinceSelects();
@@ -1227,10 +1231,12 @@
 
     // Populate province selects
     function populateProvinceSelects() {
-        if (provinces && Array.isArray(provinces)) {
+        const defaultProv = userProfile.province || '7';
+        if (provinces && Array.isArray(provinces) && provinces.length > 0) {
             $('.province-select').each(function() {
                 const select = this;
-                select.innerHTML = '<option value="">Select Province</option>';
+                const currentVal = $(select).val() || defaultProv;
+                select.innerHTML = '';
                 provinces.forEach(province => {
                     const provinceCode = province.stateProvinceCode;
                     const provinceDesc = province.stateProvinceDesc;
@@ -1238,11 +1244,25 @@
                         const option = document.createElement('option');
                         option.value = provinceCode;
                         option.textContent = provinceDesc;
+                        if (provinceCode == currentVal) {
+                            option.selected = true;
+                        }
                         select.appendChild(option);
                     }
                 });
+                if (!$(select).val()) {
+                    $(select).val(defaultProv);
+                }
+            });
+        } else {
+            $('.province-select').each(function() {
+                if (!this.value) {
+                    this.value = defaultProv;
+                }
             });
         }
+        if (!$('#sellerProvince').val()) $('#sellerProvince').val(defaultProv);
+        if (!$('#buyerProvince').val()) $('#buyerProvince').val(defaultProv);
     }
 
     // Load fallbacks if FBR is down
@@ -1260,8 +1280,9 @@
             width: 'resolve'
         });
         // Auto-select Purchase Invoice as default using Select2 API
-        if (!$('#invoiceType').val()) {
-            $('#invoiceType').val('Purchase Invoice').trigger('change');
+        const targetType = (window.appData.editInvoice && window.appData.editInvoice.invoice_type) ? window.appData.editInvoice.invoice_type : 'Purchase Invoice';
+        if (!$('#invoiceType').val() || $('#invoiceType').val() !== targetType) {
+            $('#invoiceType').val(targetType).trigger('change');
         }
     }
 
@@ -1309,8 +1330,9 @@
                     width: 'resolve'
                 });
                 // Auto-select Purchase Invoice as default using Select2 API
-                if (!$('#invoiceType').val()) {
-                    $('#invoiceType').val('Purchase Invoice').trigger('change');
+                const targetType = (window.appData.editInvoice && window.appData.editInvoice.invoice_type) ? window.appData.editInvoice.invoice_type : 'Purchase Invoice';
+                if (!$('#invoiceType').val() || $('#invoiceType').val() !== targetType) {
+                    $('#invoiceType').val(targetType).trigger('change');
                 }
             } else {
                 loadDefaultDocumentTypes();
@@ -2176,79 +2198,107 @@
         populateModalSelects();
 
         setTimeout(async () => {
-            Object.keys(item).forEach(key => {
-                const element = document.getElementById('modal' + key.charAt(0).toUpperCase() + key.slice(1));
-                if (element && key !== 'uoM') {
-                    if (element.tagName === 'SELECT') {
-                        $(element).val(item[key]).trigger('change');
-                    } else {
-                        element.value = item[key];
+            // 1. Sale Type
+            const saleTypeSelect = document.getElementById('modalSaleType');
+            const targetSaleType = item.saleType || item.saleTypeId || '';
+            const targetSaleTypeText = item.saleTypeText || item.saleType || '';
+
+            if (saleTypeSelect) {
+                let foundSaleType = false;
+                for (let i = 0; i < saleTypeSelect.options.length; i++) {
+                    const opt = saleTypeSelect.options[i];
+                    if ((targetSaleType && opt.value == targetSaleType) || (targetSaleTypeText && opt.text.trim().toLowerCase() === targetSaleTypeText.trim().toLowerCase())) {
+                        $(saleTypeSelect).val(opt.value).trigger('change');
+                        foundSaleType = true;
+                        break;
                     }
                 }
-            });
-
-            if (item.discountType === 'percent' && item.discountPercentInput !== undefined) {
-                document.getElementById('modalDiscount').value = item.discountPercentInput;
+                if (!foundSaleType && (targetSaleType || targetSaleTypeText)) {
+                    const optVal = targetSaleType || targetSaleTypeText;
+                    const optText = targetSaleTypeText || targetSaleType;
+                    const newOpt = new Option(optText, optVal, true, true);
+                    $(saleTypeSelect).append(newOpt).trigger('change');
+                }
             }
 
-            const saleTypeText = item.saleTypeText || '';
+            // 2. Direct input values
+            if (item.productDescription !== undefined) document.getElementById('modalProductDescription').value = item.productDescription;
+            if (item.quantity !== undefined) document.getElementById('modalQuantity').value = item.quantity;
+            if (item.rateValues !== undefined) document.getElementById('modalRateValues').value = item.rateValues;
+            if (item.totalValues !== undefined) document.getElementById('modalTotalValues').value = item.totalValues;
+            if (item.valueSalesExcludingST !== undefined) document.getElementById('modalValueSalesExcludingST').value = item.valueSalesExcludingST;
+            if (item.salesTaxApplicable !== undefined) document.getElementById('modalSalesTaxApplicable').value = item.salesTaxApplicable;
+            if (item.fixedNotifiedValueOrRetailPrice !== undefined) document.getElementById('modalFixedNotifiedValueOrRetailPrice').value = item.fixedNotifiedValueOrRetailPrice;
+            if (item.extraTax !== undefined) document.getElementById('modalExtraTax').value = item.extraTax;
+            if (item.furtherTax !== undefined) document.getElementById('modalFurtherTax').value = item.furtherTax;
+            if (item.discountType !== undefined) document.getElementById('modalDiscountType').value = item.discountType;
+
+            if (item.discount !== undefined) {
+                document.getElementById('modalDiscount').value = (item.discountType === 'percent' && item.discountPercentInput !== undefined) ? item.discountPercentInput : item.discount;
+            }
+
+            // 3. Unit of Measure
+            const uomSelect = document.getElementById('modalUoM');
+            const targetUoM = item.uoM || '';
+            const targetUoMText = item.uoMText || item.uoM || '';
+
+            if (uomSelect) {
+                let foundUoM = false;
+                for (let i = 0; i < uomSelect.options.length; i++) {
+                    const opt = uomSelect.options[i];
+                    if ((targetUoM && opt.value == targetUoM) || (targetUoMText && opt.text.trim().toLowerCase() === targetUoMText.trim().toLowerCase())) {
+                        $(uomSelect).val(opt.value).trigger('change');
+                        foundUoM = true;
+                        break;
+                    }
+                }
+                if (!foundUoM && (targetUoM || targetUoMText)) {
+                    const optVal = targetUoM || targetUoMText;
+                    const optText = targetUoMText || targetUoM;
+                    const newOpt = new Option(optText, optVal, true, true);
+                    $(uomSelect).append(newOpt).trigger('change');
+                }
+            }
+
+            // 4. Rate (%)
+            const rateSelect = document.getElementById('modalRate');
+            let rawRateVal = item.rateValue !== undefined && item.rateValue !== '' ? item.rateValue : (item.rate || '');
+            let cleanRateNum = rawRateVal.toString().replace(/%/g, '').trim();
+            let targetRateText = item.rateText || (cleanRateNum ? cleanRateNum + '%' : '');
+            targetRateText = targetRateText.toString().replace(/%+$/, '').trim() + '%';
+
+            if (rateSelect) {
+                let foundRate = false;
+                for (let i = 0; i < rateSelect.options.length; i++) {
+                    const opt = rateSelect.options[i];
+                    const optCleanText = opt.text.replace(/%/g, '').trim();
+                    if (opt.value == item.rate || (cleanRateNum !== '' && optCleanText === cleanRateNum)) {
+                        $(rateSelect).val(opt.value).trigger('change');
+                        foundRate = true;
+                        break;
+                    }
+                }
+                if (!foundRate && cleanRateNum !== '') {
+                    const optVal = typeof item.rate === 'object' ? JSON.stringify(item.rate) : (item.rate || cleanRateNum);
+                    const newOpt = new Option(targetRateText, optVal, true, true);
+                    $(rateSelect).append(newOpt).trigger('change');
+                }
+            }
+
+            // 5. 3rd Schedule fields check
+            const saleTypeText = item.saleTypeText || targetSaleTypeText || '';
             if (saleTypeText.toLowerCase().includes('3rd schedule') || saleTypeText.toLowerCase().includes('3rd party')) {
-                if (item.ghPercent !== undefined) {
-                    document.getElementById('modalGhPercent').value = item.ghPercent;
-                }
-                if (item.discountPercent !== undefined) {
-                    document.getElementById('modalDiscountPercent').value = item.discountPercent;
-                }
+                if (item.ghPercent !== undefined) document.getElementById('modalGhPercent').value = item.ghPercent;
+                if (item.discountPercent !== undefined) document.getElementById('modalDiscountPercent').value = item.discountPercent;
                 recalculate3rdSchedule();
             }
 
-            const hsCodeElement = document.getElementById('modalHsCode');
-            const uomElement = document.getElementById('modalUoM');
-
-            if (hsCodeElement && item.hsCode && uomElement && item.uoM) {
-                $(hsCodeElement).val(item.hsCode).trigger('change');
-
-                setTimeout(async () => {
-                    try {
-                        await fetchUomByHsCode(hsCodeElement);
-                        setTimeout(() => {
-                            $(uomElement).val(item.uoM).trigger('change');
-
-                            setTimeout(async () => {
-                                if (item.sroScheduleNo) {
-                                    const rateSelect = document.getElementById('modalRate');
-                                    const invoiceDate = document.getElementById('invoiceDate').value;
-                                    const buyerProvince = $('#buyerProvince').val();
-
-                                    if (rateSelect.value) {
-                                        try {
-                                            const rateData = JSON.parse(rateSelect.value);
-                                            const rateId = rateData.rate_id;
-
-                                            await fetchSroSchedule(rateId, invoiceDate, buyerProvince, document.getElementById('addItemModal'));
-
-                                            setTimeout(() => {
-                                                $('#modalSroScheduleNo').val(item.sroScheduleNo).trigger('change');
-
-                                                setTimeout(() => {
-                                                    if (item.sroItemSerialNo) {
-                                                        $('#modalSroItemSerialNo').val(item.sroItemSerialNo).trigger('change');
-                                                    }
-                                                }, 300);
-                                            }, 300);
-                                        } catch (error) {
-                                            console.error('Error setting SRO data:', error);
-                                        }
-                                    }
-                                }
-                            }, 300);
-                        }, 200);
-                    } catch (error) {
-                        console.error('Error loading UoM for edit mode:', error);
-                    }
-                }, 300);
-            } else if (uomElement && item.uoM) {
-                $(uomElement).val(item.uoM).trigger('change');
+            // 6. SRO Schedule & Item
+            if (item.sroScheduleNo) {
+                $('#modalSroScheduleNo').val(item.sroScheduleNo).trigger('change');
+            }
+            if (item.sroItemSerialNo) {
+                $('#modalSroItemSerialNo').val(item.sroItemSerialNo).trigger('change');
             }
 
             document.querySelector('#addItemModal h3').textContent = 'Edit Invoice Item';
@@ -2258,7 +2308,7 @@
                 </svg>
                 Update Item
             `;
-        }, 100);
+        }, 150);
     }
 
     function deleteItem(index) {
@@ -2398,10 +2448,10 @@
             }
 
             if (result.success) {
-                showMessage('Purchase Invoice saved successfully!', 'success');
+                showMessage(result.message || 'Purchase Invoice saved successfully!', 'success');
                 setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
+                    window.location.href = "{{ route('reports.purchase') }}";
+                }, 1200);
             } else {
                 // Show detailed errors if available
                 let errorMsg = result.message || 'Unknown error';

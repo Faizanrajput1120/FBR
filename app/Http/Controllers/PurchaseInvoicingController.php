@@ -230,4 +230,133 @@ class PurchaseInvoicingController extends Controller
             'message' => 'Purchase Invoice deleted successfully.',
         ]);
     }
+
+    /**
+     * Display the purchase invoicing form for editing an existing invoice.
+     */
+    public function edit($id)
+    {
+        $user = Auth::user();
+        $editInvoice = PurchaseInvoiceFbr::where('id', $id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        $provinces = [];
+        $hsCodes = [];
+        $uoMs = [];
+        $transactionTypes = [];
+
+        if ($user->fbr_access_token) {
+            try {
+                $fbrService = $this->getFbrApiService();
+
+                $provincesResult = $fbrService->getProvinceCodes($user->fbr_access_token);
+                if ($provincesResult['success']) {
+                    $provinces = $provincesResult['data'] ?? [];
+                }
+
+                $hsCodesResult = $fbrService->getItemDescriptionCodes($user->fbr_access_token);
+                if ($hsCodesResult['success']) {
+                    $hsCodes = $hsCodesResult['data'] ?? [];
+                }
+
+                $uoMsResult = $fbrService->getUnitsOfMeasurement($user->fbr_access_token);
+                if ($uoMsResult['success']) {
+                    $uoMs = $uoMsResult['data'] ?? [];
+                }
+
+                $transactionTypesResult = $fbrService->getTransactionTypeCodes($user->fbr_access_token);
+                if ($transactionTypesResult['success']) {
+                    $transactionTypes = $transactionTypesResult['data'] ?? [];
+                }
+            } catch (\Exception $e) {
+                Log::error('Error loading FBR data for purchase invoicing edit', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
+        return view('purchase-invoicing.index', compact('provinces', 'hsCodes', 'uoMs', 'transactionTypes', 'user', 'editInvoice'));
+    }
+
+    /**
+     * Update an existing purchase invoice in the database.
+     */
+    public function update(Request $request, $id)
+    {
+        $user = Auth::user();
+
+        $invoice = PurchaseInvoiceFbr::where('id', $id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        $validator = Validator::make($request->all(), [
+            'sellerNTNCNIC'           => 'required|string',
+            'sellerBusinessName'      => 'required|string',
+            'sellerProvince'          => 'required|string',
+            'sellerAddress'           => 'required|string',
+            'invoiceType'             => 'required|string',
+            'invoiceDate'             => 'required|date',
+            'buyerNTNCNIC'            => 'required|string',
+            'buyerBusinessName'       => 'required|string',
+            'buyerProvince'           => 'required|string',
+            'buyerRegistrationType'   => 'required|string',
+            'buyerAddress'            => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            $errorMessages = [];
+            foreach ($validator->errors()->toArray() as $field => $messages) {
+                $errorMessages[] = implode(', ', $messages);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => implode(' | ', $errorMessages),
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $items = $request->input('items', []);
+            if (!is_array($items)) {
+                $items = [];
+            }
+
+            $invoice->update([
+                'seller_ntn_cnic'         => $request->input('sellerNTNCNIC'),
+                'seller_business_name'    => $request->input('sellerBusinessName'),
+                'seller_province'         => $request->input('sellerProvince'),
+                'seller_address'          => $request->input('sellerAddress'),
+                'invoice_type'            => $request->input('invoiceType'),
+                'invoice_date'            => $request->input('invoiceDate'),
+                'invoice_ref_no'          => $request->input('invoiceRefNo'),
+                'buyer_ntn_cnic'          => $request->input('buyerNTNCNIC'),
+                'buyer_business_name'     => $request->input('buyerBusinessName'),
+                'buyer_province'          => $request->input('buyerProvince'),
+                'buyer_registration_type' => $request->input('buyerRegistrationType'),
+                'buyer_address'           => $request->input('buyerAddress'),
+                'items'                   => $items,
+                'expense_col'             => $request->input('furtherexpense', 0) ?: 0,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Purchase Invoice updated successfully.',
+                'id'      => $invoice->id,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Purchase Invoice update failed', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update purchase invoice: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }
