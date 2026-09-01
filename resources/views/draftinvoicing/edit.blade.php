@@ -137,7 +137,7 @@
                                     <input type="text" id="buyerNTNCNIC" name="buyerNTNCNIC" placeholder="0000000000000" value="{{ $draftInvoice->buyer_ntn_cnic }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" autocomplete="off">
 
                                     <!-- Autocomplete suggestions dropdown -->
-                                    <div id="buyerNTNAutocomplete" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden">
+                                    <div id="buyerNTNAutocomplete" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden" style="max-height: 250px; overflow-y: auto;">
                                         <div class="p-2 text-sm text-gray-500 text-center">
                                             Start typing to search buyers...
                                         </div>

@@ -305,7 +305,8 @@
             @if(count($registerRows ?? []) > 0)
             <tfoot>
                 <tr>
-                    <td colspan="5" style="text-align:right;font-weight:bold;">TOTAL</td>
+                    <td colspan="4" style="text-align:right;font-weight:bold;">TOTAL</td>
+                    <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('qty'), 2) }}</td>
                     <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('value_excl'), 2) }}</td>
                     <td></td>
                     <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('stax_amt'), 2) }}</td>

@@ -74,7 +74,7 @@
         <div><b>NTN</b> {{ $invoice->buyer_ntn_cnic ?? '' }}</div>
       </div>
       <div class="invoice-meta">
-        <div><b>Draft No.</b> #{{ $invoice->id }}</div>
+        <div><b>Draft No.</b> #{{ $invoice->invoice_ref_no ?? $invoice->id }}</div>
         <div><b>Date</b> {{ \Carbon\Carbon::parse($invoice->invoice_date ?? now())->format('d/m/Y') }}</div>
         <div><b>HS Code</b> {{ $hsCode ?: '-' }}</div>
       </div>

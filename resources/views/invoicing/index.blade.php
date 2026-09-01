@@ -132,7 +132,7 @@
                                     <input type="text" id="buyerNTNCNIC" name="buyerNTNCNIC" placeholder="0000000000000" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" autocomplete="off">
 
                                     <!-- Autocomplete suggestions dropdown -->
-                                    <div id="buyerNTNAutocomplete" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden">
+                                    <div id="buyerNTNAutocomplete" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto hidden" style="max-height: 250px; overflow-y: auto;">
                                         <div class="p-2 text-sm text-gray-500 text-center">
                                             Start typing to search buyers...
                                         </div>
@@ -319,8 +319,12 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Product Description <span class="text-red-500">*</span></label>
-                                <input type="text" id="modalProductDescription" name="productDescription" placeholder="Enter product description" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                 <div class="relative">
+                                     <label class="block text-sm font-medium text-gray-700 mb-1">Product Description <span class="text-red-500">*</span></label>
+                                     <input type="text" id="modalProductDescription" name="productDescription" placeholder="Enter product description" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" autocomplete="off">
+                                     <!-- Product Autocomplete suggestions dropdown -->
+                                     <div id="productDescriptionAutocomplete" class="absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg hidden" style="max-height: 200px; overflow-y: auto;"></div>
+                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -458,7 +462,9 @@
             hsCodes: @json($hsCodes ?? []),
             uoMs: @json($uoMs ?? []),
             transactionTypes: @json($transactionTypes ?? []),
+            existingProducts: @json($existingProducts ?? []),
             user: {
+                c_id: @json($user->c_id ?? ''),
                 cinc_ntn: @json($user->cinc_ntn ?? ''),
                 business_name: @json($user->business_name ?? $user->name ?? ''),
                 province: @json($user->province ?? ''),
@@ -633,6 +639,7 @@ const data = JSON.parse(cleanText);
 
                 // Setup event listeners
                 setupEventListeners();
+                initProductDescriptionAutocomplete();
 
                 // Perform initial validation to set correct button state
                 setTimeout(() => {
@@ -1427,6 +1434,131 @@ const result = JSON.parse(cleanText);
         function hideBuyerAutocomplete() {
             const autocompleteDiv = document.getElementById('buyerNTNAutocomplete');
             autocompleteDiv.classList.add('hidden');
+        }
+
+        // ==========================================
+        // Product Description – Smart Autocomplete
+        // ==========================================
+        let existingProductsList = [];
+
+        function getProductStorageKey() {
+            const cid = window.appData?.user?.c_id || window.appData?.user?.cinc_ntn || 'default';
+            return 'saved_product_descriptions_' + cid;
+        }
+
+        function initProductDescriptionAutocomplete() {
+            const serverProducts = window.appData.existingProducts || [];
+            let localProducts = [];
+            try {
+                localProducts = JSON.parse(localStorage.getItem(getProductStorageKey()) || '[]');
+            } catch (e) {
+                localProducts = [];
+            }
+
+            const map = new Map();
+            [...serverProducts, ...localProducts].forEach(prod => {
+                if (prod && typeof prod === 'string' && prod.trim()) {
+                    const clean = prod.trim();
+                    const key = clean.toLowerCase();
+                    if (!map.has(key)) {
+                        map.set(key, clean);
+                    }
+                }
+            });
+            existingProductsList = Array.from(map.values());
+
+            const input = document.getElementById('modalProductDescription');
+            if (!input) return;
+
+            input.removeEventListener('input', handleProductDescriptionInput);
+            input.removeEventListener('focus', handleProductDescriptionInput);
+            input.addEventListener('input', handleProductDescriptionInput);
+            input.addEventListener('focus', handleProductDescriptionInput);
+
+            document.addEventListener('click', function(e) {
+                const autocompleteDiv = document.getElementById('productDescriptionAutocomplete');
+                const prodInput = document.getElementById('modalProductDescription');
+                if (autocompleteDiv && prodInput && !prodInput.contains(e.target) && !autocompleteDiv.contains(e.target)) {
+                    hideProductDescriptionAutocomplete();
+                }
+            });
+        }
+
+        function handleProductDescriptionInput() {
+            const input = document.getElementById('modalProductDescription');
+            const autocompleteDiv = document.getElementById('productDescriptionAutocomplete');
+            if (!input || !autocompleteDiv) return;
+
+            const query = input.value.trim().toLowerCase();
+            if (!query) {
+                hideProductDescriptionAutocomplete();
+                return;
+            }
+
+            const matches = existingProductsList.filter(prod => prod.toLowerCase().includes(query));
+
+            if (matches.length === 0) {
+                hideProductDescriptionAutocomplete();
+                return;
+            }
+
+            let html = '';
+            matches.slice(0, 30).forEach(product => {
+                const escaped = escapeHtmlStr(product);
+                html += `
+                    <div class="product-suggestion px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 text-sm text-gray-800" data-product="${escaped}">
+                        <div class="font-medium">${escaped}</div>
+                    </div>
+                `;
+            });
+
+            autocompleteDiv.innerHTML = html;
+            autocompleteDiv.classList.remove('hidden');
+
+            autocompleteDiv.querySelectorAll('.product-suggestion').forEach(item => {
+                item.addEventListener('click', function() {
+                    const selectedProduct = this.getAttribute('data-product');
+                    input.value = selectedProduct;
+                    hideProductDescriptionAutocomplete();
+                });
+            });
+        }
+
+        function hideProductDescriptionAutocomplete() {
+            const autocompleteDiv = document.getElementById('productDescriptionAutocomplete');
+            if (autocompleteDiv) {
+                autocompleteDiv.classList.add('hidden');
+            }
+        }
+
+        function escapeHtmlStr(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function saveNewProductDescription(productDesc) {
+            if (!productDesc || !productDesc.trim()) return;
+            const clean = productDesc.trim();
+            const key = clean.toLowerCase();
+
+            if (!existingProductsList.some(p => p.toLowerCase() === key)) {
+                existingProductsList.push(clean);
+                try {
+                    const storageKey = getProductStorageKey();
+                    let localProducts = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                    if (!localProducts.some(p => p.toLowerCase() === key)) {
+                        localProducts.push(clean);
+                        localStorage.setItem(storageKey, JSON.stringify(localProducts));
+                    }
+                } catch (e) {
+                    console.error('Error saving product to localStorage', e);
+                }
+            }
         }
 
         // Fetch registration type when NTN/CNIC field loses focus
@@ -2782,6 +2914,7 @@ const result = JSON.parse(cleanText);
 
         // Clear modal form
         function clearModalForm() {
+            hideProductDescriptionAutocomplete();
             const form = document.getElementById('itemForm');
             form.reset();
 
@@ -2953,6 +3086,10 @@ const result = JSON.parse(cleanText);
 
             // Update hidden form inputs
             updateHiddenFormInputs();
+
+            // Save product description for future autocomplete suggestions
+            saveNewProductDescription(itemData.productDescription);
+            hideProductDescriptionAutocomplete();
 
             // Close modal
             closeAddItemModal();

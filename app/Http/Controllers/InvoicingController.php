@@ -80,12 +80,28 @@ class InvoicingController extends Controller
                 'error' => $e->getMessage()
             ]);
         }
-$provincesResult = $fbrService->getProvinceCodes($user->fbr_access_token);
-if ($provincesResult['success']) {
-    $provinces = $provincesResult['data'] ?? [];
-    Log::info('=== FULL PROVINCE LIST FROM FBR ===', ['provinces' => $provinces]);
-}
-        return view('invoicing.index', compact('provinces', 'hsCodes', 'uoMs', 'transactionTypes', 'user'));
+
+        $existingProducts = [];
+        try {
+            $registeredProducts = \App\Models\ProductMaster::where('c_id', $user->c_id)->pluck('prod_name')->filter()->toArray();
+            $previousInvoices = \App\Models\SaleInvoiceFbr::where('cid', $user->c_id)->pluck('items');
+            $savedDescriptions = [];
+            foreach ($previousInvoices as $itemsJson) {
+                $itemsArr = is_string($itemsJson) ? json_decode($itemsJson, true) : ($itemsJson ?? []);
+                if (is_array($itemsArr)) {
+                    foreach ($itemsArr as $item) {
+                        if (!empty($item['productDescription'])) {
+                            $savedDescriptions[] = trim($item['productDescription']);
+                        }
+                    }
+                }
+            }
+            $existingProducts = array_values(array_unique(array_filter(array_merge($registeredProducts, $savedDescriptions))));
+        } catch (\Exception $e) {
+            Log::error('Error fetching existing products', ['error' => $e->getMessage()]);
+        }
+
+        return view('invoicing.index', compact('provinces', 'hsCodes', 'uoMs', 'transactionTypes', 'user', 'existingProducts'));
     }
 
     /**
