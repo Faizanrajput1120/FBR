@@ -453,7 +453,7 @@
                     <th>CUSTOMER NAME</th>
                     <th>PRODUCT NAME</th>
                     <th>QTY</th>
-                    <th>RATE</th>
+                    <th style="display: none;">RATE</th>
                     <th>RETAIL EXCL.</th>
                     <th>RETAIL S.TAX</th>
                     <th>RETAIL INCL.</th>
@@ -474,7 +474,7 @@
                     <td>{{ $row['customer'] }}</td>
                     <td>{{ $row['product'] }}</td>
                     <td class="no">{{ number_format($row['qty'], 2) }}{{ $row['unit'] ? ' ' . $row['unit'] : '' }}</td>
-                    <td class="no">{{ number_format($row['rate'], 4) }}</td>
+                    <td class="no" style="display: none;">{{ number_format($row['rate'], 4) }}</td>
                     <td class="no">{{ number_format($row['retail_excl'], 2) }}</td>
                     <td class="no">{{ number_format($row['retail_tax'], 2) }}</td>
                     <td class="no">{{ number_format($row['retail_incl'], 2) }}</td>
@@ -491,7 +491,12 @@
             @if(count($registerRows ?? []) > 0)
             <tfoot>
                 <tr>
-                    <td colspan="9" style="text-align:right;font-weight:bold;">TOTAL</td>
+                    <td colspan="4" style="text-align:right;font-weight:bold;">TOTAL</td>
+                    <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('qty'), 2) }}</td>
+                    <td style="display: none;"></td>
+                    <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('retail_excl'), 2) }}</td>
+                    <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('retail_tax'), 2) }}</td>
+                    <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('retail_incl'), 2) }}</td>
                     <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('discount'), 2) }}</td>
                     <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('trade_excl'), 2) }}</td>
                     <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('trade_tax'), 2) }}</td>
@@ -501,7 +506,7 @@
                     <td class="no" style="font-weight:bold;">{{ number_format(collect($registerRows)->sum('amount'), 2) }}</td>
                 </tr>
                 <tr>
-                    <td colspan="15" style="text-align:right;font-weight:bold;">GH 236 TOTAL</td>
+                    <td colspan="14" style="text-align:right;font-weight:bold;">GH 236 TOTAL</td>
                     <td class="no" style="font-weight:bold;">{{ number_format($ghTotal ?? 0, 2) }}</td>
                 </tr>
             </tfoot>
