@@ -3584,11 +3584,32 @@ const result = JSON.parse(cleanText);
         async function submitDraft(e) {
              e.preventDefault();
     const formData = new FormData(document.getElementById('invoiceForm'));
-    const data = formDataToObjectWithLabels(formData); // <-- use labels
+
+    // Build top-level fields from formData (non-items)
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+        if (!key.startsWith('items[')) {
+            data[key] = value;
+        }
+    }
+
+    // Use raw itemsData for items — keeps original IDs (saleType, rate JSON, uoM)
+    // so that the Edit Draft page can correctly restore all dropdown selections.
+    data.items = itemsData.map(item => {
+        const clean = { ...item };
+        // Remove transient UI-only fields
+        Object.keys(clean).forEach(k => {
+            if (k.endsWith('Text') || k === 'rateValue' || k === 'rowId' || k === 'index') {
+                delete clean[k];
+            }
+        });
+        return clean;
+    });
+
     const apiUrl = `${API_BASE}/premiertax/invoicing/save-draft`;
 
             // Create display version for console logging (with labels)
-            const displayData = convertIdsToLabels(data);
+            const displayData = data;
 
            
 
