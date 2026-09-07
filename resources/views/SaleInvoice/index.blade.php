@@ -154,6 +154,17 @@
             size: A4 portrait;
             margin: 8mm;
         }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+        .register-report .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin: 6px 0;
+        }
         .register-report {
             width: 100%;
             margin: 0 auto;
@@ -199,7 +210,7 @@
             width: 220px;
             border: 1px solid #000;
             padding: 5px;
-            margin: 6px 0;
+            margin: 0;
         }
         .register-report .date-box .date-label {
             font-weight: bold;
@@ -255,21 +266,29 @@
             <div class="company">
                 <h2>{{ $companyInfo['name'] ?? '' }}</h2>
                 <div class="address">{{ $companyInfo['address'] ?? '' }}</div>
-                <div class="taxno">TAXPAYER NO: {{ $companyInfo['ntn'] ?? '' }}</div>
+                <div class="taxno">STRN NO: {{ $companyInfo['strn'] ?? ($companyInfo['ntn'] ?? '') }}</div>
             </div>
             <div class="title">Supply Register</div>
-            <div class="date-box">
-                <div class="date-label">Date</div>
-                <table>
-                    <tr>
-                        <td>Date From :</td>
-                        <td>{{ $reportStart ?? '' ? date('d-m-y', strtotime($reportStart)) : 'Start' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Date To :</td>
-                        <td>{{ $reportEnd ?? '' ? date('d-m-y', strtotime($reportEnd)) : 'End' }}</td>
-                    </tr>
-                </table>
+            <div class="header-flex">
+                <div class="date-box">
+                    <div class="date-label">Date</div>
+                    <table>
+                        <tr>
+                            <td>Date From :</td>
+                            <td>{{ $reportStart ?? '' ? date('d-m-y', strtotime($reportStart)) : 'Start' }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date To :</td>
+                            <td>{{ $reportEnd ?? '' ? date('d-m-y', strtotime($reportEnd)) : 'End' }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="no-print" style="margin-bottom: 2px;">
+                    <button type="button" onclick="exportTableToExcel('Supply_Register.xlsx')" style="background-color: #28a745; color: #fff; border: 1px solid #1e7e34; padding: 6px 16px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: sans-serif;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        Export Excel
+                    </button>
+                </div>
             </div>
             <hr>
         </div>
@@ -326,6 +345,17 @@
             size: A4 landscape;
             margin: 8mm;
         }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+        .register-report .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin: 6px 0;
+        }
         .register-report {
             width: 100%;
             margin: 0 auto;
@@ -371,7 +401,7 @@
             width: 220px;
             border: 1px solid #000;
             padding: 5px;
-            margin: 6px 0;
+            margin: 0;
         }
         .register-report .date-box .date-label {
             font-weight: bold;
@@ -427,21 +457,29 @@
             <div class="company">
                 <h2>{{ $companyInfo['name'] ?? '' }}</h2>
                 <div class="address">{{ $companyInfo['address'] ?? '' }}</div>
-                <div class="taxno">TAXPAYER NO: {{ $companyInfo['ntn'] ?? '' }}</div>
+                <div class="taxno">STRN NO: {{ $companyInfo['strn'] ?? ($companyInfo['ntn'] ?? '') }}</div>
             </div>
             <div class="title">Third Schedule Register</div>
-            <div class="date-box">
-                <div class="date-label">Date</div>
-                <table>
-                    <tr>
-                        <td>Date From :</td>
-                        <td>{{ $reportStart ?? '' ? date('d-m-y', strtotime($reportStart)) : 'Start' }}</td>
-                    </tr>
-                    <tr>
-                        <td>Date To :</td>
-                        <td>{{ $reportEnd ?? '' ? date('d-m-y', strtotime($reportEnd)) : 'End' }}</td>
-                    </tr>
-                </table>
+            <div class="header-flex">
+                <div class="date-box">
+                    <div class="date-label">Date</div>
+                    <table>
+                        <tr>
+                            <td>Date From :</td>
+                            <td>{{ $reportStart ?? '' ? date('d-m-y', strtotime($reportStart)) : 'Start' }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date To :</td>
+                            <td>{{ $reportEnd ?? '' ? date('d-m-y', strtotime($reportEnd)) : 'End' }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="no-print" style="margin-bottom: 2px;">
+                    <button type="button" onclick="exportTableToExcel('Third_Schedule_Register.xlsx')" style="background-color: #28a745; color: #fff; border: 1px solid #1e7e34; padding: 6px 16px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: sans-serif;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        Export Excel
+                    </button>
+                </div>
             </div>
             <hr>
         </div>
@@ -554,9 +592,45 @@
         var styleHTML = section.querySelector('style').outerHTML;
         var reportHTML = section.querySelector('.register-report').outerHTML;
         var title = section.getAttribute('data-title') || 'Register';
+
+        var scriptHTML = '<script>'
+            + 'function exportTableToExcel(filename) {'
+            + '    var table = document.querySelector("table.data");'
+            + '    if (!table) { alert("No table found"); return; }'
+            + '    var title = document.title || "Register";'
+            + '    var fname = filename || (title.replace(/\\s+/g, "_") + ".xlsx");'
+            + '    var cloneTable = table.cloneNode(true);'
+            + '    var hiddenEls = cloneTable.querySelectorAll(\'[style*="display: none"], [style*="display:none"]\');'
+            + '    hiddenEls.forEach(function(el) { el.remove(); });'
+            + '    if (typeof XLSX !== "undefined") {'
+            + '        var wb = XLSX.utils.table_to_book(cloneTable, { sheet: title.substring(0, 31) });'
+            + '        XLSX.writeFile(wb, fname);'
+            + '        return;'
+            + '    }'
+            + '    var html = \'<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">\''
+            + '        + \'<head><meta charset="utf-8">\''
+            + '        + \'<!--[if gte mso 9]><xml><\' + \'x:ExcelWorkbook><\' + \'x:ExcelWorksheets><\' + \'x:ExcelWorksheet>\''
+            + '        + \'<\' + \'x:Name>\' + title.substring(0, 31) + \'</\' + \'x:Name>\''
+            + '        + \'<\' + \'x:WorksheetOptions><\' + \'x:DisplayGridlines/></\' + \'x:WorksheetOptions>\''
+            + '        + \'</\' + \'x:ExcelWorksheet></\' + \'x:ExcelWorksheets></\' + \'x:ExcelWorkbook></xml><![endif]-->\''
+            + '        + \'<style>table{border-collapse:collapse;width:100%;}th,td{border:1px solid #000;padding:4px;}th{background:#d9f2b4;font-weight:bold;}.no{text-align:right;}</style>\''
+            + '        + \'</head><body>\' + cloneTable.outerHTML + \'</body></html>\';'
+            + '    var blob = new Blob(["\\ufeff" + html], { type: "application/vnd.ms-excel" });'
+            + '    var url = URL.createObjectURL(blob);'
+            + '    var a = document.createElement("a");'
+            + '    a.href = url;'
+            + '    a.download = fname.endsWith(".xlsx") || fname.endsWith(".xls") ? fname : fname + ".xls";'
+            + '    document.body.appendChild(a);'
+            + '    a.click();'
+            + '    document.body.removeChild(a);'
+            + '    URL.revokeObjectURL(url);'
+            + '}'
+            + '<\/script>'
+            + '<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"><\/script>';
+
         var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + title + '</title>'
             + styleHTML
-            + '</head><body>' + reportHTML + '</body></html>';
+            + '</head><body>' + reportHTML + scriptHTML + '</body></html>';
         var url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
         var newTab = window.open(url, '_blank');
         if (!newTab) {
@@ -568,5 +642,50 @@
             newTab.print();
         }, 400);
     }
+
+    function exportSectionToExcel(sectionId, customFilename) {
+        var section = document.getElementById(sectionId);
+        if (!section) return;
+        
+        var title = section.getAttribute('data-title') || 'Report';
+        var filename = customFilename || (title.replace(/\s+/g, '_') + '.xlsx');
+        var table = section.querySelector('table.data');
+        if (!table) {
+            alert('No data available to export.');
+            return;
+        }
+
+        // Clone table to clean up hidden elements for export
+        var cloneTable = table.cloneNode(true);
+        var hiddenEls = cloneTable.querySelectorAll('[style*="display: none"], [style*="display:none"]');
+        hiddenEls.forEach(function(el) { el.remove(); });
+
+        if (typeof XLSX !== 'undefined') {
+            var wb = XLSX.utils.table_to_book(cloneTable, { sheet: title.substring(0, 31) });
+            XLSX.writeFile(wb, filename);
+            return;
+        }
+
+        // Fallback HTML spreadsheet blob
+        var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">'
+            + '<head><meta charset="utf-8">'
+            + '<!--[if gte mso 9]><xml><' + 'x:ExcelWorkbook><' + 'x:ExcelWorksheets><' + 'x:ExcelWorksheet>'
+            + '<' + 'x:Name>' + title.substring(0, 31) + '</' + 'x:Name>'
+            + '<' + 'x:WorksheetOptions><' + 'x:DisplayGridlines/></' + 'x:WorksheetOptions>'
+            + '</' + 'x:ExcelWorksheet></' + 'x:ExcelWorksheets></' + 'x:ExcelWorkbook></xml><![endif]-->'
+            + '<style>table{border-collapse:collapse;}th,td{border:1px solid #000;padding:4px;}th{background:#d9f2b4;font-weight:bold;}</style>'
+            + '</head><body>' + cloneTable.outerHTML + '</body></html>';
+
+        var blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename.endsWith('.xlsx') || filename.endsWith('.xls') ? filename : filename + '.xls';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 @endsection

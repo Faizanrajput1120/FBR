@@ -802,6 +802,20 @@ const result = JSON.parse(cleanText);
     // Use raw itemsData for items instead of converted form data
     data.items = itemsData.map(item => {
         const clean = { ...item };
+        // Map saleType ID to FBR description text if transactionTypes reference data is available
+        if (clean.saleType && transactionTypes && Array.isArray(transactionTypes) && transactionTypes.length > 0) {
+            const matchedType = transactionTypes.find(t => String(t.transactioN_TYPE_ID) === String(clean.saleType));
+            if (matchedType && matchedType.transactioN_DESC) {
+                clean.saleType = matchedType.transactioN_DESC;
+            }
+        }
+        // Map uoM ID to description text if uoMs reference data is available
+        if (clean.uoM && uoMs && Array.isArray(uoMs) && uoMs.length > 0) {
+            const matchedUom = uoMs.find(u => String(u.uoM_ID || u.id) === String(clean.uoM));
+            if (matchedUom && (matchedUom.uoM_DESC || matchedUom.description)) {
+                clean.uoM = matchedUom.uoM_DESC || matchedUom.description;
+            }
+        }
         Object.keys(clean).forEach(k => {
             if (k.endsWith('Text') || k === 'rateValue' || k === 'rowId' || k === 'index') delete clean[k];
         });

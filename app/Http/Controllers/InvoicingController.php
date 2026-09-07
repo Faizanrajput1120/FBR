@@ -250,6 +250,23 @@ foreach ($fbrItems as &$item) {
             $item['rate'] = $rateParsed['rate_desc'];
         }
     }
+    // Fallback: If saleType is numeric ID, resolve to description text from reference API
+    if (isset($item['saleType']) && (is_numeric($item['saleType']) || ctype_digit((string)$item['saleType']))) {
+        try {
+            $fbrService = $this->getFbrApiService();
+            $ttRes = $fbrService->getTransactionTypeCodes($user->fbr_access_token);
+            if ($ttRes['success'] && !empty($ttRes['data'])) {
+                foreach ($ttRes['data'] as $tType) {
+                    if (isset($tType['transactioN_TYPE_ID']) && (string)$tType['transactioN_TYPE_ID'] === (string)$item['saleType']) {
+                        $item['saleType'] = $tType['transactioN_DESC'] ?? $item['saleType'];
+                        break;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to map numeric saleType in submitInvoice: ' . $e->getMessage());
+        }
+    }
 }
 
 // Replace only for API submission
