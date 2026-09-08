@@ -95,6 +95,8 @@ $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)
 
             $ghTotal += $gh;
 
+            $tradeExcl = $retailExcl > 0 ? ($retailExcl - $discount) : $valueExcl;
+
             $registerRows[] = [
                 'date' => \Carbon\Carbon::parse($inv->invoice_date ?? now())->format('d-m-y'),
                 'invoice_no' => $inv->fbr_invoice_no ?? '-',
@@ -111,12 +113,12 @@ $availableBillNumbers = SaleInvoiceFbr::where('cid', $user->c_id)
                 'retail_tax' => $retailExcl * 0.18,
                 'retail_incl' => $retailExcl * 1.18,
                 'discount' => $discount,
-                'trade_excl' => $valueExcl - $discount,
+                'trade_excl' => $tradeExcl,
                 'trade_tax' => $stax,
-                'trade_with_tax' => ($valueExcl - $discount) + $stax,
+                'trade_with_tax' => $tradeExcl + $stax,
                 'us236' => $gh,
                 'further_tax' => $ft,
-                'amount' => (($valueExcl - $discount) + $stax) + $gh,
+                'amount' => $tradeExcl + $stax + $gh,
             ];
         }
     }

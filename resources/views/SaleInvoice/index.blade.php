@@ -587,46 +587,133 @@
     });
 });
 
+    function buildExcelTableFromContainer(container, defaultTitle) {
+        var table = container.querySelector("table.data") || container.querySelector("table");
+        if (!table) return null;
+
+        var title = defaultTitle || container.getAttribute('data-title') || document.title || "Register";
+        var cloneTable = table.cloneNode(true);
+        var hiddenEls = cloneTable.querySelectorAll('[style*="display: none"], [style*="display:none"]');
+        hiddenEls.forEach(function(el) { el.remove(); });
+
+        var colCount = 1;
+        var firstRow = cloneTable.querySelector('thead tr') || cloneTable.querySelector('tr');
+        if (firstRow) {
+            colCount = firstRow.children.length;
+        }
+        colCount = Math.max(colCount, 2);
+
+        var pageLabelEl = container.querySelector('.page-label');
+        var pageLabel = pageLabelEl ? pageLabelEl.innerText.trim() : 'Page 1 of 1';
+
+        var companyH2 = container.querySelector('.company h2');
+        var companyName = companyH2 ? companyH2.innerText.trim() : '';
+
+        var companyAddrEl = container.querySelector('.company .address');
+        var companyAddr = companyAddrEl ? companyAddrEl.innerText.trim() : '';
+
+        var companyTaxEl = container.querySelector('.company .taxno');
+        var companyTax = companyTaxEl ? companyTaxEl.innerText.trim() : '';
+
+        var titleEl = container.querySelector('.title');
+        var reportTitle = titleEl ? titleEl.innerText.trim() : title;
+
+        var dateFrom = '';
+        var dateTo = '';
+        var dateBoxTable = container.querySelector('.date-box table');
+        if (dateBoxTable) {
+            var dRows = dateBoxTable.querySelectorAll('tr');
+            if (dRows.length >= 1 && dRows[0].children.length >= 2) {
+                dateFrom = dRows[0].children[1].innerText.trim();
+            }
+            if (dRows.length >= 2 && dRows[1].children.length >= 2) {
+                dateTo = dRows[1].children[1].innerText.trim();
+            }
+        }
+
+        var topRows = '';
+        topRows += '<tr><td colspan="' + colCount + '" class="no-border" style="text-align: right; font-size: 10pt; font-family: \'Times New Roman\', serif; border: none;">' + pageLabel + '</td></tr>';
+        if (companyName) {
+            topRows += '<tr><td colspan="' + colCount + '" class="no-border" style="text-align: center; font-size: 16pt; font-weight: bold; font-family: \'Times New Roman\', serif; text-transform: uppercase; border: none;">' + companyName + '</td></tr>';
+        }
+        if (companyAddr) {
+            topRows += '<tr><td colspan="' + colCount + '" class="no-border" style="text-align: center; font-size: 10pt; font-family: \'Times New Roman\', serif; border: none;">' + companyAddr + '</td></tr>';
+        }
+        if (companyTax) {
+            topRows += '<tr><td colspan="' + colCount + '" class="no-border" style="text-align: center; font-size: 10pt; font-family: \'Times New Roman\', serif; border: none;">' + companyTax + '</td></tr>';
+        }
+        if (reportTitle) {
+            topRows += '<tr><td colspan="' + colCount + '" class="no-border" style="text-align: center; font-size: 20pt; font-weight: bold; font-style: italic; color: #0000FF; font-family: \'Times New Roman\', serif; padding: 6px 0; border: none;">' + reportTitle + '</td></tr>';
+        }
+        topRows += '<tr>'
+            + '<td colspan="2" class="date-border-top" style="font-weight: bold; font-family: \'Times New Roman\', serif; padding: 3px 5px; background-color: #f8f9fa;">Date</td>'
+            + (colCount > 2 ? '<td colspan="' + (colCount - 2) + '" class="no-border" style="border: none;"></td>' : '')
+            + '</tr>';
+        topRows += '<tr>'
+            + '<td class="date-border-mid" style="font-family: \'Times New Roman\', serif; padding: 2px 5px;">Date From :</td>'
+            + '<td class="date-border-mid" style="font-weight: bold; text-align: right; font-family: \'Times New Roman\', serif; padding: 2px 5px;">' + dateFrom + '</td>'
+            + (colCount > 2 ? '<td colspan="' + (colCount - 2) + '" class="no-border" style="border: none;"></td>' : '')
+            + '</tr>';
+        topRows += '<tr>'
+            + '<td class="date-border-bot" style="font-family: \'Times New Roman\', serif; padding: 2px 5px;">Date To :</td>'
+            + '<td class="date-border-bot" style="font-weight: bold; text-align: right; font-family: \'Times New Roman\', serif; padding: 2px 5px;">' + dateTo + '</td>'
+            + (colCount > 2 ? '<td colspan="' + (colCount - 2) + '" class="no-border" style="border: none;"></td>' : '')
+            + '</tr>';
+        topRows += '<tr><td colspan="' + colCount + '" class="no-border" style="height: 12px; border: none;"></td></tr>';
+
+        var thead = cloneTable.querySelector('thead');
+        if (thead) {
+            thead.insertAdjacentHTML('afterbegin', topRows);
+        } else {
+            cloneTable.insertAdjacentHTML('afterbegin', '<thead>' + topRows + '</thead>');
+        }
+
+        return cloneTable;
+    }
+
     function printSectionReport(sectionId) {
         var section = document.getElementById(sectionId);
         var styleHTML = section.querySelector('style').outerHTML;
         var reportHTML = section.querySelector('.register-report').outerHTML;
         var title = section.getAttribute('data-title') || 'Register';
 
-        var scriptHTML = '<script>'
-            + 'function exportTableToExcel(filename) {'
-            + '    var table = document.querySelector("table.data");'
-            + '    if (!table) { alert("No table found"); return; }'
-            + '    var title = document.title || "Register";'
-            + '    var fname = filename || (title.replace(/\\s+/g, "_") + ".xlsx");'
-            + '    var cloneTable = table.cloneNode(true);'
-            + '    var hiddenEls = cloneTable.querySelectorAll(\'[style*="display: none"], [style*="display:none"]\');'
-            + '    hiddenEls.forEach(function(el) { el.remove(); });'
-            + '    if (typeof XLSX !== "undefined") {'
-            + '        var wb = XLSX.utils.table_to_book(cloneTable, { sheet: title.substring(0, 31) });'
-            + '        XLSX.writeFile(wb, fname);'
-            + '        return;'
-            + '    }'
+        var scriptHTML = '<script>\n'
+            + buildExcelTableFromContainer.toString() + '\n'
+            + 'function exportTableToExcel(filename) {\n'
+            + '    var container = document.querySelector(".register-report") || document.body;\n'
+            + '    var title = document.title || "Register";\n'
+            + '    var fname = filename || (title.replace(/\\s+/g, "_") + ".xls");\n'
+            + '    var fnameXls = fname.endsWith(".xlsx") ? fname.replace(/\\.xlsx$/i, ".xls") : (fname.endsWith(".xls") ? fname : fname + ".xls");\n'
+            + '    var cloneTable = buildExcelTableFromContainer(container, title);\n'
+            + '    if (!cloneTable) { alert("No table found"); return; }\n'
             + '    var html = \'<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">\''
             + '        + \'<head><meta charset="utf-8">\''
             + '        + \'<!--[if gte mso 9]><xml><\' + \'x:ExcelWorkbook><\' + \'x:ExcelWorksheets><\' + \'x:ExcelWorksheet>\''
             + '        + \'<\' + \'x:Name>\' + title.substring(0, 31) + \'</\' + \'x:Name>\''
             + '        + \'<\' + \'x:WorksheetOptions><\' + \'x:DisplayGridlines/></\' + \'x:WorksheetOptions>\''
             + '        + \'</\' + \'x:ExcelWorksheet></\' + \'x:ExcelWorksheets></\' + \'x:ExcelWorkbook></xml><![endif]-->\''
-            + '        + \'<style>table{border-collapse:collapse;width:100%;}th,td{border:1px solid #000;padding:4px;}th{background:#d9f2b4;font-weight:bold;}.no{text-align:right;}</style>\''
+            + '        + \'<style>\''
+            + '        + \'table{border-collapse:collapse;width:100%;font-family:"Times New Roman", Times, serif;} \''
+            + '        + \'th,td{border:1px solid #000;padding:4px;} \''
+            + '        + \'th{background:#d9f2b4;font-weight:bold;} \''
+            + '        + \'.no{text-align:right;} \''
+            + '        + \'.no-border{border:none !important;} \''
+            + '        + \'.date-border-top{border-top:1px solid #000 !important; border-left:1px solid #000 !important; border-right:1px solid #000 !important; border-bottom:none !important;} \''
+            + '        + \'.date-border-mid{border-left:1px solid #000 !important; border-right:1px solid #000 !important; border-top:none !important; border-bottom:none !important;} \''
+            + '        + \'.date-border-bot{border-left:1px solid #000 !important; border-right:1px solid #000 !important; border-bottom:1px solid #000 !important; border-top:none !important;} \''
+            + '        + \'</style>\''
             + '        + \'</head><body>\' + cloneTable.outerHTML + \'</body></html>\';'
-            + '    var blob = new Blob(["\\ufeff" + html], { type: "application/vnd.ms-excel" });'
-            + '    var url = URL.createObjectURL(blob);'
-            + '    var a = document.createElement("a");'
-            + '    a.href = url;'
-            + '    a.download = fname.endsWith(".xlsx") || fname.endsWith(".xls") ? fname : fname + ".xls";'
-            + '    document.body.appendChild(a);'
-            + '    a.click();'
-            + '    document.body.removeChild(a);'
-            + '    URL.revokeObjectURL(url);'
-            + '}'
-            + '<\/script>'
-            + '<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"><\/script>';
+            + '    var blob = new Blob(["\\ufeff" + html], { type: "application/vnd.ms-excel" });\n'
+            + '    var url = URL.createObjectURL(blob);\n'
+            + '    var a = document.createElement("a");\n'
+            + '    a.href = url;\n'
+            + '    a.download = fnameXls;\n'
+            + '    document.body.appendChild(a);\n'
+            + '    a.click();\n'
+            + '    document.body.removeChild(a);\n'
+            + '    URL.revokeObjectURL(url);\n'
+            + '}\n'
+            + '<\/script>';
 
         var html = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + title + '</title>'
             + styleHTML
@@ -648,39 +735,38 @@
         if (!section) return;
         
         var title = section.getAttribute('data-title') || 'Report';
-        var filename = customFilename || (title.replace(/\s+/g, '_') + '.xlsx');
-        var table = section.querySelector('table.data');
-        if (!table) {
+        var filename = customFilename || (title.replace(/\s+/g, '_') + '.xls');
+        var fnameXls = filename.endsWith('.xlsx') ? filename.replace(/\.xlsx$/i, '.xls') : (filename.endsWith('.xls') ? filename : filename + '.xls');
+        
+        var cloneTable = buildExcelTableFromContainer(section, title);
+        if (!cloneTable) {
             alert('No data available to export.');
             return;
         }
 
-        // Clone table to clean up hidden elements for export
-        var cloneTable = table.cloneNode(true);
-        var hiddenEls = cloneTable.querySelectorAll('[style*="display: none"], [style*="display:none"]');
-        hiddenEls.forEach(function(el) { el.remove(); });
-
-        if (typeof XLSX !== 'undefined') {
-            var wb = XLSX.utils.table_to_book(cloneTable, { sheet: title.substring(0, 31) });
-            XLSX.writeFile(wb, filename);
-            return;
-        }
-
-        // Fallback HTML spreadsheet blob
         var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">'
             + '<head><meta charset="utf-8">'
             + '<!--[if gte mso 9]><xml><' + 'x:ExcelWorkbook><' + 'x:ExcelWorksheets><' + 'x:ExcelWorksheet>'
             + '<' + 'x:Name>' + title.substring(0, 31) + '</' + 'x:Name>'
             + '<' + 'x:WorksheetOptions><' + 'x:DisplayGridlines/></' + 'x:WorksheetOptions>'
             + '</' + 'x:ExcelWorksheet></' + 'x:ExcelWorksheets></' + 'x:ExcelWorkbook></xml><![endif]-->'
-            + '<style>table{border-collapse:collapse;}th,td{border:1px solid #000;padding:4px;}th{background:#d9f2b4;font-weight:bold;}</style>'
+            + '<style>'
+            + 'table{border-collapse:collapse;width:100%;font-family:\'Times New Roman\', Times, serif;} '
+            + 'th,td{border:1px solid #000;padding:4px;} '
+            + 'th{background:#d9f2b4;font-weight:bold;} '
+            + '.no{text-align:right;} '
+            + '.no-border{border:none !important;} '
+            + '.date-border-top{border-top:1px solid #000 !important; border-left:1px solid #000 !important; border-right:1px solid #000 !important; border-bottom:none !important;} '
+            + '.date-border-mid{border-left:1px solid #000 !important; border-right:1px solid #000 !important; border-top:none !important; border-bottom:none !important;} '
+            + '.date-border-bot{border-left:1px solid #000 !important; border-right:1px solid #000 !important; border-bottom:1px solid #000 !important; border-top:none !important;} '
+            + '</style>'
             + '</head><body>' + cloneTable.outerHTML + '</body></html>';
 
         var blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel' });
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;
-        a.download = filename.endsWith('.xlsx') || filename.endsWith('.xls') ? filename : filename + '.xls';
+        a.download = fnameXls;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
